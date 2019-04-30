@@ -8,9 +8,11 @@ export default class extends Component {
   }
 
   render() {
+    const { navigate } = this.props.navigation
+    this.props.navigation.set
     return (
       <View>
-        <Repls />
+        <Repls onPress={(title) => navigate('Repl', { title })} />
       </View>
     )
   }

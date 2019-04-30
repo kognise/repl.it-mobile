@@ -12,7 +12,7 @@ export default class extends Component {
     this.props.navigation.set
     return (
       <View>
-        <Repls onPress={(title) => navigate('Repl', { title })} />
+        <Repls onPress={(id, title) => navigate('Repl', { id, title })} />
       </View>
     )
   }

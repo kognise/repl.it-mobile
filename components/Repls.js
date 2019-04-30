@@ -29,7 +29,7 @@ export default class extends Component {
             title={title}
             description={`A ${language} repl`}
             key={id}
-            onPress={() => this.props.onPress(title)}
+            onPress={() => this.props.onPress(id, title)}
           />
         ))}
         {this.state.loading && <ActivityIndicator />}

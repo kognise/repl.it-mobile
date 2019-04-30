@@ -4,7 +4,7 @@ import { Text } from 'react-native-paper'
 
 export default class extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam('title', 'Repl.it')
+    title: navigation.getParam('title', 'Repl.it') 
   })
 
   render() {

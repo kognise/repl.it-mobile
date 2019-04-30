@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { ScrollView, RefreshControl } from 'react-native'
-import { List, ActivityIndicator } from 'react-native-paper'
+import { List } from 'react-native-paper'
+import ActivityIndicator from './ActivityIndicator'
 import { fetchDashboard } from '../lib/network'
 
 export default class extends Component {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
-import { ActivityIndicator } from 'react-native-paper'
+import ActivityIndicator from '../components/ActivityIndicator'
 import { readFile } from '../lib/network'
 import Editor from '../components/Editor'
 

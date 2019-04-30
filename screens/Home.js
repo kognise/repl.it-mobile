@@ -9,7 +9,7 @@ export default class extends Component {
 
   render() {
     return (
-      <View style={{ paddingVertical: 12 }}>
+      <View>
         <Repls />
       </View>
     )

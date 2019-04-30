@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
-import { ScrollView } from 'react-native'
+import { ScrollView, RefreshControl } from 'react-native'
 import { List, ActivityIndicator } from 'react-native-paper'
 import { fetchDashboard } from '../lib/network'
 
 export default class extends Component {
   state = {
     items: [],
-    loading: true
+    loading: true,
+    refreshing: false
   }
   pageInfo = {}
 
@@ -16,6 +17,12 @@ export default class extends Component {
         scrollEventThrottle={16}
         onScroll={this.onScroll}
         onMomentumScrollEnd={this.onScroll}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.refresh}
+          />
+        }
       >
         {this.state.items.map(({ id, title, language }) => (
           <List.Item
@@ -33,6 +40,13 @@ export default class extends Component {
   async componentDidMount() {
     const { items, pageInfo } = await fetchDashboard()
     this.setState({ items, loading: false })
+    this.pageInfo = pageInfo
+  }
+
+  refresh = async () => {
+    this.setState({ refreshing: true })
+    const { items, pageInfo } = await fetchDashboard()
+    this.setState({ items, refreshing: false })
     this.pageInfo = pageInfo
   }
 

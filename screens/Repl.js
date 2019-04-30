@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
-import { Text } from 'react-native-paper'
+import Editor from '../components/Editor'
 
 export default class extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -10,7 +10,7 @@ export default class extends Component {
   render() {
     return (
       <View>
-        <Text>Hi!</Text>
+        <Editor />
       </View>
     )
   }

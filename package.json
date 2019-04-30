@@ -9,7 +9,9 @@
   "dependencies": {
     "@zeit/fetch-retry": "^4.0.0",
     "expo": "^32.0.0",
+    "prismjs": "^1.16.0",
     "react": "16.5.0",
+    "react-ace": "^6.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-paper": "^2.15.2",
     "react-native-vector-icons": "^6.4.2",

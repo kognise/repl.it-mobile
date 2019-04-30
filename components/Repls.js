@@ -1,21 +1,33 @@
 import React, { Component } from 'react'
+import { ScrollView } from 'react-native'
 import { List, ActivityIndicator } from 'react-native-paper'
-
-const sid = 's%3AHKPDumQc3FQqRJzWkfwqO-qOWhqV3Nb_.S%2FxUZIFVaG7u6jKCnFwv7SNy0V1vMYQmYmyYeFhH778' // FIXME: REMOVE THIS!
+import { fetchDashboard } from '../lib/network'
 
 export default class extends Component {
   state = {
-    loading: true
+    items: null
   }
 
   render() {
-    if (this.state.loading) {
+    if (!this.state.items) {
       return <ActivityIndicator />
-    } else {
-      return <>
-        <List.Item title='First item' />
-      </>
     }
+
+    return (
+      <ScrollView>
+        {this.state.items.map(({ id, title, language }) => (
+          <List.Item
+            title={title}
+            description={`A ${language} repl`}
+            key={id}
+          />
+        ))}
+      </ScrollView>
+    )
+  }
+
+  async componentDidMount() {
+    const items = await fetchDashboard()
+    this.setState({ items })
   }
 }
-  

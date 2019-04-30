@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View } from 'react-native'
 import Repls from '../components/Repls'
 
 export default class extends Component {
   static navigationOptions = {
-    title: 'Home'
+    title: 'Your Repls'
   }
 
   render() {
@@ -15,5 +15,3 @@ export default class extends Component {
     )
   }
 }
-
-const styles = StyleSheet.create()

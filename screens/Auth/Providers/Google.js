@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { View } from 'react-native'
-import { Text } from 'react-native-paper'
+import { View, Linking } from 'react-native'
 
 export default class extends Component {
   static navigationOptions = {
@@ -13,9 +12,11 @@ export default class extends Component {
 
   render() {
     return (
-      <View>
-        <Text>Yeet! Google login isn't implemented yet :smirk:</Text>
-      </View>
+      <View />
     )
+  }
+
+  async componentDidMount() {
+    Linking.openURL('https://google.com')
   }
 }

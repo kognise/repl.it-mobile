@@ -39,14 +39,19 @@ export default class extends Component {
   }
 
   async componentDidMount() {
+    this.mounted = true
     const { items, pageInfo } = await fetchDashboard()
     this.setState({ items, loading: false })
     this.pageInfo = pageInfo
+  }
+  componentWillUnmount() {
+     this.mounted = false
   }
 
   refresh = async () => {
     this.setState({ refreshing: true })
     const { items, pageInfo } = await fetchDashboard()
+    if (!this.mounted) return
     this.setState({ items, refreshing: false })
     this.pageInfo = pageInfo
   }
@@ -64,6 +69,7 @@ export default class extends Component {
 
     this.setState({ loading: true })
     const { items, pageInfo } = await fetchDashboard(this.pageInfo.nextCursor)
+    if (!this.mounted) return
     this.setState({
       items: this.state.items.concat(items),
       loading: false

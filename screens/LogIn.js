@@ -69,11 +69,20 @@ export default withTheme(class extends Component {
     this.setState({ loading: true })
     try {
       const { username } = await logIn(this.state.username, this.state.password)
+      if (!this.mounted) return
       this.props.navigation.navigate('Hello', { username })
     } catch(error) {
+      if (!this.mounted) return
       this.setState({ loading: false, error: error.message })
     }
   }
   updateUsername = (username) => this.setState({ username })
   updatePassword = (password) => this.setState({ password })
+
+  componentDidMount() {
+    this.mounted = true
+  }
+  componentWillUnmount() {
+     this.mounted = false
+  }
 })

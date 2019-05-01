@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Appbar } from 'react-native-paper'
-import { goBack, resetAndNavigate } from '../lib/navigation'
+import { goBack } from '../lib/navigation'
 import { logOut } from '../lib/network'
 
 export default class extends Component {
@@ -16,7 +16,7 @@ export default class extends Component {
           icon='exit-to-app'
           onPress={async () => {
             await logOut()
-            resetAndNavigate(this.props.navigation, 'Welcome')
+            this.props.navigation.navigate('Auth')
           }}
         />
       </Appbar.Header>

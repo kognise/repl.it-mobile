@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Title, Text, Button } from 'react-native-paper'
-import { resetAndNavigate } from '../lib/navigation'
 
 export default class extends Component {
   static navigationOptions = {
@@ -28,7 +27,7 @@ export default class extends Component {
           You're all set to get started
         </Text>
 
-        <Button mode='contained' onPress={() => resetAndNavigate(this.props.navigation, 'Home')}>
+        <Button mode='contained' onPress={() => this.props.navigation.navigate('App')}>
           Go!
         </Button>
       </View>

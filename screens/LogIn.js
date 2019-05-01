@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Title, Button, Text } from 'react-native-paper'
-import { resetAndNavigate } from '../lib/navigation'
 import { logIn } from '../lib/network'
 import { withTheme } from 'react-native-paper'
 import FormInput from '../components/FormInput'
@@ -70,7 +69,7 @@ export default withTheme(class extends Component {
     this.setState({ loading: true })
     try {
       const { username } = await logIn(this.state.username, this.state.password)
-      resetAndNavigate(this.props.navigation, 'Hello', { username })
+      this.props.navigation.navigate('Hello', { username })
     } catch(error) {
       this.setState({ loading: false, error: error.message })
     }

@@ -1,6 +1,8 @@
 import React from 'react'
 import { Provider as PaperProvider } from 'react-native-paper'
 import { createStackNavigator, createAppContainer } from 'react-navigation'
+import { transitionConfig } from './lib/navigation'
+import CustomHeader from './components/CustomHeader'
 import InitialScreen from './screens/Initial'
 import WelcomeScreen from './screens/Welcome'
 import LogInScreen from './screens/LogIn'
@@ -16,7 +18,11 @@ const Navigator = createStackNavigator({
   Home: { screen: HomeScreen },
   Repl: { screen: ReplScreen }
 }, {
-  initialRouteName: 'Initial'
+  initialRouteName: 'Initial',
+  defaultNavigationOptions: {
+    header: ({ navigation }) => <CustomHeader navigation={navigation} />
+  },
+  transitionConfig
 })
 const App = createAppContainer(Navigator)
 

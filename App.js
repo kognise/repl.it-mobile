@@ -1,6 +1,7 @@
 import React from 'react'
 import { Provider as PaperProvider } from 'react-native-paper'
 import { createStackNavigator, createAppContainer } from 'react-navigation'
+import { useScreens } from 'react-native-screens'
 import { transitionConfig } from './lib/navigation'
 import CustomHeader from './components/CustomHeader'
 import InitialScreen from './screens/Initial'
@@ -11,6 +12,7 @@ import HomeScreen from './screens/Home'
 import ReplScreen from './screens/Repl'
 import FileScreen from './screens/File'
 
+useScreens()
 const Navigator = createStackNavigator({
   Initial: { screen: InitialScreen },
   Welcome: { screen: WelcomeScreen },

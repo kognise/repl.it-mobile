@@ -19,7 +19,8 @@ export default class extends Component {
       }}>
         <Title style={{
           fontSize: 36,
-          padding: 16
+          padding: 16,
+          textAlign: 'center'
         }}>Welcome!</Title>
         <Text style={{
           fontSize: 18,

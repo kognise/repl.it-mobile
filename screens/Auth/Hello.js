@@ -16,7 +16,8 @@ export default class extends Component {
       }}>
         <Title style={{
           fontSize: 36,
-          padding: 16
+          padding: 16,
+          textAlign: 'center'
         }}>Hello, {this.props.navigation.getParam('username', 'Repl.it user')}!</Title>
         <Text style={{
           fontSize: 18,

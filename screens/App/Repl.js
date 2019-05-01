@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
-import Files from '../components/Files'
+import Files from '../../components/Files'
 
 export default class extends Component {
   static navigationOptions = ({ navigation }) => ({

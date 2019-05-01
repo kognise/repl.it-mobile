@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Title, Text, Button } from 'react-native-paper'
-import ImageButton from '../components/ImageButton'
-import HorizontalList from '../components/HorizontalList'
+import ImageButton from '../../components/ImageButton'
+import HorizontalList from '../../components/HorizontalList'
 
 export default class extends Component {
   static navigationOptions = {
@@ -31,9 +31,9 @@ export default class extends Component {
         </Text>
         
         <HorizontalList style={{ marginBottom: 16 }}>
-          <ImageButton image='google' />
-          <ImageButton image='github' />
-          <ImageButton image='facebook' />
+          <ImageButton image='google' onPress={this.googleLogIn} />
+          <ImageButton image='github' onPress={this.gitHubLogIn} />
+          <ImageButton image='facebook' onPress={this.facebookLogIn} />
         </HorizontalList>
 
         <Button mode='contained' onPress={() => navigate('LogIn')}>
@@ -43,4 +43,8 @@ export default class extends Component {
       </View>
     )
   }
+
+  googleLogIn = () => this.props.navigation.navigate('GoogleProvider')
+  gitHubLogIn = () => this.props.navigation.navigate('GitHubProvider')
+  facebookLogIn = () => this.props.navigation.navigate('FacebookProvider')
 }

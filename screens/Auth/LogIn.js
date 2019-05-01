@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Button, Text } from 'react-native-paper'
-import { logIn } from '../lib/network'
+import { logIn } from '../../lib/network'
 import { withTheme } from 'react-native-paper'
-import FormInput from '../components/FormInput'
+import FormInput from '../../components/FormInput'
 
 export default withTheme(class extends Component {
   static navigationOptions = {

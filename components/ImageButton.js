@@ -18,7 +18,7 @@ export default class extends Component {
             style={{ width: size, height: size }}
           />
         )}
-        size={this.props.size}
+        size={26}
         onPress={this.props.onPress}
       />
     )

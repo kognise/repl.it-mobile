@@ -6,10 +6,17 @@ import { Appbar } from 'react-native-paper'
 import { logOut } from './lib/network'
 import { transitionConfig } from './lib/navigation'
 import CustomHeader from './components/CustomHeader'
+
 import InitialScreen from './screens/Initial'
+
 import WelcomeScreen from './screens/Auth/Welcome'
 import LogInScreen from './screens/Auth/LogIn'
 import HelloScreen from './screens/Auth/Hello'
+
+import GoogleProviderScreen from './screens/Auth/Providers/Google'
+import GitHubProviderScreen from './screens/Auth/Providers/GitHub'
+import FacebookProviderScreen from './screens/Auth/Providers/Facebook'
+
 import HomeScreen from './screens/App/Home'
 import ReplScreen from './screens/App/Repl'
 import FileScreen from './screens/App/File'
@@ -17,7 +24,11 @@ import FileScreen from './screens/App/File'
 const AuthNavigator = createStackNavigator({
   Welcome: { screen: WelcomeScreen },
   LogIn: { screen: LogInScreen },
-  Hello: { screen: HelloScreen }
+  Hello: { screen: HelloScreen },
+
+  GoogleProvider: { screen: GoogleProviderScreen },
+  GitHubProvider: { screen: GitHubProviderScreen },
+  FacebookProvider: { screen: FacebookProviderScreen }
 }, {
   initialRouteName: 'Welcome',
   defaultNavigationOptions: {

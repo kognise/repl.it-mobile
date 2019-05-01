@@ -1,17 +1,20 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
-import Repls from '../../components/Repls'
+import { Text } from 'react-native-paper'
 
 export default class extends Component {
   static navigationOptions = {
-    title: 'Your Repls'
+    title: 'GitHub'
+  }
+
+  state = {
+    loading: false
   }
 
   render() {
-    const { navigate } = this.props.navigation
     return (
       <View>
-        <Repls onPress={({ id, title, url }) => navigate('Repl', { id, title, url })} />
+        <Text>Yeet! GitHub login isn't implemented yet :smirk:</Text>
       </View>
     )
   }

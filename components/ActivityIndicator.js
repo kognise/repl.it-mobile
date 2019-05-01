@@ -3,6 +3,6 @@ import { ActivityIndicator } from 'react-native-paper'
 
 export default class extends Component {
   render() {
-    return <ActivityIndicator />
+    return <ActivityIndicator style={{ margin: 20 }} />
   }
 }

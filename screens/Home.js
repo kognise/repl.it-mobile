@@ -11,7 +11,7 @@ export default class extends Component {
     const { navigate } = this.props.navigation
     return (
       <View>
-        <Repls onPress={(id, title) => navigate('Repl', { id, title })} />
+        <Repls onPress={({ id, title, url }) => navigate('Repl', { id, title, url })} />
       </View>
     )
   }

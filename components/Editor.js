@@ -15,6 +15,7 @@ export default class extends Component {
           originWhitelist={[ '*' ]}
           source={{ html: editorCode }}
           ref={(webview) => this.webview = webview}
+          onMessage={this.onMessage}
         />
       </View>
     )
@@ -22,7 +23,10 @@ export default class extends Component {
 
   componentDidUpdate() {
     if (this.props.code && this.webview) {
-      this.webview.postMessage(this.props.code)
+      this.webview.postMessage(JSON.stringify({
+        code: this.props.code,
+        path: this.props.path || ''
+      }))
     }
   }
 }

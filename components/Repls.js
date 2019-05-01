@@ -25,12 +25,12 @@ export default class extends Component {
           />
         }
       >
-        {this.state.items.map(({ id, title, language }) => (
+        {this.state.items.map((item) => (
           <List.Item
-            title={title}
-            description={`A ${language} repl`}
-            key={id}
-            onPress={() => this.props.onPress(id, title)}
+            title={item.title}
+            description={`A ${item.language} repl`}
+            key={item.id}
+            onPress={() => this.props.onPress(item)}
           />
         ))}
         {this.state.loading && <ActivityIndicator />}
@@ -45,7 +45,7 @@ export default class extends Component {
     this.pageInfo = pageInfo
   }
   componentWillUnmount() {
-     this.mounted = false
+    this.mounted = false
   }
 
   refresh = async () => {

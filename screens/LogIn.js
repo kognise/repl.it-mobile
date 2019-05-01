@@ -83,6 +83,6 @@ export default withTheme(class extends Component {
     this.mounted = true
   }
   componentWillUnmount() {
-     this.mounted = false
+    this.mounted = false
   }
 })

@@ -7,12 +7,12 @@ import { logOut } from './lib/network'
 import { transitionConfig } from './lib/navigation'
 import CustomHeader from './components/CustomHeader'
 import InitialScreen from './screens/Initial'
-import WelcomeScreen from './screens/Welcome'
-import LogInScreen from './screens/LogIn'
-import HelloScreen from './screens/Hello'
-import HomeScreen from './screens/Home'
-import ReplScreen from './screens/Repl'
-import FileScreen from './screens/File'
+import WelcomeScreen from './screens/Auth/Welcome'
+import LogInScreen from './screens/Auth/LogIn'
+import HelloScreen from './screens/Auth/Hello'
+import HomeScreen from './screens/App/Home'
+import ReplScreen from './screens/App/Repl'
+import FileScreen from './screens/App/File'
 
 const AuthNavigator = createStackNavigator({
   Welcome: { screen: WelcomeScreen },

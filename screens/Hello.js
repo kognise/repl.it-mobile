@@ -4,7 +4,7 @@ import { Title, Text, Button } from 'react-native-paper'
 
 export default class extends Component {
   static navigationOptions = {
-    header: null
+    title: 'Welcome'
   }
 
   render() {

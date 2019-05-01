@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
-import { Title, Button, Text } from 'react-native-paper'
+import { Button, Text } from 'react-native-paper'
 import { logIn } from '../lib/network'
 import { withTheme } from 'react-native-paper'
 import FormInput from '../components/FormInput'
 
 export default withTheme(class extends Component {
   static navigationOptions = {
-    header: null
+    title: 'Log in'
   }
 
   state = {
@@ -23,11 +23,6 @@ export default withTheme(class extends Component {
         justifyContent: 'center',
         padding: 20
       }}>
-        <Title style={{
-          fontSize: 36,
-          padding: 16
-        }}>Log in</Title>
-
         {this.state.error && (
           <Text style={{ color: this.props.theme.colors.error }}>
             {this.state.error}
@@ -70,6 +65,12 @@ export default withTheme(class extends Component {
     try {
       const { username } = await logIn(this.state.username, this.state.password)
       if (!this.mounted) return
+      this.setState({
+        username: '',
+        password: '',
+        error: null,
+        loading: false
+      })
       this.props.navigation.navigate('Hello', { username })
     } catch(error) {
       if (!this.mounted) return

@@ -9,6 +9,7 @@ import LogInScreen from './screens/LogIn'
 import HelloScreen from './screens/Hello'
 import HomeScreen from './screens/Home'
 import ReplScreen from './screens/Repl'
+import FileScreen from './screens/File'
 
 const Navigator = createStackNavigator({
   Initial: { screen: InitialScreen },
@@ -16,11 +17,12 @@ const Navigator = createStackNavigator({
   LogIn: { screen: LogInScreen },
   Hello: { screen: HelloScreen },
   Home: { screen: HomeScreen },
-  Repl: { screen: ReplScreen }
+  Repl: { screen: ReplScreen },
+  File: { screen: FileScreen }
 }, {
   initialRouteName: 'Initial',
   defaultNavigationOptions: {
-    header: ({ navigation }) => <CustomHeader navigation={navigation} />
+    header: (props) => <CustomHeader {...props} />
   },
   transitionConfig
 })

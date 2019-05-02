@@ -17,7 +17,7 @@ import GoogleProviderScreen from './screens/Auth/Providers/Google'
 import GitHubProviderScreen from './screens/Auth/Providers/GitHub'
 import FacebookProviderScreen from './screens/Auth/Providers/Facebook'
 
-import HomeScreen from './screens/App/Home'
+import DashboardScreen from './screens/App/Dashboard'
 import ReplScreen from './screens/App/Repl'
 import FileScreen from './screens/App/File'
 
@@ -38,11 +38,11 @@ const AuthNavigator = createStackNavigator({
 })
 
 const AppNavigator = createStackNavigator({
-  Home: { screen: HomeScreen },
+  Dashboard: { screen: DashboardScreen },
   Repl: { screen: ReplScreen },
   File: { screen: FileScreen }
 }, {
-  initialRouteName: 'Home',
+  initialRouteName: 'Dashboard',
   defaultNavigationOptions: {
     header: (props) => (
       <CustomHeader {...props}

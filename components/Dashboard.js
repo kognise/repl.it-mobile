@@ -2,11 +2,12 @@ import React, { Component } from 'react'
 import { ScrollView, RefreshControl } from 'react-native'
 import { List } from 'react-native-paper'
 import ActivityIndicator from './ActivityIndicator'
-import { fetchDashboard } from '../lib/network'
+import { fetchRepls, fetchFolders } from '../lib/network'
 
 export default class extends Component {
   state = {
-    items: [],
+    repls: [],
+    folders: [],
     loading: true,
     refreshing: false
   }
@@ -25,12 +26,21 @@ export default class extends Component {
           />
         }
       >
-        {this.state.items.map((item) => (
+        {this.state.folders.map((folder) => (
           <List.Item
-            title={item.title}
-            description={`A ${item.language} repl`}
-            key={item.id}
-            onPress={() => this.props.onPress(item)}
+            title={folder.name}
+            key={folder.id}
+            onPress={() => this.props.onFolderPress(folder)}
+            left={(props) => <List.Icon {...props} icon='folder' />}
+          />
+        ))}
+        {this.state.repls.map((repl) => (
+          <List.Item
+            title={repl.title}
+            description={`A ${repl.language} repl`}
+            key={repl.id}
+            onPress={() => this.props.onReplPress(repl)}
+            left={(props) => <List.Icon {...props} icon='insert-drive-file' />}
           />
         ))}
         {this.state.loading && <ActivityIndicator />}
@@ -40,9 +50,17 @@ export default class extends Component {
 
   async componentDidMount() {
     this.mounted = true
-    const { items, pageInfo } = await fetchDashboard()
-    this.setState({ items, loading: false })
+
+    const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId)
+    const folders = await fetchFolders(this.props.folderId)
     this.pageInfo = pageInfo
+    if (!this.mounted) return
+
+    this.setState({
+      repls: items,
+      loading: false,
+      folders
+    })
   }
   componentWillUnmount() {
     this.mounted = false
@@ -50,12 +68,18 @@ export default class extends Component {
 
   refresh = async () => {
     this.setState({ refreshing: true })
-    const { items, pageInfo } = await fetchDashboard()
-    if (!this.mounted) return
-    this.setState({ items, refreshing: false })
-    this.pageInfo = pageInfo
-  }
 
+    const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId)
+    const folders = await fetchFolders(this.props.folderId)
+    if (!this.mounted) return
+    this.pageInfo = pageInfo
+
+    this.setState({
+      repls: items,
+      refreshing: false,
+      folders
+    })
+  }
   onScroll = (event) => {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent
     if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 60) {
@@ -68,12 +92,13 @@ export default class extends Component {
     if (!this.pageInfo.hasNextPage) return
 
     this.setState({ loading: true })
-    const { items, pageInfo } = await fetchDashboard(this.pageInfo.nextCursor)
+    const { items, pageInfo } = await fetchRepls(this.pageInfo.nextCursor, this.props.folderId)
     if (!this.mounted) return
+    this.pageInfo = pageInfo
+
     this.setState({
-      items: this.state.items.concat(items),
+      repls: this.state.repls.concat(items),
       loading: false
     })
-    this.pageInfo = pageInfo
   }
 }

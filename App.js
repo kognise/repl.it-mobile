@@ -46,19 +46,18 @@ const AppNavigator = createStackNavigator({
 }, {
   initialRouteName: 'Dashboard',
   defaultNavigationOptions: {
-    header: (props) => (
-      <CustomHeader {...props}
-        right={(
-          <Appbar.Action
-            icon='exit-to-app'
-            onPress={async () => {
-              await logOut()
-              props.navigation.navigate('Auth')
-            }}
-          />
-        )}
-      />
-    )
+    header: (props) => <CustomHeader {...props} />
+    //     right={(
+    //       <Appbar.Action
+    //         icon='exit-to-app'
+    //         onPress={async () => {
+    //           await logOut()
+    //           props.navigation.navigate('Auth')
+    //         }}
+    //       />
+    //     )}
+    //   />
+    // )
   },
   transitionConfig
 })

@@ -20,11 +20,16 @@ export default class extends Component {
   }
 
   componentDidUpdate() {
-    if (this.props.code && this.webview) {
+    if (this.props.code !== undefined && this.webview) {
       this.webview.postMessage(JSON.stringify({
         code: this.props.code,
         path: this.props.path || ''
       }))
     }
+  }
+
+  onMessage = (event) => {
+    const code = event.nativeEvent.data
+    this.props.onChange && this.props.onChange(code)
   }
 }

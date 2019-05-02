@@ -8,7 +8,7 @@ export default class extends Component {
       <TextInput
         label={this.props.label}
         style={{
-          marginBottom: 20,
+          marginBottom: this.props.hasNext ? 10 : 20,
           backgroundColor: '#ffffff'
         }}
         mode='outlined'
@@ -16,7 +16,7 @@ export default class extends Component {
           <RNTextInput
             {...props}
             secureTextEntry={this.props.password}
-            returnKeyType={this.props.returnKeyType || 'done'}
+            returnKeyType={this.props.hasNext ? 'next' : 'done'}
             blurOnSubmit={false}
             onSubmitEditing={this.props.onSubmit}
             autoCapitalize='none'

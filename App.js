@@ -11,6 +11,7 @@ import InitialScreen from './screens/Initial'
 
 import WelcomeScreen from './screens/Auth/Welcome'
 import LogInScreen from './screens/Auth/LogIn'
+import SignUpScreen from './screens/Auth/SignUp'
 import HelloScreen from './screens/Auth/Hello'
 
 import GoogleProviderScreen from './screens/Auth/Providers/Google'
@@ -24,6 +25,7 @@ import FileScreen from './screens/App/File'
 const AuthNavigator = createStackNavigator({
   Welcome: { screen: WelcomeScreen },
   LogIn: { screen: LogInScreen },
+  SignUp: { screen: SignUpScreen },
   Hello: { screen: HelloScreen },
 
   GoogleProvider: { screen: GoogleProviderScreen },

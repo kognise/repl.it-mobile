@@ -31,16 +31,26 @@ export default class extends Component {
           Just sign in or sign up and you'll be ready to start coding with Repl.it
         </Text>
         
-        <HorizontalList style={{ marginBottom: 16 }}>
+        <HorizontalList style={{ marginBottom: 20 }}>
           <ImageButton image='google' onPress={this.googleLogIn} />
           <ImageButton image='github' onPress={this.gitHubLogIn} />
           <ImageButton image='facebook' onPress={this.facebookLogIn} />
         </HorizontalList>
 
-        <Button mode='contained' onPress={() => navigate('LogIn')}>
+        <Button
+          mode='contained'
+          style={{ marginBottom: 10, minWidth: 200 }}
+          onPress={() => navigate('LogIn')}
+        >
           Log in
         </Button>
-        <Button>Sign up</Button>
+        <Button
+          mode='outlined'
+          style={{ minWidth: 200 }}
+          onPress={() => navigate('SignUp')}
+        >
+          Sign up
+        </Button>
       </View>
     )
   }

@@ -29,12 +29,16 @@ export default class extends Component {
           folderId={folderId}
           onFolderPress={({ id, name }) => navigateSame(this.props.navigation, { folderId: id, name })}
           onReplPress={({ id, title, url }) => navigate('Repl', { id, title, url })}
+          ref={(dashboard) => this.dashboard = dashboard}
         />
         <NewRepl
           navigation={this.props.navigation}
           folderId={folderId}
+          onUpdate={this.reload}
         />
       </View>
     )
   }
+
+  reload = async () => this.dashboard && await this.dashboard.reload()
 }

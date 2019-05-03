@@ -81,6 +81,24 @@ export default class extends Component {
       folders
     })
   }
+  reload = async () => {
+    this.setState({
+      repls: [],
+      folders: [],
+      loading: true
+    })
+    
+    const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId)
+    const folders = await fetchFolders(this.props.folderId)
+    this.pageInfo = pageInfo
+    if (!this.mounted) return
+
+    this.setState({
+      repls: items,
+      loading: false,
+      folders
+    })
+  }
   onScroll = (event) => {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent
     if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 60) {

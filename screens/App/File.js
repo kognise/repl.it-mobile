@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
 import ActivityIndicator from '../../components/ActivityIndicator'
-import { readFile } from '../../lib/network'
+import { getUrls, readFile, writeFile } from '../../lib/network'
 import Editor from '../../components/Editor'
 
 export default class extends Component {
@@ -10,7 +10,8 @@ export default class extends Component {
   })
 
   state = {
-    code: '',
+    code: undefined,
+    path: undefined,
     loading: true
   }
 
@@ -22,6 +23,7 @@ export default class extends Component {
           hidden={this.state.loading}
           code={this.state.code}
           path={this.state.path}
+          onChange={this.saveCode}
         />
       </View>
     )
@@ -33,11 +35,16 @@ export default class extends Component {
     const id = this.props.navigation.getParam('id')
     const path = this.props.navigation.getParam('path')
 
-    const code = await readFile(id, path)
+    const urls = await getUrls(id, path)
+    const code = await readFile(urls)
+
     if (!this.mounted) return
+    this.urls = urls
     this.setState({ code, path, loading: false })
   }
   componentWillUnmount() {
     this.mounted = false
   }
+
+  saveCode = async (code) => await writeFile(this.urls, code)
 }

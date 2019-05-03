@@ -1,8 +1,8 @@
 import React from 'react'
-import { Provider as PaperProvider } from 'react-native-paper'
+import { StatusBar } from 'react-native'
+import { Provider as PaperProvider, Appbar } from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
-// import { useScreens } from 'react-native-screens'
-import { Appbar } from 'react-native-paper'
+import { useScreens } from 'react-native-screens'
 import { logOut } from './lib/network'
 import { transitionConfig } from './lib/navigation'
 import CustomHeader from './components/CustomHeader'
@@ -63,7 +63,7 @@ const AppNavigator = createStackNavigator({
   transitionConfig
 })
 
-// useScreens() // TODO: Look into broken autofill
+useScreens() // TODO: Look into broken autofill
 const Navigator = createSwitchNavigator({
   Initial: InitialScreen,
   Auth: AuthNavigator,
@@ -73,6 +73,7 @@ const App = createAppContainer(Navigator)
 
 export default () => (
   <PaperProvider>
+    <StatusBar barStyle='light-content' />
     <App />
   </PaperProvider>
 )

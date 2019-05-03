@@ -29,7 +29,7 @@ export default class extends Component {
           onFolderPress={({ id, name }) => navigateSame(this.props.navigation, { folderId: id, name })}
           onReplPress={({ id, title, url }) => navigate('Repl', { id, title, url })}
         />
-        <NewRepl />
+        <NewRepl navigation={this.props.navigation} />
       </View>
     )
   }

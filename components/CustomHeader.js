@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Appbar, Menu, Divider } from 'react-native-paper'
+import { Platform } from 'react-native'
+import { Appbar, Menu } from 'react-native-paper'
 import { goBack } from '../lib/navigation'
 
 export default class extends Component {
@@ -22,7 +23,7 @@ export default class extends Component {
           anchor={
             <Appbar.Action
               onPress={this.openMenu}
-              icon='more-vert'
+              icon={Platform.OS === 'android' ? 'more-vert' : 'more-horiz'}
               color='#ffffff'
             />
           }

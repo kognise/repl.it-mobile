@@ -9,6 +9,7 @@
   "dependencies": {
     "@zeit/fetch-retry": "^4.0.0",
     "expo": "^32.0.0",
+    "fuse.js": "^3.4.4",
     "prismjs": "^1.16.0",
     "react": "16.5.0",
     "react-ace": "^6.5.0",

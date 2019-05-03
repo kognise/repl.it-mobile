@@ -11,7 +11,6 @@ export default class extends Component {
 
   state = {
     code: undefined,
-    code: undefined,
     path: undefined,
     loading: true
   }

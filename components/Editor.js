@@ -21,10 +21,14 @@ export default class extends Component {
   }
 
   componentDidUpdate() {
-    if (this.props.code !== undefined && this.webview) {
+    if (
+      this.props.code !== undefined
+      && this.props.path !== undefined
+      && this.webview
+    ) {
       this.webview.postMessage(JSON.stringify({
         code: this.props.code,
-        path: this.props.path || ''
+        path: this.props.path
       }))
     }
   }

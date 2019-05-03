@@ -10,6 +10,7 @@ export default class extends Component {
         display: this.props.hidden ? 'none' : 'flex'
       }}>
         <WebView
+          // useWebKit={true}
           originWhitelist={[ '*' ]}
           source={{ html: editorCode }}
           ref={(webview) => this.webview = webview}

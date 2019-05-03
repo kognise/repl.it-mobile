@@ -11,6 +11,8 @@ export default class extends Component {
 
   state = {
     code: undefined,
+    code: undefined,
+    path: undefined,
     loading: true
   }
 
@@ -39,7 +41,7 @@ export default class extends Component {
 
     if (!this.mounted) return
     this.urls = urls
-    this.setState({ code, loading: false })
+    this.setState({ code, path, loading: false })
   }
   componentWillUnmount() {
     this.mounted = false

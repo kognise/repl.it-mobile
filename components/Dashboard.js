@@ -25,6 +25,7 @@ export default class extends Component {
             onRefresh={this.refresh}
           />
         }
+        contentContainerStyle={{ height: '100%' }}
       >
         {this.state.folders.map((folder) => (
           <List.Item

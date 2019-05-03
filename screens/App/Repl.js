@@ -12,7 +12,7 @@ export default class extends Component {
     const id = this.props.navigation.getParam('id')
     const url = this.props.navigation.getParam('url')
     return (
-      <View>
+      <View style={{ flex: 1 }}>
         <Files url={url} onPress={(path) => navigate('File', { id, path })} />
       </View>
     )

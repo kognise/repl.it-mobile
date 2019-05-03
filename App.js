@@ -1,6 +1,6 @@
 import React from 'react'
 import { StatusBar } from 'react-native'
-import { Provider as PaperProvider } from 'react-native-paper'
+import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
 import { useScreens } from 'react-native-screens'
 import { transitionConfig } from './lib/navigation'
@@ -58,8 +58,16 @@ const Navigator = createSwitchNavigator({
 }, { initialRouteName: 'Initial' })
 const App = createAppContainer(Navigator)
 
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#ff1255',
+    accent: '#008cff'
+  }
+}
 export default () => (
-  <PaperProvider>
+  <PaperProvider theme={theme}>
     <StatusBar barStyle='light-content' />
     <App />
   </PaperProvider>

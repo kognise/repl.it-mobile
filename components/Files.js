@@ -20,6 +20,7 @@ export default class extends Component {
             onRefresh={this.refresh}
           />
         }
+        contentContainerStyle={{ flex: 1 }}
       >
         {this.state.files.map((path) => (
           <List.Item

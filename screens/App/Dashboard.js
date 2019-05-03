@@ -3,6 +3,7 @@ import { View } from 'react-native'
 import { Menu } from 'react-native-paper'
 import { navigateSame } from '../../lib/navigation'
 import { logOut } from '../../lib/network'
+import NewRepl from '../../components/NewRepl'
 import Dashboard from '../../components/Dashboard'
 
 export default class extends Component {
@@ -22,12 +23,13 @@ export default class extends Component {
   render() {
     const { navigate, getParam } = this.props.navigation
     return (
-      <View>
+      <View style={{ flex: 1 }}>
         <Dashboard
           folderId={getParam('folderId')}
           onFolderPress={({ id, name }) => navigateSame(this.props.navigation, { folderId: id, name })}
           onReplPress={({ id, title, url }) => navigate('Repl', { id, title, url })}
         />
+        <NewRepl />
       </View>
     )
   }

@@ -1,9 +1,8 @@
 import React from 'react'
 import { StatusBar } from 'react-native'
-import { Provider as PaperProvider, Appbar } from 'react-native-paper'
+import { Provider as PaperProvider } from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
 import { useScreens } from 'react-native-screens'
-import { logOut } from './lib/network'
 import { transitionConfig } from './lib/navigation'
 import CustomHeader from './components/CustomHeader'
 
@@ -47,17 +46,6 @@ const AppNavigator = createStackNavigator({
   initialRouteName: 'Dashboard',
   defaultNavigationOptions: {
     header: (props) => <CustomHeader {...props} />
-    //     right={(
-    //       <Appbar.Action
-    //         icon='exit-to-app'
-    //         onPress={async () => {
-    //           await logOut()
-    //           props.navigation.navigate('Auth')
-    //         }}
-    //       />
-    //     )}
-    //   />
-    // )
   },
   transitionConfig
 })

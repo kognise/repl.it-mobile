@@ -1,8 +1,12 @@
 import React, { Component } from 'react'
-import { Appbar } from 'react-native-paper'
+import { Appbar, Menu, Divider } from 'react-native-paper'
 import { goBack } from '../lib/navigation'
 
 export default class extends Component {
+  state = {
+    menuOpen: false
+  }
+
   render() {
     const { state } = this.props.navigation
     const { options } = this.props.scene.descriptor
@@ -11,10 +15,25 @@ export default class extends Component {
         {state.routes.length > 1
           && <Appbar.BackAction onPress={this.goBack} />}
         <Appbar.Content title={options.title || 'Repl.it'} />
-        {this.props.right}
+        
+        {options.menu && <Menu
+          visible={this.state.menuOpen}
+          onDismiss={this.closeMenu}
+          anchor={
+            <Appbar.Action
+              onPress={this.openMenu}
+              icon='more-vert'
+              color='#ffffff'
+            />
+          }
+        >
+          {options.menu}
+        </Menu>}
       </Appbar.Header>
     )
   }
 
   goBack = () => goBack(this.props.navigation)
+  openMenu = () => this.setState({ menuOpen: true })
+  closeMenu = () => this.setState({ menuOpen: false })
 }

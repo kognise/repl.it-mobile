@@ -8,7 +8,7 @@
       "ios",
       "android"
     ],
-    "version": "1.0.0",
+    "version": "0.0.1",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "splash": {
@@ -23,7 +23,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.replit.mobile"
+    },
+    "android": {
+      "package": "com.replit.mobile"
     },
     "description": "The mobile app for Repl.it. It's a work in progress and this is meant for testers.",
     "githubUrl": "https://github.com/kognise/repl.it-mobile"

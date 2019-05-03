@@ -2,7 +2,6 @@ import React from 'react'
 import { StatusBar } from 'react-native'
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
-import { useScreens } from 'react-native-screens'
 import { transitionConfig } from './lib/navigation'
 import CustomHeader from './components/CustomHeader'
 
@@ -50,7 +49,6 @@ const AppNavigator = createStackNavigator({
   transitionConfig
 })
 
-useScreens() // TODO: Look into broken autofill
 const Navigator = createSwitchNavigator({
   Initial: InitialScreen,
   Auth: AuthNavigator,

@@ -22,14 +22,18 @@ export default class extends Component {
 
   render() {
     const { navigate, getParam } = this.props.navigation
+    const folderId = getParam('folderId')
     return (
       <View style={{ flex: 1 }}>
         <Dashboard
-          folderId={getParam('folderId')}
+          folderId={folderId}
           onFolderPress={({ id, name }) => navigateSame(this.props.navigation, { folderId: id, name })}
           onReplPress={({ id, title, url }) => navigate('Repl', { id, title, url })}
         />
-        <NewRepl navigation={this.props.navigation} />
+        <NewRepl
+          navigation={this.props.navigation}
+          folderId={folderId}
+        />
       </View>
     )
   }

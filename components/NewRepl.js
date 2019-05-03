@@ -104,7 +104,7 @@ export default withTheme(class extends Component {
       const result = fuse.search(this.state.language)[0]
       if (!result) throw new Error('Sorry, we don\'t know what language that is!')
 
-      const { id, title, url } = await createRepl(this.state.title, result)
+      const { id, title, url } = await createRepl(this.state.title, result, this.props.folderId)
       if (!this.state.dialogOpen) return
       this.cancel()
       this.props.navigation.navigate('Repl', { id, title, url })

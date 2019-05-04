@@ -1,10 +1,22 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
+import { Menu } from 'react-native-paper'
+import { deleteRepl } from '../../lib/network'
 import Files from '../../components/Files'
 
 export default class extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam('title', 'Files') 
+    title: navigation.getParam('title', 'Files'),
+    menu: (
+      <Menu.Item
+        title='Delete'
+        onPress={async () => {
+          const id = navigation.getParam('id')
+          await deleteRepl(id)
+          navigation.navigate('Dashboard', { reload: true })
+        }}
+      />
+    )
   })
 
   render() {

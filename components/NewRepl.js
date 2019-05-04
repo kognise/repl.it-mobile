@@ -107,7 +107,7 @@ export default withTheme(class extends Component {
       const { id, title, url } = await createRepl(this.state.title, result, this.props.folderId)
       if (!this.state.dialogOpen) return
       this.cancel()
-      this.props.onUpdate && await this.props.onUpdate()
+      this.props.navigation.navigate('Dashboard', { reload: true })
       this.props.navigation.navigate('Repl', { id, title, url })
     } catch(error) {
       if (!this.state.dialogOpen) return

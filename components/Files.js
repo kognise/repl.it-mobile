@@ -7,7 +7,6 @@ import { fetchFiles } from '../lib/network'
 
 function renderFiles(files, onPress) {
   const children = []
-  console.log(files)
   for (let name in files) {
     const file = files[name]
     if (file.type === 'file') {
@@ -16,7 +15,7 @@ function renderFiles(files, onPress) {
           title={name}
           key={name}
           left={(props) => <List.Icon {...props} icon='insert-drive-file' />}
-          onPress={() => onPress(path)}
+          onPress={() => onPress(file.path)}
         />
       )
     } else {

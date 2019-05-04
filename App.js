@@ -2,7 +2,6 @@ import React from 'react'
 import { StatusBar } from 'react-native'
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
-import { transitionConfig } from './lib/navigation'
 import CustomHeader from './components/CustomHeader'
 
 import InitialScreen from './screens/Initial'
@@ -33,8 +32,7 @@ const AuthNavigator = createStackNavigator({
   initialRouteName: 'Welcome',
   defaultNavigationOptions: {
     header: (props) => <CustomHeader {...props} />
-  },
-  transitionConfig
+  }
 })
 
 const AppNavigator = createStackNavigator({
@@ -45,8 +43,7 @@ const AppNavigator = createStackNavigator({
   initialRouteName: 'Dashboard',
   defaultNavigationOptions: {
     header: (props) => <CustomHeader {...props} />
-  },
-  transitionConfig
+  }
 })
 
 const Navigator = createSwitchNavigator({

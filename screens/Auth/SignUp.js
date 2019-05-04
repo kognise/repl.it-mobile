@@ -1,9 +1,20 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Button, Text, withTheme } from 'react-native-paper'
-import ReCaptcha from 'react-native-recaptcha-v3'
-import { signUp } from '../../lib/network'
+import ReCaptcha from '../../components/ReCaptcha'
 import FormInput from '../../components/FormInput'
+import { signUp } from '../../lib/network'
+
+function waitForCaptcha(state) {
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (state.captcha) {
+        clearInterval(interval)
+        resolve()
+      }
+    }, 500)
+  })
+}
 
 export default withTheme(class extends Component {
   static navigationOptions = {
@@ -26,12 +37,7 @@ export default withTheme(class extends Component {
         padding: 20
       }}>
         <ReCaptcha
-          siteKey='6Lc7fZQUAAAAAIXMD8AonuuleBX0P3hS2XW364Ms'
-          url='https://repl.it'
-          containerStyle={{
-            display: 'none'
-          }}
-          reCaptchaType={1}
+          style={{ display: 'none' }}
           onExecute={this.updateCaptcha}
         />
 
@@ -85,6 +91,7 @@ export default withTheme(class extends Component {
   submit = async () => {
     this.setState({ loading: true })
     try {
+      await waitForCaptcha(this)
       await signUp(this.state.username, this.state.email, this.state.password, this.captcha)
       if (!this.mounted) return
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { View, WebView } from 'react-native'
-import editorCode from '../lib/editor.js'
+import editorCode from '../lib/editor'
 
 export default class extends Component {
   render() {

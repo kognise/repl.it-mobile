@@ -4009,7 +4009,7 @@ merge-stream@^1.0.1:
   dependencies:
     readable-stream "^2.0.1"
 
-merge@>=1.2.1, merge@^1.2.0:
+merge@^1.2.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/merge/-/merge-1.2.1.tgz#38bebf80c3220a8a487b6fcfb3941bb11720c145"
   integrity sha512-VjFo4P5Whtj4vsLzsYBu5ayHhoHJ0UqNm7ibvShmbmoz7tGi0vXaoJbGdB+GmDMLUdg8DpQXEIeVDAe8MaABvQ==
@@ -5114,14 +5114,6 @@ react-native-reanimated@1.0.0-alpha.11:
   version "1.0.0-alpha.11"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.0.0-alpha.11.tgz#b78c839bae878d149561b56a3c750414957ea86d"
   integrity sha512-lDakjY8CXmZiSN71hyc276b3d7M9mKV9ZyYw4W/rTnnJbgBFaqdIxSHq4S4LxSbVqpAoQMfUJqPTE0BKbAz7Aw==
-
-react-native-recaptcha-v3@^0.0.16:
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/react-native-recaptcha-v3/-/react-native-recaptcha-v3-0.0.16.tgz#3295988c0f7dcc8fac11dc28e38028b6ae20546e"
-  integrity sha512-uZqMwasOwXM8o6vSZLq8TrY7X9eCIwgr3OqgGfLcuOAk7L0+5hWcWFUvjgUJG2cdzqB5080chKlBFXi1bzgMNA==
-  dependencies:
-    merge ">=1.2.1"
-    prop-types "^15.6.1"
 
 react-native-safe-area-view@^0.12.0:
   version "0.12.0"

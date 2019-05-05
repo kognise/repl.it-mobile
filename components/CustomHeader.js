@@ -11,6 +11,7 @@ export default class extends Component {
   render() {
     const { state } = this.props.navigation
     const { options } = this.props.scene.descriptor
+
     return (
       <Appbar.Header>
         {state.routes.length > 1

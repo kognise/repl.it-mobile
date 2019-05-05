@@ -4,10 +4,6 @@ import { isLoggedIn } from '../lib/network'
 import ActivityIndicator from '../components/ActivityIndicator'
 
 export default class extends Component {
-  static navigationOptions = {
-    header: null
-  }
-
   render() {
     return (
       <View style={{

@@ -5,10 +5,6 @@ import ImageButton from '../../components/ImageButton'
 import HorizontalList from '../../components/HorizontalList'
 
 export default class extends Component {
-  static navigationOptions = {
-    header: null
-  }
-
   render() {
     const { navigate } = this.props.navigation
     return (

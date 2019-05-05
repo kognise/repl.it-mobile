@@ -20,7 +20,7 @@ export default withTheme(class extends Component {
     return (
       <View style={{ 
         flex: 1,
-        // justifyContent: 'center',
+        justifyContent: 'center',
         padding: 20
       }}>
         {this.state.error && (

@@ -6,7 +6,7 @@ import FormInput from '../../components/FormInput'
 
 export default withTheme(class extends Component {
   static navigationOptions = {
-    title: 'Log in'
+    title: 'Log In'
   }
 
   state = {

@@ -18,7 +18,7 @@ function waitForCaptcha(state) {
 
 export default withTheme(class extends Component {
   static navigationOptions = {
-    title: 'Sign up'
+    title: 'Sign Up'
   }
 
   state = {

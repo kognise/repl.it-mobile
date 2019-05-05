@@ -42,7 +42,7 @@ export default withTheme(class extends Component {
               <FormInput
                 label='Name'
                 value={this.state.title}
-                onChangeText={this.updateName}
+                onChangeText={this.updateTitle}
                 disabled={this.state.loading}
                 onSubmit={this.focusLanguage}
                 hasNext
@@ -74,7 +74,7 @@ export default withTheme(class extends Component {
   }
 
   focusLanguage = () => this.languageInput && this.languageInput.focus()
-  updateName = (title) => this.setState({ title })
+  updateTitle = (title) => this.setState({ title })
   updateLanguage = (language) => this.setState({ language })
 
   open = () => this.setState({ dialogOpen: true })

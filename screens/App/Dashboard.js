@@ -10,10 +10,11 @@ import Dashboard from '../../components/Dashboard'
 export default class extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam('name', 'Your Repls'),
-    menu: (
+    menu: (closeMenu) => (
       <Menu.Item
         title='Log out'
         onPress={async () => {
+          closeMenu()
           await logOut()
           navigation.navigate('Auth')
         }}

@@ -29,7 +29,7 @@ export default class extends Component {
             />
           }
         >
-          {options.menu}
+          {options.menu(this.closeMenu)}
         </Menu>}
       </Appbar.Header>
     )

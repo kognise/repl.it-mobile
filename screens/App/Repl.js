@@ -7,10 +7,11 @@ import Files from '../../components/Files'
 export default class extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam('title', 'Files'),
-    menu: (
+    menu: (closeMenu) => (
       <Menu.Item
         title='Delete'
         onPress={async () => {
+          closeMenu()
           const id = navigation.getParam('id')
           await deleteRepl(id)
           navigation.navigate('Dashboard', { reload: true })

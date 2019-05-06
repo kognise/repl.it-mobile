@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { View, WebView } from 'react-native'
 import editorCode from '../lib/editor'
+import Theme from '../components/Theme'
 import { withTheme } from 'react-native-paper'
 
 export default withTheme(class extends Component {
@@ -10,13 +11,15 @@ export default withTheme(class extends Component {
         height: '100%',
         display: this.props.hidden ? 'none' : 'flex'
       }}>
-        <WebView
-          useWebKit={true}
-          originWhitelist={[ '*' ]}
-          source={{ html: editorCode }}
-          ref={(webview) => this.webview = webview}
-          onMessage={this.onMessage}
-        />
+        <Theme>
+          <WebView
+            useWebKit={true}
+            originWhitelist={[ '*' ]}
+            source={{ html: editorCode }}
+            ref={(webview) => this.webview = webview}
+            onMessage={this.onMessage}
+          />
+        </Theme>
       </View>
     )
   }

@@ -45,6 +45,7 @@ export default withTheme(class extends Component {
                 onChangeText={this.updateTitle}
                 disabled={this.state.loading}
                 onSubmit={this.focusLanguage}
+                background={this.props.theme.colors.surface}
                 hasNext
               />
               <FormInput
@@ -54,6 +55,7 @@ export default withTheme(class extends Component {
                 ref={(input) => this.languageInput = input}
                 onSubmit={this.create}
                 disabled={this.state.loading}
+                background={this.props.theme.colors.surface}
               />
             </Dialog.Content>
 

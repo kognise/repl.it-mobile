@@ -43,6 +43,7 @@ export default withTheme(class extends Component {
                 onChangeText={this.updateName}
                 disabled={this.state.loading}
                 onSubmit={this.create}
+                background={this.props.theme.colors.surface}
               />
             </Dialog.Content>
 

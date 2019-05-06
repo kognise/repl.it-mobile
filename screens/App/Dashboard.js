@@ -34,7 +34,7 @@ export default class extends Component {
           navigate={navigate}
           ref={(dashboard) => this.dashboard = dashboard}
         />
-        <NewRepl folderId={folderId} navigation={this.props.navigation} />
+        <NewRepl folderId={folderId} reload={this.reload} navigate={navigate} />
       </View>
     )
   }

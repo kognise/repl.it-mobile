@@ -3,6 +3,7 @@ import { View } from 'react-native'
 import { Button, Text, withTheme } from 'react-native-paper'
 import { logIn } from '../../lib/network'
 import FormInput from '../../components/FormInput'
+import Theme from '../../components/Theme'
 
 export default withTheme(class extends Component {
   static navigationOptions = {
@@ -18,44 +19,46 @@ export default withTheme(class extends Component {
 
   render() {
     return (
-      <View style={{ 
-        flex: 1,
-        justifyContent: 'center',
-        padding: 20
-      }}>
-        {this.state.error && (
-          <Text style={{ color: this.props.theme.colors.error }}>
-            {this.state.error}
-          </Text>
-        )}
+      <Theme>
+        <View style={{ 
+          flex: 1,
+          justifyContent: 'center',
+          padding: 20
+        }}>
+          {this.state.error && (
+            <Text style={{ color: this.props.theme.colors.error }}>
+              {this.state.error}
+            </Text>
+          )}
 
-        <FormInput
-          label='Email or username'
-          value={this.state.username}
-          onChangeText={this.updateUsername}
-          onSubmit={this.focusPassword}
-          disabled={this.state.loading}
-          hasNext
-        />
-        <FormInput
-          label='Password'
-          value={this.state.password}
-          onChangeText={this.updatePassword}
-          ref={(input) => this.passwordInput = input}
-          disabled={this.state.loading}
-          onSubmit={this.submit}
-          password
-        />
+          <FormInput
+            label='Email or username'
+            value={this.state.username}
+            onChangeText={this.updateUsername}
+            onSubmit={this.focusPassword}
+            disabled={this.state.loading}
+            hasNext
+          />
+          <FormInput
+            label='Password'
+            value={this.state.password}
+            onChangeText={this.updatePassword}
+            ref={(input) => this.passwordInput = input}
+            disabled={this.state.loading}
+            onSubmit={this.submit}
+            password
+          />
 
-        <Button
-          mode='contained'
-          onPress={this.submit}
-          disabled={this.state.loading}
-          loading={this.state.loading}
-        >
-          Log in
-        </Button>
-      </View>
+          <Button
+            mode='contained'
+            onPress={this.submit}
+            disabled={this.state.loading}
+            loading={this.state.loading}
+          >
+            Log in
+          </Button>
+        </View>
+      </Theme>
     )
   }
 

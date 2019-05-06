@@ -3,6 +3,7 @@ import { ScrollView, RefreshControl } from 'react-native'
 import { List } from 'react-native-paper'
 import ActivityIndicator from './ActivityIndicator'
 import { fetchRepls, fetchFolders } from '../lib/network'
+import Theme from '../components/Theme'
 
 export default class extends Component {
   state = {
@@ -15,37 +16,39 @@ export default class extends Component {
 
   render() {
     return (
-      <ScrollView
-        scrollEventThrottle={16}
-        onScroll={this.onScroll}
-        onMomentumScrollEnd={this.onScroll}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this.refresh}
-          />
-        }
-        contentContainerStyle={{ minHeight: '100%' }}
-      >
-        {this.state.folders.map((folder) => (
-          <List.Item
-            title={folder.name}
-            key={folder.id}
-            onPress={() => this.props.onFolderPress(folder)}
-            left={(props) => <List.Icon {...props} icon='folder' />}
-          />
-        ))}
-        {this.state.repls.map((repl) => (
-          <List.Item
-            title={repl.title}
-            description={`A ${repl.language} repl`}
-            key={repl.id}
-            onPress={() => this.props.onReplPress(repl)}
-            left={(props) => <List.Icon {...props} icon='insert-drive-file' />}
-          />
-        ))}
-        {this.state.loading && <ActivityIndicator />}
-      </ScrollView>
+      <Theme>
+        <ScrollView
+          scrollEventThrottle={16}
+          onScroll={this.onScroll}
+          onMomentumScrollEnd={this.onScroll}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this.refresh}
+            />
+          }
+          contentContainerStyle={{ minHeight: '100%' }}
+        >
+          {this.state.folders.map((folder) => (
+            <List.Item
+              title={folder.name}
+              key={folder.id}
+              onPress={() => this.props.onFolderPress(folder)}
+              left={(props) => <List.Icon {...props} icon='folder' />}
+            />
+          ))}
+          {this.state.repls.map((repl) => (
+            <List.Item
+              title={repl.title}
+              description={`A ${repl.language} repl`}
+              key={repl.id}
+              onPress={() => this.props.onReplPress(repl)}
+              left={(props) => <List.Icon {...props} icon='insert-drive-file' />}
+            />
+          ))}
+          {this.state.loading && <ActivityIndicator />}
+        </ScrollView>
+      </Theme>
     )
   }
 

@@ -4,6 +4,7 @@ import { List } from 'react-native-paper'
 import ActivityIndicator from './ActivityIndicator'
 import moisten from '../lib/moisten'
 import { fetchFiles } from '../lib/network'
+import Theme from '../components/Theme'
 
 function renderFiles(files, onPress) {
   const children = []
@@ -42,18 +43,20 @@ export default class extends Component {
 
   render() {
     return (
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this.refresh}
-          />
-        }
-        contentContainerStyle={{ minHeight: '100%' }}
-      >
-        {renderFiles(this.state.files, this.props.onPress)}
-        {this.state.loading && <ActivityIndicator />}
-      </ScrollView>
+      <Theme>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this.refresh}
+            />
+          }
+          contentContainerStyle={{ minHeight: '100%' }}
+        >
+          {renderFiles(this.state.files, this.props.onPress)}
+          {this.state.loading && <ActivityIndicator />}
+        </ScrollView>
+      </Theme>
     )
   }
 

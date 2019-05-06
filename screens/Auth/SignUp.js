@@ -4,6 +4,7 @@ import { Button, Text, withTheme } from 'react-native-paper'
 import ReCaptcha from '../../components/ReCaptcha'
 import FormInput from '../../components/FormInput'
 import { signUp } from '../../lib/network'
+import Theme from '../../components/Theme'
 
 function waitForCaptcha(state) {
   return new Promise((resolve) => {
@@ -31,58 +32,60 @@ export default withTheme(class extends Component {
 
   render() {
     return (
-      <View style={{ 
-        flex: 1,
-        justifyContent: 'center',
-        padding: 20
-      }}>
-        <ReCaptcha
-          style={{ display: 'none' }}
-          onExecute={this.updateCaptcha}
-        />
+      <Theme>
+        <View style={{ 
+          flex: 1,
+          justifyContent: 'center',
+          padding: 20
+        }}>
+          <ReCaptcha
+            style={{ display: 'none' }}
+            onExecute={this.updateCaptcha}
+          />
 
-        {this.state.error && (
-          <Text style={{ color: this.props.theme.colors.error }}>
-            {this.state.error}
-          </Text>
-        )}
+          {this.state.error && (
+            <Text style={{ color: this.props.theme.colors.error }}>
+              {this.state.error}
+            </Text>
+          )}
 
-        <FormInput
-          label='Username'
-          value={this.state.username}
-          onChangeText={this.updateUsername}
-          onSubmit={this.focusEmail}
-          disabled={this.state.loading}
-          hasNext
-        />
-        <FormInput
-          label='Email'
-          value={this.state.email}
-          onChangeText={this.updateEmail}
-          ref={(input) => this.emailInput = input}
-          disabled={this.state.loading}
-          onSubmit={this.focusPassword}
-          hasNext
-        />
-        <FormInput
-          label='Password'
-          value={this.state.password}
-          onChangeText={this.updatePassword}
-          ref={(input) => this.passwordInput = input}
-          disabled={this.state.loading}
-          onSubmit={this.submit}
-          password
-        />
+          <FormInput
+            label='Username'
+            value={this.state.username}
+            onChangeText={this.updateUsername}
+            onSubmit={this.focusEmail}
+            disabled={this.state.loading}
+            hasNext
+          />
+          <FormInput
+            label='Email'
+            value={this.state.email}
+            onChangeText={this.updateEmail}
+            ref={(input) => this.emailInput = input}
+            disabled={this.state.loading}
+            onSubmit={this.focusPassword}
+            hasNext
+          />
+          <FormInput
+            label='Password'
+            value={this.state.password}
+            onChangeText={this.updatePassword}
+            ref={(input) => this.passwordInput = input}
+            disabled={this.state.loading}
+            onSubmit={this.submit}
+            password
+          />
 
-        <Button
-          mode='contained'
-          onPress={this.submit}
-          disabled={this.state.loading}
-          loading={this.state.loading}
-        >
-          Sign up
-        </Button>
-      </View>
+          <Button
+            mode='contained'
+            onPress={this.submit}
+            disabled={this.state.loading}
+            loading={this.state.loading}
+          >
+            Sign up
+          </Button>
+        </View>
+      </Theme>
     )
   }
 

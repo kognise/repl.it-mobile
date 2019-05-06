@@ -7,10 +7,7 @@ export default class extends Component {
     return (
       <TextInput
         label={this.props.label}
-        style={{
-          marginBottom: this.props.hasNext ? 10 : 20,
-          backgroundColor: '#ffffff'
-        }}
+        style={{ marginBottom: this.props.hasNext ? 10 : 20 }}
         mode='outlined'
         render={(props) => (
           <RNTextInput

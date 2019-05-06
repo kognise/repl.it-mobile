@@ -54,9 +54,9 @@ const Navigator = createSwitchNavigator({
 const App = createAppContainer(Navigator)
 
 const theme = {
-  ...DefaultTheme,
+  ...DarkTheme,
   colors: {
-    ...DefaultTheme.colors,
+    ...DarkTheme.colors,
     primary: '#ff1255',
     accent: '#008cff'
   }

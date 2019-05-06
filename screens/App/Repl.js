@@ -30,11 +30,12 @@ export default class extends Component {
     const { navigate, getParam } = this.props.navigation
     const id = getParam('id')
     const url = getParam('url')
+    const language = getParam('language')
     return (
       <View style={{ flex: 1 }}>
         <Files
           url={url}
-          onPress={(path) => navigate('File', { id, path, reload: this.reload })}
+          onPress={(path) => navigate('File', { id, path, language, reload: this.reload })}
           ref={(files) => this.files = files}
         />
         <NewFile id={id} reload={this.reload} navigate={navigate} />
@@ -42,11 +43,5 @@ export default class extends Component {
       </View>
     )
   }
-
-  // didFocus = () => {
-  //   const shouldReload = this.props.navigation.getParam('reload')
-  //   this.props.navigation.setParams({ reload: false })
-  //   if (shouldReload) this.reload()
-  // }
   reload = async () => this.files && await this.files.reload()
 }

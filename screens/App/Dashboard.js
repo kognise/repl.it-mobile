@@ -30,7 +30,7 @@ export default class extends Component {
         <Dashboard
           folderId={folderId}
           onFolderPress={({ id, name }) => navigateSame(this.props.navigation, { folderId: id, name })}
-          onReplPress={({ id, title, url }) => navigate('Repl', { id, title, url, reload: this.reload })}
+          onReplPress={({ id, title, url, language }) => navigate('Repl', { id, title, url, language, reload: this.reload })}
           reload={this.reload}
           navigate={navigate}
           ref={(dashboard) => this.dashboard = dashboard}

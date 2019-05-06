@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
-import { Menu } from 'react-native-paper'
+import { Menu, Paragraph } from 'react-native-paper'
 import ActivityIndicator from '../../components/ActivityIndicator'
 import { getUrls, readFile, writeFile, deleteFile } from '../../lib/network'
 import TabView from '../../components/TabView'
@@ -47,11 +47,28 @@ class EditorScene extends Component {
   saveCode = async (code) => await writeFile(this.urls, code)
 }
 
-class OutputScene extends Component {
+class ConsoleScene extends Component {
   render() {
     return (
       <Theme>
         <View style={{ flex: 1 }}>
+          <Paragraph>
+            We're really sorry, but the console view isn't implemented yet! Kognise is working on it while you read this.
+          </Paragraph>
+        </View>
+      </Theme> 
+    )
+  }
+}
+
+class WebScene extends Component {
+  render() {
+    return (
+      <Theme>
+        <View style={{ flex: 1 }}>
+          <Paragraph>
+            We're really sorry, but the web view isn't implemented yet! Kognise is working on it while you read this.
+          </Paragraph>
         </View>
       </Theme> 
     )
@@ -85,18 +102,20 @@ export default class extends Component {
     index: 0,
     routes: [
       { key: 'editor', title: 'Code' },
-      { key: 'output', title: 'Output' }
+      { key: 'console', title: 'Console' }
     ]
+  }
+  scenes = {
+    editor: this.EditorScene,
+    web: this.OutputScene,
+    console: this.OutputScene
   }
 
   render() {
     return (
       <TabView
         state={this.state}
-        scenes={{
-          editor: this.EditorScene,
-          output: this.OutputScene
-        }}
+        scenes={this.scenes}
         onIndexChange={this.updateIndex}
       />
     )
@@ -105,13 +124,17 @@ export default class extends Component {
   async componentWillMount() {
     const id = this.props.navigation.getParam('id')
     const path = this.props.navigation.getParam('path')
+    const language = this.props.navigation.getParam('language')
 
-    this.EditorScene = () => (
-      <EditorScene id={id} path={path} />
-    )
-    this.OutputScene = () => (
-      <OutputScene />
-    )
+    this.scenes = {
+      editor: () => <EditorScene id={id} path={path} />,
+      console: () => <ConsoleScene />
+    }
+    if (language === 'html') {
+      this.state.routes[2] = this.state.routes[1]
+      this.state.routes[1] = { key: 'web', title: 'Web' }
+      this.scenes.web = () => <WebScene id={id} />
+    }
   }
   updateIndex = (index) => this.setState({ index })
 }

@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { View, WebView } from 'react-native'
 import editorCode from '../lib/editor'
+import { withTheme } from 'react-native-paper'
 
-export default class extends Component {
+export default withTheme(class extends Component {
   render() {
     return (
       <View style={{
@@ -28,7 +29,8 @@ export default class extends Component {
     ) {
       this.webview.postMessage(JSON.stringify({
         code: this.props.code,
-        path: this.props.path
+        path: this.props.path,
+        dark: this.props.theme.dark
       }))
     }
   }
@@ -37,4 +39,4 @@ export default class extends Component {
     const code = event.nativeEvent.data
     this.props.onChange && this.props.onChange(code)
   }
-}
+})

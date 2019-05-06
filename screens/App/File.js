@@ -3,6 +3,7 @@ import { View } from 'react-native'
 import ActivityIndicator from '../../components/ActivityIndicator'
 import { getUrls, readFile, writeFile } from '../../lib/network'
 import Editor from '../../components/Editor'
+import Theme from '../../components/Theme'
 
 export default class extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -17,15 +18,17 @@ export default class extends Component {
 
   render() {
     return (
-      <View>
-        {this.state.loading && <ActivityIndicator />}
-        <Editor
-          hidden={this.state.loading}
-          code={this.state.code}
-          path={this.state.path}
-          onChange={this.saveCode}
-        />
-      </View>
+      <Theme>
+        <View>
+          {this.state.loading && <ActivityIndicator />}
+          <Editor
+            hidden={this.state.loading}
+            code={this.state.code}
+            path={this.state.path}
+            onChange={this.saveCode}
+          />
+        </View>
+      </Theme>
     )
   }
 

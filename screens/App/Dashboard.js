@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Menu } from 'react-native-paper'
-import { NavigationEvents } from 'react-navigation'
 import { navigateSame } from '../../lib/navigation'
 import { logOut } from '../../lib/network'
 import NewRepl from '../../components/NewRepl'
@@ -30,19 +29,15 @@ export default class extends Component {
         <Dashboard
           folderId={folderId}
           onFolderPress={({ id, name }) => navigateSame(this.props.navigation, { folderId: id, name })}
-          onReplPress={({ id, title, url }) => navigate('Repl', { id, title, url })}
+          onReplPress={({ id, title, url }) => navigate('Repl', { id, title, url, reload: this.reload })}
+          reload={this.reload}
+          navigate={navigate}
           ref={(dashboard) => this.dashboard = dashboard}
         />
         <NewRepl folderId={folderId} navigation={this.props.navigation} />
-        <NavigationEvents onDidFocus={this.didFocus} />
       </View>
     )
   }
 
-  didFocus = () => {
-    const shouldReload = this.props.navigation.getParam('reload')
-    this.props.navigation.setParams({ reload: false })
-    if (shouldReload) this.reload()
-  }
   reload = async () => this.dashboard && await this.dashboard.reload()
 }

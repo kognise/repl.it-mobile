@@ -14,35 +14,39 @@ export default class extends Component {
         title='Delete'
         onPress={async () => {
           closeMenu()
+
           const id = navigation.getParam('id')
+          const reload = navigation.getParam('reload')
+
           await deleteRepl(id)
-          navigation.navigate('Dashboard', { reload: true })
+          reload()
+          navigation.goBack()
         }}
       />
     )
   })
 
   render() {
-    const { navigate } = this.props.navigation
-    const id = this.props.navigation.getParam('id')
-    const url = this.props.navigation.getParam('url')
+    const { navigate, getParam } = this.props.navigation
+    const id = getParam('id')
+    const url = getParam('url')
     return (
       <View style={{ flex: 1 }}>
         <Files
           url={url}
-          onPress={(path) => navigate('File', { id, path })}
+          onPress={(path) => navigate('File', { id, path, reload: this.reload })}
           ref={(files) => this.files = files}
         />
-        <NewFile id={id} navigation={this.props.navigation} />
+        <NewFile id={id} reload={this.reload} navigate={navigate} />
         <NavigationEvents onDidFocus={this.didFocus} />
       </View>
     )
   }
 
-  didFocus = () => {
-    const shouldReload = this.props.navigation.getParam('reload')
-    this.props.navigation.setParams({ reload: false })
-    if (shouldReload) this.reload()
-  }
+  // didFocus = () => {
+  //   const shouldReload = this.props.navigation.getParam('reload')
+  //   this.props.navigation.setParams({ reload: false })
+  //   if (shouldReload) this.reload()
+  // }
   reload = async () => this.files && await this.files.reload()
 }

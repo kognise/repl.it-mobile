@@ -1,13 +1,32 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
+import { Menu } from 'react-native-paper'
 import ActivityIndicator from '../../components/ActivityIndicator'
-import { getUrls, readFile, writeFile } from '../../lib/network'
+import { getUrls, readFile, writeFile, deleteFile } from '../../lib/network'
 import Editor from '../../components/Editor'
 import Theme from '../../components/Theme'
 
 export default class extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam('path', 'File') 
+    title: navigation.getParam('path', 'File'),
+    menu: (closeMenu) => (
+      <Menu.Item
+        title='Delete'
+        onPress={async () => {
+          closeMenu()
+
+          const id = navigation.getParam('id')
+          const path = navigation.getParam('path')
+          const reload = navigation.getParam('reload')
+
+          const urls = await getUrls(id, path)
+          await deleteFile(urls)
+
+          reload()
+          navigation.goBack()
+        }}
+      />
+    )
   })
 
   state = {

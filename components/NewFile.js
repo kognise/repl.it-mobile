@@ -84,8 +84,8 @@ export default withTheme(class extends Component {
       if (!this.state.dialogOpen) return
 
       this.cancel()
-      this.props.navigation.setParams({ reload: true })
-      this.props.navigation.navigate('File', { id, path: name })
+      this.props.reload()
+      this.props.navigate('File', { id, path: name })
     } catch(error) {
       if (!this.state.dialogOpen) return
       this.setState({

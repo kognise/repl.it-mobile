@@ -1,6 +1,6 @@
 import React from 'react'
 import { StatusBar } from 'react-native'
-import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
+import { DarkTheme, Provider as PaperProvider } from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
 import CustomHeader from './components/CustomHeader'
 

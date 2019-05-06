@@ -33,10 +33,7 @@ export default class extends Component {
           onReplPress={({ id, title, url }) => navigate('Repl', { id, title, url })}
           ref={(dashboard) => this.dashboard = dashboard}
         />
-        <NewRepl
-          navigation={this.props.navigation}
-          folderId={folderId}
-        />
+        <NewRepl folderId={folderId} navigation={this.props.navigation} />
         <NavigationEvents onDidFocus={this.didFocus} />
       </View>
     )
@@ -44,8 +41,8 @@ export default class extends Component {
 
   didFocus = () => {
     const shouldReload = this.props.navigation.getParam('reload')
-    if (shouldReload) this.reload()
     this.props.navigation.setParams({ reload: false })
+    if (shouldReload) this.reload()
   }
   reload = async () => this.dashboard && await this.dashboard.reload()
 }

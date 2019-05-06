@@ -59,9 +59,11 @@ export default class extends Component {
 
   async componentDidMount() {
     this.mounted = true
+
     const flatFiles = await fetchFiles(this.props.url)
-    if (!this.mounted) return
     const files = moisten(flatFiles)
+    if (!this.mounted) return
+    
     this.setState({ files, loading: false })
   }
   componentWillUnmount() {
@@ -70,9 +72,20 @@ export default class extends Component {
 
   refresh = async () => {
     this.setState({ refreshing: true })
+
     const flatFiles = await fetchFiles(this.props.url)
-    if (!this.mounted) return
     const files = moisten(flatFiles)
+    if (!this.mounted) return
+
     this.setState({ files, refreshing: false })
+  }
+  reload = async () => {
+    this.setState({ files: {}, loading: true })
+    
+    const flatFiles = await fetchFiles(this.props.url)
+    const files = moisten(flatFiles)
+    if (!this.mounted) return
+
+    this.setState({ files, loading: false })
   }
 }

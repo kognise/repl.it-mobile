@@ -1,15 +1,13 @@
 import React, { Component } from 'react'
-import Fuse from 'fuse.js'
-import { View, Animated } from 'react-native'
+import { View } from 'react-native'
 import { FAB, Dialog, Portal, Button, Text, withTheme } from 'react-native-paper'
-import { fetchLanguages, createRepl } from '../lib/network'
+import { getUrls, writeFile } from '../lib/network'
 import FormInput from './FormInput'
 
 export default withTheme(class extends Component {
   state = {
     dialogOpen: false,
-    title: '',
-    language: '',
+    name: '',
     error: null,
     loading: false
   }
@@ -24,13 +22,13 @@ export default withTheme(class extends Component {
             right: 0,
             bottom: 0
           }}
-          icon='add'
+          icon='create'
           onPress={this.open}
         />
 
         <Portal>
           <Dialog visible={this.state.dialogOpen} onDismiss={this.cancel}>
-            <Dialog.Title>Create a Repl</Dialog.Title>
+            <Dialog.Title>New File</Dialog.Title>
 
             <Dialog.Content>
               {this.state.error && (
@@ -41,19 +39,10 @@ export default withTheme(class extends Component {
 
               <FormInput
                 label='Name'
-                value={this.state.title}
-                onChangeText={this.updateTitle}
+                value={this.state.name}
+                onChangeText={this.updateName}
                 disabled={this.state.loading}
-                onSubmit={this.focusLanguage}
-                hasNext
-              />
-              <FormInput
-                label='Language'
-                value={this.state.language}
-                onChangeText={this.updateLanguage}
-                ref={(input) => this.languageInput = input}
                 onSubmit={this.create}
-                disabled={this.state.loading}
               />
             </Dialog.Content>
 
@@ -73,15 +62,11 @@ export default withTheme(class extends Component {
     )
   }
 
-  focusLanguage = () => this.languageInput && this.languageInput.focus()
-  updateTitle = (title) => this.setState({ title })
-  updateLanguage = (language) => this.setState({ language })
-
+  updateName = (name) => this.setState({ name })
   open = () => this.setState({ dialogOpen: true })
   cancel = () => this.setState({
     dialogOpen: false,
-    title: '',
-    language: '',
+    name: '',
     error: null,
     loading: false
   })
@@ -89,26 +74,17 @@ export default withTheme(class extends Component {
   create = async () => {
     this.setState({ loading: true })
     try {
-      if (!this.state.language) throw new Error('Please enter a language!')
-      const languages = await fetchLanguages()
-      const fuse = new Fuse(languages, {
-        shouldSort: true,
-        threshold: 0.6,
-        location: 0,
-        distance: 100,
-        maxPatternLength: 16,
-        minMatchCharLength: 1,
-        keys: [ 'title', 'displayName' ],
-        id: 'name'
-      })
-      const result = fuse.search(this.state.language)[0]
-      if (!result) throw new Error('Sorry, we don\'t know what language that is!')
+      if (!this.state.name) throw new Error('Please enter a filename!')
+      const { id } = this.props
+      const { name } = this.state
 
-      const { id, title, url } = await createRepl(this.state.title, result, this.props.folderId)
+      const urls = await getUrls(id, name)
+      await writeFile(urls, '')
       if (!this.state.dialogOpen) return
+
       this.cancel()
       this.props.navigation.setParams({ reload: true })
-      this.props.navigation.navigate('Repl', { id, title, url })
+      this.props.navigation.navigate('File', { id, path: name })
     } catch(error) {
       if (!this.state.dialogOpen) return
       this.setState({

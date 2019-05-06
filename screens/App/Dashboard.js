@@ -24,6 +24,7 @@ export default class extends Component {
   render() {
     const { navigate, getParam } = this.props.navigation
     const folderId = getParam('folderId')
+
     return (
       <View style={{ flex: 1 }}>
         <Dashboard

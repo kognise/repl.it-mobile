@@ -65,7 +65,8 @@ class WebScene extends Component {
   state = {
     url: undefined,
     loading: true,
-    reloading: false
+    reloading: false,
+    key: 0
   }
 
   render() {
@@ -89,6 +90,7 @@ class WebScene extends Component {
             ref={(webView) => this.webView = webView}
             renderLoading={() => null}
             onLoadEnd={this.onLoadEnd}
+            key={this.state.key}
           />}
         </ScrollView>
       </Theme> 
@@ -102,9 +104,9 @@ class WebScene extends Component {
     if (!this.mounted) return
     this.setState({ url, loading: false })
   }
-  reload = () => {
+  reload = (event) => {
     this.setState({ reloading: true })
-    this.webView && this.webView.reload()
+    this.webView && this.setState({ key: this.state.key + 1 })
   }
   onLoadEnd = () => this.setState({ reloading: false })
   componentWillUnmount() {

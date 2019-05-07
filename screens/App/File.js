@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { View, ScrollView, WebView, RefreshControl } from 'react-native'
-import { Menu, Paragraph } from 'react-native-paper'
+import { Menu, Text, withTheme } from 'react-native-paper'
 import ActivityIndicator from '../../components/ActivityIndicator'
 import { getUrls, readFile, writeFile, deleteFile, getWebUrl } from '../../lib/network'
 import TabView from '../../components/TabView'
@@ -47,19 +47,34 @@ class EditorScene extends Component {
   saveCode = async (code) => await writeFile(this.urls, code)
 }
 
-class ConsoleScene extends Component {
+const ConsoleScene = withTheme(class extends Component {
+  state = {
+    messages: []
+  }
+
   render() {
     return (
       <Theme>
-        <View style={{ flex: 1 }}>
-          <Paragraph>
-            We're really sorry, but the console view isn't implemented yet! Kognise is working on it while you read this.
-          </Paragraph>
-        </View>
+        <ScrollView style={{ minHeight: '100%' }}>
+          {this.state.messages.map(({ message, error }, index) => (
+            <Text style={{
+              fontFamily: 'monospace',
+              color: error ? this.props.theme.colors.error : this.props.theme.colors.text
+            }} selectable key={index}>
+              {message}
+            </Text>
+          ))}
+        </ScrollView>
       </Theme> 
     )
   }
-}
+
+  appendMessage(message, error) {
+    this.setState((prevState) => ({
+      messages: [ ...prevState.messages, { message, error } ]
+    }))
+  }
+})
 
 class WebScene extends Component {
   state = {
@@ -104,7 +119,7 @@ class WebScene extends Component {
     if (!this.mounted) return
     this.setState({ url, loading: false })
   }
-  reload = (event) => {
+  reload = () => {
     this.setState({ reloading: true })
     this.webView && this.setState({ key: this.state.key + 1 })
   }
@@ -168,14 +183,36 @@ export default class extends Component {
 
     this.scenes = {
       editor: () => <EditorScene id={id} path={path} />,
-      console: () => <ConsoleScene />
+      console: () => <ConsoleScene ref={this.consoleRef} />
     }
     if (language === 'html') {
       this.state.routes[2] = this.state.routes[1]
       this.state.routes[1] = { key: 'web', title: 'Web' }
       this.scenes.web = () => <WebScene id={id} />
+      this.logMessage('Kognise can\'t figure out how to get web logging to work, any help would be appreciated! '
+        + 'https://stackoverflow.com/questions/56029586/listen-for-console-logs-in-webview-from-parent',
+        true)
     }
   }
+
+  logQueue = []
+  consoleRef = (consoleScene) => {
+    this.console = consoleScene
+    if (this.logQueue.length > 0) {
+      for (let [ message, error ] of this.logQueue) {
+        consoleScene.appendMessage(message, error)
+      }
+      this.logQueue = []
+    }
+  }
+  logMessage = (message, error) => {
+    if (this.console) {
+      this.console.appendMessage(message, error)
+    } else {
+      this.logQueue.push([ message, error ])
+    }
+  }
+
   updateIndex = (index) => {
     this.setState({ index })
   }

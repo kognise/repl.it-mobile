@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
+import { Platform } from 'react-native'
 import { withTheme } from 'react-native-paper'
+import shadow from 'react-native-paper/src/styles/shadow'
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view'
 
 export default withTheme(class extends Component {
@@ -14,7 +16,10 @@ export default withTheme(class extends Component {
           <TabBar
             {...props}
             indicatorStyle={{ backgroundColor: 'white' }}
-            style={{ backgroundColor: this.props.theme.colors.primary }}
+            style={{
+              backgroundColor: this.props.theme.colors.primary,
+              ...shadow(Platform.OS === 'ios' ? 4 : 0)
+            }}
           />
         )}
       />

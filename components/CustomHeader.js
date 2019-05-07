@@ -13,7 +13,7 @@ export default class extends Component {
     const { options } = this.props.scene.descriptor
 
     return (
-      <Appbar.Header>
+      <Appbar.Header style={{ elevation: options.hasAddon ? 0 : 4 }}>
         {state.routes.length > 1
           && <Appbar.BackAction onPress={this.goBack} />}
         <Appbar.Content title={options.title || 'Repl.it'} />

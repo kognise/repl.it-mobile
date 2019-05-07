@@ -134,7 +134,8 @@ export default class extends Component {
           navigation.goBack()
         }}
       />
-    )
+    ),
+    hasAddon: true
   })
 
   state = {

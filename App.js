@@ -61,6 +61,7 @@ const theme = {
     accent: '#008cff'
   }
 }
+
 export default () => (
   <PaperProvider theme={theme}>
     <StatusBar barStyle='light-content' />

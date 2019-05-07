@@ -16,7 +16,7 @@ export default withTheme(class extends Component {
             useWebKit={true}
             originWhitelist={[ '*' ]}
             source={{ html: editorCode }}
-            ref={(webview) => this.webview = webview}
+            ref={(webView) => this.webView = webView}
             onMessage={this.onMessage}
           />
         </Theme>
@@ -28,9 +28,9 @@ export default withTheme(class extends Component {
     if (
       this.props.code !== undefined
       && this.props.path !== undefined
-      && this.webview
+      && this.webView
     ) {
-      this.webview.postMessage(JSON.stringify({
+      this.webView.postMessage(JSON.stringify({
         code: this.props.code,
         path: this.props.path,
         dark: this.props.theme.dark

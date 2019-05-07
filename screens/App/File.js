@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { View } from 'react-native'
+import { View, ScrollView, WebView, RefreshControl } from 'react-native'
 import { Menu, Paragraph } from 'react-native-paper'
 import ActivityIndicator from '../../components/ActivityIndicator'
-import { getUrls, readFile, writeFile, deleteFile } from '../../lib/network'
+import { getUrls, readFile, writeFile, deleteFile, getWebUrl } from '../../lib/network'
 import TabView from '../../components/TabView'
 import Editor from '../../components/Editor'
 import Theme from '../../components/Theme'
@@ -62,16 +62,53 @@ class ConsoleScene extends Component {
 }
 
 class WebScene extends Component {
+  state = {
+    url: undefined,
+    loading: true,
+    reloading: false
+  }
+
   render() {
     return (
       <Theme>
-        <View style={{ flex: 1 }}>
-          <Paragraph>
-            We're really sorry, but the web view isn't implemented yet! Kognise is working on it while you read this.
-          </Paragraph>
-        </View>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.reloading}
+              onRefresh={this.reload}
+            />
+          }
+          contentContainerStyle={{ flex: 1 }}
+        >
+          {this.state.loading && <ActivityIndicator />}
+          {!this.state.loading && <WebView
+            style={{ backgroundColor: '#ffffff' }}
+            useWebKit={true}
+            originWhitelist={[ '*' ]}
+            source={{ uri: this.state.url }}
+            ref={(webView) => this.webView = webView}
+            renderLoading={() => null}
+            onLoadEnd={this.onLoadEnd}
+          />}
+        </ScrollView>
       </Theme> 
     )
+  }
+
+  async componentDidMount() {
+    this.mounted = true
+
+    const url = await getWebUrl(this.props.id)
+    if (!this.mounted) return
+    this.setState({ url, loading: false })
+  }
+  reload = () => {
+    this.setState({ reloading: true })
+    this.webView && this.webView.reload()
+  }
+  onLoadEnd = () => this.setState({ reloading: false })
+  componentWillUnmount() {
+    this.mounted = false
   }
 }
 
@@ -136,5 +173,7 @@ export default class extends Component {
       this.scenes.web = () => <WebScene id={id} />
     }
   }
-  updateIndex = (index) => this.setState({ index })
+  updateIndex = (index) => {
+    this.setState({ index })
+  }
 }

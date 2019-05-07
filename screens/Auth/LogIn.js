@@ -11,8 +11,8 @@ export default withTheme(class extends Component {
   }
 
   state = {
-    username: '',
-    password: '',
+    username: 'Xeborch',
+    password: 'xeborch',
     error: null,
     loading: false
   }

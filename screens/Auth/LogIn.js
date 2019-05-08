@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Button, Text, withTheme } from 'react-native-paper'
 import { logIn } from '../../lib/network'
+import SettingsContext from '../../components/SettingsContext'
 import FormInput from '../../components/FormInput'
 import Theme from '../../components/Theme'
 
@@ -9,6 +10,7 @@ export default withTheme(class extends Component {
   static navigationOptions = {
     title: 'Log In'
   }
+  static contextType = SettingsContext
 
   state = {
     username: 'Xeborch',
@@ -49,24 +51,28 @@ export default withTheme(class extends Component {
             password
           />
 
-          <Button
-            mode='contained'
-            onPress={this.submit}
-            disabled={this.state.loading}
-            loading={this.state.loading}
-          >
-            Log in
-          </Button>
+          <SettingsContext.Consumer>
+            {({ setTheme }) => (
+              <Button
+                mode='contained'
+                onPress={() => this.submit(setTheme)}
+                disabled={this.state.loading}
+                loading={this.state.loading}
+              >
+                Log in
+              </Button>
+            )}
+          </SettingsContext.Consumer>
         </View>
       </Theme>
     )
   }
 
   focusPassword = () => this.passwordInput && this.passwordInput.focus()
-  submit = async () => {
+  submit = async (setTheme) => {
     this.setState({ loading: true })
     try {
-      const { username } = await logIn(this.state.username, this.state.password)
+      const { username, editor_preferences: { theme } } = await logIn(this.state.username, this.state.password)
       if (!this.mounted) return
       this.setState({
         username: '',
@@ -74,6 +80,7 @@ export default withTheme(class extends Component {
         error: null,
         loading: false
       })
+      setTheme(theme === 'replitDark')
       this.props.navigation.navigate('Hello', { username })
     } catch(error) {
       if (!this.mounted) return

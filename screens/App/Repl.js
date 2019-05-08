@@ -5,6 +5,7 @@ import { NavigationEvents } from 'react-navigation'
 import { deleteRepl } from '../../lib/network'
 import NewFile from '../../components/NewFile'
 import Files from '../../components/Files'
+import Theme from '../../components/Theme'
 
 export default class extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -32,15 +33,17 @@ export default class extends Component {
     const url = getParam('url')
     const language = getParam('language')
     return (
-      <View style={{ flex: 1 }}>
-        <Files
-          url={url}
-          onPress={(path) => navigate('File', { id, path, language, reload: this.reload })}
-          ref={(files) => this.files = files}
-        />
-        <NewFile id={id} reload={this.reload} navigate={navigate} />
-        <NavigationEvents onDidFocus={this.didFocus} />
-      </View>
+      <Theme>
+        <View style={{ flex: 1 }}>
+          <Files
+            url={url}
+            onPress={(path) => navigate('File', { id, path, language, reload: this.reload })}
+            ref={(files) => this.files = files}
+          />
+          <NewFile id={id} reload={this.reload} navigate={navigate} />
+          <NavigationEvents onDidFocus={this.didFocus} />
+        </View>
+      </Theme>
     )
   }
   reload = async () => this.files && await this.files.reload()

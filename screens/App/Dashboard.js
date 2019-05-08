@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Menu } from 'react-native-paper'
 import { navigateSame } from '../../lib/navigation'
-import { logOut } from '../../lib/network'
+import Theme from '../../components/Theme'
 import NewRepl from '../../components/NewRepl'
 import Dashboard from '../../components/Dashboard'
 
@@ -11,11 +11,10 @@ export default class extends Component {
     title: navigation.getParam('name', 'Your Repls'),
     menu: (closeMenu) => (
       <Menu.Item
-        title='Log out'
-        onPress={async () => {
+        title='Settings'
+        onPress={() => {
           closeMenu()
-          await logOut()
-          navigation.navigate('Auth')
+          navigation.navigate('Settings')
         }}
       />
     )
@@ -26,17 +25,19 @@ export default class extends Component {
     const folderId = getParam('folderId')
 
     return (
-      <View style={{ flex: 1 }}>
-        <Dashboard
-          folderId={folderId}
-          onFolderPress={({ id, name }) => navigateSame(this.props.navigation, { folderId: id, name })}
-          onReplPress={({ id, title, url, language }) => navigate('Repl', { id, title, url, language, reload: this.reload })}
-          reload={this.reload}
-          navigate={navigate}
-          ref={(dashboard) => this.dashboard = dashboard}
-        />
-        <NewRepl folderId={folderId} reload={this.reload} navigate={navigate} />
-      </View>
+      <Theme>
+        <View style={{ flex: 1 }}>
+          <Dashboard
+            folderId={folderId}
+            onFolderPress={({ id, name }) => navigateSame(this.props.navigation, { folderId: id, name })}
+            onReplPress={({ id, title, url, language }) => navigate('Repl', { id, title, url, language, reload: this.reload })}
+            reload={this.reload}
+            navigate={navigate}
+            ref={(dashboard) => this.dashboard = dashboard}
+          />
+          <NewRepl folderId={folderId} reload={this.reload} navigate={navigate} />
+        </View>
+      </Theme>
     )
   }
 

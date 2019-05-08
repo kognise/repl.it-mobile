@@ -1,8 +1,9 @@
-import React from 'react'
-import { StatusBar } from 'react-native'
-import { DarkTheme, Provider as PaperProvider } from 'react-native-paper'
+import React, { Component } from 'react'
+import { StatusBar, AsyncStorage } from 'react-native'
+import { DarkTheme, DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
 import CustomHeader from './components/CustomHeader'
+import SettingsContext from './components/SettingsContext'
 
 import InitialScreen from './screens/Initial'
 
@@ -16,6 +17,7 @@ import GitHubProviderScreen from './screens/Auth/Providers/GitHub'
 import FacebookProviderScreen from './screens/Auth/Providers/Facebook'
 
 import DashboardScreen from './screens/App/Dashboard'
+import SettingsScreen from './screens/App/Settings'
 import ReplScreen from './screens/App/Repl'
 import FileScreen from './screens/App/File'
 
@@ -37,6 +39,7 @@ const AuthNavigator = createStackNavigator({
 
 const AppNavigator = createStackNavigator({
   Dashboard: { screen: DashboardScreen },
+  Settings: { screen: SettingsScreen },
   Repl: { screen: ReplScreen },
   File: { screen: FileScreen }
 }, {
@@ -53,18 +56,45 @@ const Navigator = createSwitchNavigator({
 }, { initialRouteName: 'Initial' })
 const App = createAppContainer(Navigator)
 
-const theme = {
-  ...DarkTheme,
-  colors: {
-    ...DarkTheme.colors,
-    primary: '#ff1255',
-    accent: '#008cff'
+export default class extends Component {
+  state = {
+    theme: {
+      ...DefaultTheme,
+      colors: {
+        ...DefaultTheme.colors,
+        primary: '#ff1255',
+        accent: '#008cff'
+      }
+    }
+  }
+
+  render() {
+    return (
+      <PaperProvider theme={this.state.theme}>
+        <StatusBar barStyle='light-content' />
+        <SettingsContext.Provider value={{ theme: this.state.theme.dark, setTheme: this.setTheme }}>
+          <App />
+        </SettingsContext.Provider>
+      </PaperProvider>
+    )
+  }
+
+  setTheme = async (dark) => {
+    this.setState({
+      theme: {
+        ...(dark ? DarkTheme : DefaultTheme),
+        colors: {
+          ...(dark ? DarkTheme.colors : DefaultTheme.colors),
+          primary: '#ff1255',
+          accent: '#008cff'
+        }
+      }
+    })
+    await AsyncStorage.setItem('@dark', dark ? 'glory' : '')
+  }
+
+  async componentDidMount() {
+    const theme = await AsyncStorage.getItem('@dark')
+    this.setTheme(theme === 'glory')
   }
 }
-
-export default () => (
-  <PaperProvider theme={theme}>
-    <StatusBar barStyle='light-content' />
-    <App />
-  </PaperProvider>
-)

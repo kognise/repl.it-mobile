@@ -1,10 +1,10 @@
-import React, { Component, forwardRef } from 'react'
+import React, { Component } from 'react'
 import { View, WebView } from 'react-native'
 import editorCode from '../lib/editor'
 import Theme from '../components/Theme'
-import SettingsContext from '../components/SettingsContext'
+import withSettings from '../lib/withSettings'
 
-const FML = class extends Component {
+export default withSettings(class extends Component {
   render() {
     return (
       <View style={{
@@ -45,13 +45,4 @@ const FML = class extends Component {
     const code = event.nativeEvent.data
     this.props.onChange && this.props.onChange(code)
   }
-}
-
-// ContextType wasn't working...
-export default forwardRef((props, ref) => (
-  <SettingsContext.Consumer>
-    {(context) => (
-      <FML {...props} ref={ref} context={context} />
-    )}
-  </SettingsContext.Consumer>
-))
+})

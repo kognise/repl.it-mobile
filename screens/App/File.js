@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, ScrollView, WebView, RefreshControl } from 'react-native'
+import { View, ScrollView, WebView, RefreshControl, Keyboard, Dimensions, Platform, StatusBar } from 'react-native'
 import { Menu, Text, withTheme } from 'react-native-paper'
 import ActivityIndicator from '../../components/ActivityIndicator'
 import { getUrls, readFile, writeFile, deleteFile, getWebUrl } from '../../lib/network'
@@ -12,7 +12,8 @@ class EditorScene extends Component {
     code: undefined,
     path: undefined,
     loading: true,
-    saving: false
+    saving: false,
+    keyboard: false
   }
 
   render() {
@@ -20,24 +21,37 @@ class EditorScene extends Component {
       <Theme>
         <View style={{ flex: 1 }}>
           {this.state.loading && <ActivityIndicator />}
-          <Editor
-            hidden={this.state.loading}
-            code={this.state.code}
-            path={this.state.path}
-            onChange={this.saveCode}
-          />
-          <Text style={{
-            position: 'absolute',
-            bottom: 10,
-            left: 10
+          <View style={{
+            height: this.state.keyboard ? 
+              Dimensions.get('window').height - this.state.keyboard - 56 - 48
+                - (Platform.OS === 'android' ? StatusBar.currentHeight : 0)
+              : '100%'
           }}>
-            {this.state.saving ? 'Saving...' : 'Saved'}
-          </Text>
+            <Editor
+              hidden={this.state.loading}
+              code={this.state.code}
+              path={this.state.path}
+              onChange={this.saveCode}
+            />
+            <Text style={{
+              position: 'absolute',
+              bottom: 10,
+              left: 10
+            }}>
+              {this.state.saving ? 'Saving...' : 'Saved'}
+            </Text>
+          </View>
         </View>
       </Theme> 
     )
   }
 
+  componentWillMount() {
+    this.keyboardWillShowSub = Keyboard.addListener('keyboardDidShow', (event) => {
+      this.setState({ keyboard: event.endCoordinates.height })
+    })
+    this.keyboardWillHideSub = Keyboard.addListener('keyboardDidHide', () => this.setState({ keyboard: false }))
+  }
   async componentDidMount() {
     this.mounted = true
 
@@ -50,6 +64,8 @@ class EditorScene extends Component {
     this.setState({ code, path, loading: false })
   }
   componentWillUnmount() {
+    this.keyboardWillShowSub.remove()
+    this.keyboardWillHideSub.remove()
     this.mounted = false
   }
   saveCode = async (code) => {

@@ -65,14 +65,26 @@ export default class extends Component {
         primary: '#ff1255',
         accent: '#008cff'
       }
-    }
+    },
+    softWrapping: false,
+    softTabs: true,
+    indentSize: '2'
   }
 
   render() {
     return (
       <PaperProvider theme={this.state.theme}>
         <StatusBar barStyle='light-content' />
-        <SettingsContext.Provider value={{ theme: this.state.theme.dark, setTheme: this.setTheme }}>
+        <SettingsContext.Provider value={{
+          theme: this.state.theme.dark,
+          setTheme: this.setTheme,
+          softWrapping: this.state.softWrapping,
+          setSoftWrapping: this.setSoftWrapping,
+          softTabs: this.state.softTabs,
+          setSoftTabs: this.setSoftTabs,
+          indentSize: this.state.indentSize,
+          setIndentSize: this.setIndentSize
+        }}>
           <App />
         </SettingsContext.Provider>
       </PaperProvider>
@@ -93,8 +105,33 @@ export default class extends Component {
     await AsyncStorage.setItem('@dark', dark ? 'glory' : '')
   }
 
+  setSoftWrapping = async (softWrapping) => {
+    this.setState({ softWrapping })
+    await AsyncStorage.setItem('@wrapping', softWrapping ? 'soft' : 'hard')
+  }
+
+  setSoftTabs = async (softTabs) => {
+    this.setState({ softTabs })
+    await AsyncStorage.setItem('@tabs', softTabs ? 'soft' : 'hard')
+  }
+
+  setIndentSize = async (indentSize) => {
+    if (!/^[0-9]+$/.test(indentSize)) return
+    this.setState({ indentSize })
+    await AsyncStorage.setItem('@indent', indentSize)
+  }
+
   async componentDidMount() {
     const theme = await AsyncStorage.getItem('@dark')
     this.setTheme(theme === 'glory')
+
+    const wrapping = await AsyncStorage.getItem('@wrapping')
+    this.setSoftWrapping(wrapping === 'soft')
+
+    const tabs = await AsyncStorage.getItem('@tabs')
+    this.setSoftTabs(tabs !== 'hard')
+
+    const indentSize = await AsyncStorage.getItem('@indent')
+    this.setIndentSize(indentSize || '2')
   }
 }

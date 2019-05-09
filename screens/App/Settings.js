@@ -13,7 +13,7 @@ export default class extends Component {
   render() {
     return (
       <SettingsContext.Consumer>
-        {({ theme, setTheme }) => (
+        {(context) => (
           <Theme>
             <ScrollView>
               <List.Section>
@@ -22,8 +22,8 @@ export default class extends Component {
                   title='Dark theme'
                   right={() => (
                     <Switch
-                      value={theme}
-                      onValueChange={setTheme}
+                      value={context.theme}
+                      onValueChange={context.setTheme}
                     />
                   )}
                 />
@@ -43,8 +43,8 @@ export default class extends Component {
                   title='Soft wrapping'
                   right={() => (
                     <Switch
-                      value={false}
-                      disabled
+                      value={context.softWrapping}
+                      onValueChange={context.setSoftWrapping}
                     />
                   )}
                 />
@@ -52,8 +52,8 @@ export default class extends Component {
                   title='Indent with spaces'
                   right={() => (
                     <Switch
-                      value={true}
-                      disabled
+                      value={context.softTabs}
+                      onValueChange={context.setSoftTabs}
                     />
                   )}
                 />
@@ -61,7 +61,8 @@ export default class extends Component {
                   title='Indent size'
                   right={() => (
                     <TextInput
-                      value={'4'}
+                      value={context.indentSize}
+                      onChangeText={context.setIndentSize}
                       render={(props) => (
                         <RNTextInput
                           {...props}
@@ -69,7 +70,6 @@ export default class extends Component {
                           keyboardType='number-pad'
                         />
                       )}
-                      disabled
                     />
                   )}
                 />

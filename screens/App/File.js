@@ -11,7 +11,8 @@ class EditorScene extends Component {
   state = {
     code: undefined,
     path: undefined,
-    loading: true
+    loading: true,
+    saving: false
   }
 
   render() {
@@ -25,6 +26,13 @@ class EditorScene extends Component {
             path={this.state.path}
             onChange={this.saveCode}
           />
+          <Text style={{
+            position: 'absolute',
+            bottom: 10,
+            left: 10
+          }}>
+            {this.state.saving ? 'Saving...' : 'Saved'}
+          </Text>
         </View>
       </Theme> 
     )
@@ -44,7 +52,11 @@ class EditorScene extends Component {
   componentWillUnmount() {
     this.mounted = false
   }
-  saveCode = async (code) => await writeFile(this.urls, code)
+  saveCode = async (code) => {
+    this.setState({ saving: true })
+    await writeFile(this.urls, code)
+    this.setState({ saving: false })
+  }
 }
 
 const ConsoleScene = withTheme(class extends Component {
@@ -192,6 +204,8 @@ export default class extends Component {
       this.logMessage('Kognise can\'t figure out how to get web logging to work, any help would be appreciated! '
         + 'https://stackoverflow.com/questions/56029586/listen-for-console-logs-in-webview-from-parent',
         true)
+    } else {
+      this.logMessage('Sorry, but it turns out running won\'t work until June.', true)
     }
   }
 

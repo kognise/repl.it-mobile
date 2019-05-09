@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { View, WebView } from 'react-native'
 import editorCode from '../lib/editor'
 import Theme from '../components/Theme'
 import withSettings from '../lib/withSettings'
 
-export default withSettings(class extends Component {
+export default withSettings(class extends PureComponent {
   render() {
     return (
       <View style={{

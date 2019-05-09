@@ -57,14 +57,15 @@ const Navigator = createSwitchNavigator({
 }, { initialRouteName: 'Initial' })
 const App = createAppContainer(Navigator)
 
+const accent = '#687d85'
+const primary = '#e83d39'
 export default class extends Component {
   state = {
     theme: {
       ...DefaultTheme,
       colors: {
         ...DefaultTheme.colors,
-        primary: '#ff1255',
-        accent: '#008cff'
+        primary, accent
       }
     },
     softWrapping: false,
@@ -98,8 +99,7 @@ export default class extends Component {
         ...(dark ? DarkTheme : DefaultTheme),
         colors: {
           ...(dark ? DarkTheme.colors : DefaultTheme.colors),
-          primary: '#ff1255',
-          accent: '#008cff'
+          primary, accent
         }
       }
     })

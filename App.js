@@ -59,10 +59,12 @@ const App = createAppContainer(Navigator)
 
 const accent = '#687d85'
 const primary = '#e83d39'
+const roundness = 0
 export default class extends Component {
   state = {
     theme: {
       ...DefaultTheme,
+      roundness,
       colors: {
         ...DefaultTheme.colors,
         primary, accent
@@ -97,6 +99,7 @@ export default class extends Component {
     this.setState({
       theme: {
         ...(dark ? DarkTheme : DefaultTheme),
+        roundness,
         colors: {
           ...(dark ? DarkTheme.colors : DefaultTheme.colors),
           primary, accent

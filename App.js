@@ -23,14 +23,14 @@ import ReplScreen from './screens/App/Repl'
 import FileScreen from './screens/App/File'
 
 const AuthNavigator = createStackNavigator({
-  Welcome: { screen: WelcomeScreen },
-  LogIn: { screen: LogInScreen },
-  SignUp: { screen: SignUpScreen },
-  Hello: { screen: HelloScreen },
+  Welcome: WelcomeScreen,
+  LogIn: LogInScreen,
+  SignUp: SignUpScreen,
+  Hello: HelloScreen,
 
-  GoogleProvider: { screen: GoogleProviderScreen },
-  GitHubProvider: { screen: GitHubProviderScreen },
-  FacebookProvider: { screen: FacebookProviderScreen }
+  GoogleProvider: GoogleProviderScreen,
+  GitHubProvider: GitHubProviderScreen,
+  FacebookProvider: FacebookProviderScreen
 }, {
   initialRouteName: 'Welcome',
   defaultNavigationOptions: {
@@ -39,10 +39,10 @@ const AuthNavigator = createStackNavigator({
 })
 
 const AppNavigator = createStackNavigator({
-  Dashboard: { screen: DashboardScreen },
-  Settings: { screen: SettingsScreen },
-  Repl: { screen: ReplScreen },
-  File: { screen: FileScreen }
+  Dashboard: DashboardScreen,
+  Settings: SettingsScreen,
+  Repl: ReplScreen,
+  File: FileScreen
 }, {
   initialRouteName: 'Dashboard',
   defaultNavigationOptions: {
@@ -51,7 +51,13 @@ const AppNavigator = createStackNavigator({
 })
 
 const Navigator = createSwitchNavigator({
-  Initial: InitialScreen,
+  Initial: createStackNavigator({
+    Initial: InitialScreen
+  }, {
+    defaultNavigationOptions: {
+      header: (props) => <CustomHeader {...props} />
+    }
+  }),
   Auth: AuthNavigator,
   App: AppNavigator
 }, { initialRouteName: 'Initial' })

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View } from 'react-native'
+import { KeyboardAvoidingView } from 'react-native'
 import { Button, Text, withTheme } from 'react-native-paper'
 import { logIn } from '../../lib/network'
 import FormInput from '../../components/FormInput'
@@ -21,11 +21,11 @@ export default withSettings(withTheme(class extends Component {
   render() {
     return (
       <Theme>
-        <View style={{ 
+        <KeyboardAvoidingView style={{ 
           flex: 1,
           justifyContent: 'center',
           padding: 20
-        }}>
+        }} behavior='padding'>
           {this.state.error && (
             <Text style={{ color: this.props.theme.colors.error }}>
               {this.state.error}
@@ -58,7 +58,7 @@ export default withSettings(withTheme(class extends Component {
           >
             Log in
           </Button>
-        </View>
+        </KeyboardAvoidingView>
       </Theme>
     )
   }

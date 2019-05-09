@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { StatusBar, AsyncStorage } from 'react-native'
+import { Font } from 'expo'
 import { DarkTheme, DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
 import CustomHeader from './components/CustomHeader'
@@ -133,5 +134,7 @@ export default class extends Component {
 
     const indentSize = await AsyncStorage.getItem('@indent')
     this.setIndentSize(indentSize || '2')
+
+    await Font.loadAsync('inconsolata', require('./assets/Inconsolata-Regular.ttf'))
   }
 }

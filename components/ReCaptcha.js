@@ -5,7 +5,7 @@ import reCaptchaCode from '../lib/reCaptcha'
 export default class extends Component {
   render() {
     return (
-      <View style={this.props.style}>
+      <View style={{ opacity: 0 }}>
         <WebView
           useWebKit={true}
           originWhitelist={[ '*' ]}

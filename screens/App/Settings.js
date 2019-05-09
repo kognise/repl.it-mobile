@@ -68,6 +68,7 @@ export default class extends Component {
                           {...props}
                           style={[ ...props.style, { textAlign: 'center' } ]}
                           keyboardType='number-pad'
+                          maxLength={2}
                         />
                       )}
                     />

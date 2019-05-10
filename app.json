@@ -27,7 +27,11 @@
       "bundleIdentifier": "com.replit.mobile"
     },
     "android": {
-      "package": "com.replit.mobile"
+      "package": "com.replit.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff",
+        "foregroundImage": "./assets/foreground.png"
+      }
     },
     "description": "The mobile app for Repl.it. It's a work in progress and this is meant for testers.",
     "githubUrl": "https://github.com/kognise/repl.it-mobile"

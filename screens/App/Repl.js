@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View } from 'react-native'
+import { View, Clipboard, Platform, ToastAndroid } from 'react-native'
 import { Menu } from 'react-native-paper'
 import { NavigationEvents } from 'react-navigation'
 import { deleteRepl } from '../../lib/network'
@@ -11,19 +11,32 @@ export default class extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam('title', 'Files'),
     menu: (closeMenu) => (
-      <Menu.Item
-        title='Delete'
-        onPress={async () => {
-          closeMenu()
+      <>
+        <Menu.Item
+          title='Copy link'
+          onPress={() => {
+            closeMenu()
+            const url = navigation.getParam('url')
+            Clipboard.setString(`https://repl.it${url}`)
+            if (Platform.OS === 'android') {
+              ToastAndroid.show('Link copied', ToastAndroid.SHORT)
+            }
+          }}
+        />
+        <Menu.Item
+          title='Delete'
+          onPress={async () => {
+            closeMenu()
 
-          const id = navigation.getParam('id')
-          const reload = navigation.getParam('reload')
+            const id = navigation.getParam('id')
+            const reload = navigation.getParam('reload')
 
-          await deleteRepl(id)
-          reload()
-          navigation.goBack()
-        }}
-      />
+            await deleteRepl(id)
+            reload()
+            navigation.goBack()
+          }}
+        />
+      </>
     )
   })
 

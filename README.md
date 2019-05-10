@@ -11,4 +11,4 @@ Repl.it is amazing but the site isn't very mobile friendly. It's almost impossib
 - Clone this repository or pull the latest changes
 - Make sure to run `yarn` to install packages
 - Install the [Expo mobile app](https://expo.io/tools#client)
-- Run `yarn start` and scan the QR code
+- Run `yarn dev` and scan the QR code

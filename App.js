@@ -63,19 +63,34 @@ const Navigator = createSwitchNavigator({
 }, { initialRouteName: 'Initial' })
 const App = createAppContainer(Navigator)
 
-const accent = '#687d85'
 const primary = '#e83d39'
+const accent = '#687d85'
 const roundness = 0
+
+const darkTheme = {
+  ...DarkTheme,
+  roundness,
+  colors: {
+    ...DarkTheme.colors,
+    primary, accent,
+    background: '#121212',
+    surface: '#373737',
+    appBar: '#1f1f1f'
+  }
+}
+const lightTheme = {
+  ...DefaultTheme,
+  roundness,
+  colors: {
+    ...DefaultTheme.colors,
+    primary, accent,
+    appBar: primary
+  }
+}
+
 export default class extends Component {
   state = {
-    theme: {
-      ...DefaultTheme,
-      roundness,
-      colors: {
-        ...DefaultTheme.colors,
-        primary, accent
-      }
-    },
+    theme: lightTheme,
     softWrapping: false,
     softTabs: true,
     indentSize: '2'
@@ -103,14 +118,7 @@ export default class extends Component {
 
   setTheme = async (dark) => {
     this.setState({
-      theme: {
-        ...(dark ? DarkTheme : DefaultTheme),
-        roundness,
-        colors: {
-          ...(dark ? DarkTheme.colors : DefaultTheme.colors),
-          primary, accent
-        }
-      }
+      theme: dark ? darkTheme : lightTheme
     })
     await AsyncStorage.setItem('@dark', dark ? 'glory' : '')
   }

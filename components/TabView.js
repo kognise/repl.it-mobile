@@ -17,7 +17,7 @@ export default withTheme(class extends Component {
             {...props}
             indicatorStyle={{ backgroundColor: 'white' }}
             style={{
-              backgroundColor: this.props.theme.colors.primary,
+              backgroundColor: this.props.theme.colors.appBar,
               ...shadow(Platform.OS === 'ios' ? 4 : 0)
             }}
           />

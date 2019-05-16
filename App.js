@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { StatusBar, AsyncStorage } from 'react-native'
-import { Font } from 'expo'
+import { Font, SplashScreen } from 'expo'
 import { DarkTheme, DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
 import CustomHeader from './components/CustomHeader'
@@ -93,7 +93,13 @@ export default class extends Component {
     theme: lightTheme,
     softWrapping: false,
     softTabs: true,
-    indentSize: '2'
+    indentSize: '2',
+    ready: false
+  }
+
+  constructor(props) {
+    super(props)
+    SplashScreen.preventAutoHide()
   }
 
   render() {
@@ -110,32 +116,36 @@ export default class extends Component {
           indentSize: this.state.indentSize,
           setIndentSize: this.setIndentSize
         }}>
-          <App />
+          {this.state.ready && <App />}
         </SettingsContext.Provider>
       </PaperProvider>
     )
   }
 
+  asyncSetState = (newState) => new Promise((resolve) => {
+    this.setState(newState, resolve)
+  })
+
   setTheme = async (dark) => {
-    this.setState({
+    await this.asyncSetState({
       theme: dark ? darkTheme : lightTheme
     })
     await AsyncStorage.setItem('@dark', dark ? 'glory' : '')
   }
 
   setSoftWrapping = async (softWrapping) => {
-    this.setState({ softWrapping })
+    await this.asyncSetState({ softWrapping })
     await AsyncStorage.setItem('@wrapping', softWrapping ? 'soft' : 'hard')
   }
 
   setSoftTabs = async (softTabs) => {
-    this.setState({ softTabs })
+    await this.asyncSetState({ softTabs })
     await AsyncStorage.setItem('@tabs', softTabs ? 'soft' : 'hard')
   }
 
   setIndentSize = async (indentSize) => {
     if (!/^[0-9]+$/.test(indentSize)) return
-    this.setState({ indentSize })
+    await this.asyncSetState({ indentSize })
     await AsyncStorage.setItem('@indent', indentSize)
   }
 
@@ -153,5 +163,7 @@ export default class extends Component {
     this.setIndentSize(indentSize || '2')
 
     await Font.loadAsync('inconsolata', require('./assets/Inconsolata-Regular.ttf'))
+    await this.asyncSetState({ ready: true })
+    SplashScreen.hide()
   }
 }

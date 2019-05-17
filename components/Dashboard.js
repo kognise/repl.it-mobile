@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { ScrollView, RefreshControl } from 'react-native'
 import { List } from 'react-native-paper'
 import ActivityIndicator from './ActivityIndicator'
 import { fetchRepls, fetchFolders } from '../lib/network'
 
-export default class extends Component {
+export default class extends PureComponent {
   state = {
     repls: [],
     folders: [],
@@ -12,6 +12,7 @@ export default class extends Component {
     refreshing: false
   }
   pageInfo = {}
+  search = ''
 
   render() {
     return (
@@ -52,7 +53,7 @@ export default class extends Component {
   async componentDidMount() {
     this.mounted = true
 
-    const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId)
+    const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId, this.state.search)
     const folders = await fetchFolders(this.props.folderId)
     this.pageInfo = pageInfo
     if (!this.mounted) return
@@ -70,7 +71,7 @@ export default class extends Component {
   refresh = async () => {
     this.setState({ refreshing: true })
 
-    const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId)
+    const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId, this.state.search)
     const folders = await fetchFolders(this.props.folderId)
     if (!this.mounted) return
     this.pageInfo = pageInfo
@@ -88,7 +89,7 @@ export default class extends Component {
       loading: true
     })
     
-    const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId)
+    const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId, this.state.search)
     const folders = await fetchFolders(this.props.folderId)
     this.pageInfo = pageInfo
     if (!this.mounted) return
@@ -99,6 +100,24 @@ export default class extends Component {
       folders
     })
   }
+
+  search = async (search) => {
+    this.setState({
+      repls: [],
+      loading: true,
+      search
+    })
+    
+    const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId, search)
+    this.pageInfo = pageInfo
+    if (!this.mounted) return
+
+    this.setState({
+      repls: items,
+      loading: false
+    })
+  }
+
   onScroll = (event) => {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent
     if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 60) {
@@ -111,7 +130,7 @@ export default class extends Component {
     if (!this.pageInfo.hasNextPage) return
 
     this.setState({ loading: true })
-    const { items, pageInfo } = await fetchRepls(this.pageInfo.nextCursor, this.props.folderId)
+    const { items, pageInfo } = await fetchRepls(this.pageInfo.nextCursor, this.props.folderId, this.state.search)
     if (!this.mounted) return
     this.pageInfo = pageInfo
 

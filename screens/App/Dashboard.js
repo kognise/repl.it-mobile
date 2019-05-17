@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
-import { Menu } from 'react-native-paper'
+import { Menu, Searchbar } from 'react-native-paper'
 import { navigateSame } from '../../lib/navigation'
 import Theme from '../../components/Theme'
 import NewRepl from '../../components/NewRepl'
@@ -20,12 +20,24 @@ export default class extends Component {
     )
   })
 
+  state = {
+    search: ''
+  }
+
   render() {
     const { navigate, getParam } = this.props.navigation
     const folderId = getParam('folderId')
 
     return (
       <Theme>
+        <View style={{ padding: 10 }}>
+          <Searchbar
+            placeholder='Search'
+            onChangeText={this.updateSearch}
+            onSubmitEditing={this.performSearch}
+            value={this.state.search}
+          />
+        </View>
         <View style={{ flex: 1 }}>
           <Dashboard
             folderId={folderId}
@@ -41,5 +53,11 @@ export default class extends Component {
     )
   }
 
+  updateSearch = (search) => {
+    this.setState({ search }, () => {
+      if (search === '') this.performSearch()
+    })
+  }
+  performSearch = async () => this.dashboard && await this.dashboard.search(this.state.search)
   reload = async () => this.dashboard && await this.dashboard.reload()
 }

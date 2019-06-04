@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import { View, Clipboard, Platform, ToastAndroid } from 'react-native'
 import { Menu } from 'react-native-paper'
 import { NavigationEvents } from 'react-navigation'
-import { deleteRepl } from '../../lib/network'
+import { navigateSame } from '../../lib/navigation'
+import { deleteRepl, forkRepl } from '../../lib/network'
 import NewFile from '../../components/NewFile'
 import Files from '../../components/Files'
 import Theme from '../../components/Theme'
@@ -21,6 +22,25 @@ export default class extends Component {
             if (Platform.OS === 'android') {
               ToastAndroid.show('Link copied', ToastAndroid.SHORT)
             }
+          }}
+        />
+        <Menu.Item
+          title='Fork'
+          onPress={async () => {
+            closeMenu()
+
+            const id = navigation.getParam('id')
+            const reload = navigation.getParam('reload')
+
+            const newRepl = await forkRepl(id)
+            reload()
+            navigateSame(navigation, {
+              ...navigation.state.params,
+              id: newRepl.id,
+              title: newRepl.title,
+              url: newRepl.url,
+              language: newRepl.language
+            })
           }}
         />
         <Menu.Item

@@ -9,6 +9,16 @@ import TabView from '../../components/TabView'
 import Editor from '../../components/Editor'
 import Theme from '../../components/Theme'
 
+const imageExtensions = [ 'png', 'jpg', 'jpeg', 'bmp', 'gif' ]
+function isImage(file) {
+  for (let extension of imageExtensions) {
+    if (file.endsWith(`.${extension}`)) {
+      return true
+    }
+  }
+  return false
+}
+
 class EditorScene extends Component {
   state = {
     code: undefined,
@@ -58,6 +68,41 @@ class EditorScene extends Component {
     this.setState({ saving: true })
     await writeFile(this.urls, code)
     this.setState({ saving: false })
+  }
+}
+
+class ImageScene extends Component {
+  state = {
+    url: undefined,
+    loading: true
+  }
+
+  render() {
+    return (
+      <Theme>
+        <View style={{ flex: 1 }}>
+          {this.state.loading ? <ActivityIndicator /> : (
+            <Image
+              source={{ uri: this.state.url }}
+              style={{ flex: 1, resizeMode: 'center' }}
+            />
+          )}
+        </View>
+      </Theme> 
+    )
+  }
+
+  async componentDidMount() {
+    this.mounted = true
+
+    const { id, path } = this.props
+    const urls = await getUrls(id, path)
+
+    if (!this.mounted) return
+    this.setState({ url: urls.read, loading: false })
+  }
+  componentWillUnmount() {
+    this.mounted = false
   }
 }
 
@@ -170,16 +215,9 @@ export default class extends Component {
 
   state = {
     index: 0,
-    routes: [
-      { key: 'editor', title: 'Code' },
-      { key: 'console', title: 'Console' }
-    ]
+    routes: []
   }
-  scenes = {
-    editor: this.EditorScene,
-    web: this.OutputScene,
-    console: this.OutputScene
-  }
+  scenes = {}
 
   render() {
     return (
@@ -196,18 +234,34 @@ export default class extends Component {
     const path = this.props.navigation.getParam('path')
     const language = this.props.navigation.getParam('language')
 
-    this.scenes = {
-      editor: () => <EditorScene id={id} path={path} />,
-      console: () => <ConsoleScene ref={this.consoleRef} />
-    }
-    if (language === 'html') {
-      this.state.routes[2] = this.state.routes[1]
-      this.state.routes[1] = { key: 'web', title: 'Web' }
-      this.scenes.web = () => <WebScene id={id} />
-      this.logMessage('Kognise can\'t figure out how to get web logging to work, any help would be appreciated! '
-        + 'https://stackoverflow.com/questions/56029586/listen-for-console-logs-in-webview-from-parent',
-        true)
+    if (isImage(path)) {
+      this.state.routes = [
+        { key: 'image', title: 'Image' }
+      ]
+      this.scenes = {
+        image: () => <ImageScene id={id} path={path} />
+      }
+    } else if (language === 'html') {
+      this.state.routes = [
+        { key: 'editor', title: 'Code' },
+        { key: 'web', title: 'Web' },
+        { key: 'console', title: 'Console' }
+      ]
+      this.scenes = {
+        editor: () => <EditorScene id={id} path={path} />,
+        web: () => <WebScene id={id} />,
+        console: () => <ConsoleScene ref={this.consoleRef} />
+      }
     } else {
+      this.state.routes = [
+        { key: 'editor', title: 'Code' },
+        { key: 'console', title: 'Console' }
+      ]
+      this.scenes = {
+        editor: () => <EditorScene id={id} path={path} />,
+        console: () => <ConsoleScene ref={this.consoleRef} />
+      }
+
       this.logMessage('Sorry, but it turns out running won\'t work until June.', true)
     }
   }

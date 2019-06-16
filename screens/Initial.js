@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
 import { isLoggedIn } from '../lib/network'
+
 import ActivityIndicator from '../components/ActivityIndicator'
 import Theme from '../components/Theme'
 

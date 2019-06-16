@@ -2,8 +2,10 @@ import React, { Component } from 'react'
 import { View, Clipboard, Platform, ToastAndroid } from 'react-native'
 import { Menu } from 'react-native-paper'
 import { NavigationEvents } from 'react-navigation'
+
 import { navigateSame } from '../../lib/navigation'
 import { deleteRepl, forkRepl } from '../../lib/network'
+
 import NewFile from '../../components/NewFile'
 import Files from '../../components/Files'
 import Theme from '../../components/Theme'

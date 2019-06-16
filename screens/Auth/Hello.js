@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Title, Text, Button } from 'react-native-paper'
+
 import Theme from '../../components/Theme'
 
 export default class extends Component {

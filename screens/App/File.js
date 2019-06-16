@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
-import { View, ScrollView, WebView, RefreshControl } from 'react-native'
+
+import { View, ScrollView, WebView, RefreshControl, Image } from 'react-native'
 import { Menu, Text, withTheme } from 'react-native-paper'
-import ActivityIndicator from '../../components/ActivityIndicator'
 import { getUrls, readFile, writeFile, deleteFile, getWebUrl } from '../../lib/network'
+
+import ActivityIndicator from '../../components/ActivityIndicator'
 import TabView from '../../components/TabView'
 import Editor from '../../components/Editor'
 import Theme from '../../components/Theme'

@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import { KeyboardAvoidingView } from 'react-native'
 import { Button, Text, withTheme } from 'react-native-paper'
+import { signUp } from '../../lib/network'
+
 import ReCaptcha from '../../components/ReCaptcha'
 import FormInput from '../../components/FormInput'
-import { signUp } from '../../lib/network'
 import Theme from '../../components/Theme'
 
 function waitForCaptcha(state) {

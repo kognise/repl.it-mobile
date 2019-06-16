@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { ScrollView, TextInput as RNTextInput } from 'react-native'
 import { List, Divider, Button, Switch, TextInput } from 'react-native-paper'
 import { logOut } from '../../lib/network'
+
 import SettingsContext from '../../components/SettingsContext'
 import Theme from '../../components/Theme'
 

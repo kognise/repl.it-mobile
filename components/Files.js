@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import { ScrollView, RefreshControl } from 'react-native'
 import { List } from 'react-native-paper'
-import ActivityIndicator from './ActivityIndicator'
+
 import moisten from '../lib/moisten'
 import { fetchFiles } from '../lib/network'
+
+import ActivityIndicator from './ActivityIndicator'
 
 function renderFiles(files, onPress) {
   const children = []

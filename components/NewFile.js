@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { View } from 'react-native'
 import { FAB, Dialog, Portal, Button, Text, withTheme } from 'react-native-paper'
 import { getUrls, writeFile } from '../lib/network'
+
 import FormInput from './FormInput'
 
 export default withTheme(class extends Component {

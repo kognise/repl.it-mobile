@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Menu, Searchbar } from 'react-native-paper'
 import { navigateSame } from '../../lib/navigation'
+
 import Theme from '../../components/Theme'
 import NewRepl from '../../components/NewRepl'
 import Dashboard from '../../components/Dashboard'

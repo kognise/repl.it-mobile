@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-
+import { Console } from 'console'
 import { View, ScrollView, WebView, RefreshControl, Image } from 'react-native'
 import { Menu, Text, withTheme } from 'react-native-paper'
 import { getUrls, readFile, writeFile, deleteFile, getWebUrl } from '../../lib/network'

@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { View, ScrollView, WebView, RefreshControl, Image } from 'react-native'
 import { Menu, Text, withTheme } from 'react-native-paper'
 import { getUrls, readFile, writeFile, deleteFile, getWebUrl } from '../../lib/network'
+import Streams from '../../lib/outStreams'
 
 import ActivityIndicator from '../../components/ActivityIndicator'
 import TabView from '../../components/TabView'
@@ -26,7 +27,6 @@ class EditorScene extends Component {
     loading: true,
     saving: false
   }
-
   render() {
     return (
       <Theme>
@@ -62,7 +62,7 @@ class EditorScene extends Component {
     this.setState({ code, path, loading: false })
   }
   componentWillUnmount() {
-    this.mounted = false
+    this.mounted = false    
   }
   saveCode = async (code) => {
     this.setState({ saving: true })
@@ -143,7 +143,7 @@ class WebScene extends Component {
     reloading: false,
     key: 0
   }
-
+  consoleHistory = []
   render() {
     return (
       <Theme>
@@ -166,6 +166,7 @@ class WebScene extends Component {
             renderLoading={() => null}
             onLoadEnd={this.onLoadEnd}
             key={this.state.key}
+            injectJavascript={this.props.jsToBeInjected}
           />}
         </ScrollView>
       </Theme> 
@@ -218,7 +219,7 @@ export default class extends Component {
     routes: []
   }
   scenes = {}
-
+  
   render() {
     return (
       <TabView
@@ -242,6 +243,8 @@ export default class extends Component {
         image: () => <ImageScene id={id} path={path} />
       }
     } else if (language === 'html') {
+      const streams = Streams(this.logMessage.bind(this))
+      
       this.state.routes = [
         { key: 'editor', title: 'Code' },
         { key: 'web', title: 'Web' },
@@ -249,7 +252,9 @@ export default class extends Component {
       ]
       this.scenes = {
         editor: () => <EditorScene id={id} path={path} />,
-        web: () => <WebScene id={id} />,
+        web: () => <WebScene id={id} jsToBeInjected={((Console, stdout, stderr)=>{
+            window.console = new Console(stdout, stderr)
+          }).bind(this, Console, ...streams)}/>,
         console: () => <ConsoleScene ref={this.consoleRef} />
       }
     } else {

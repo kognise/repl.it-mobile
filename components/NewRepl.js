@@ -111,7 +111,7 @@ export default withTheme(class extends Component {
       if (!this.state.dialogOpen) return
       this.cancel()
       this.props.reload()
-      this.props.navigate('Repl', { id, title, url })
+      this.props.navigate('Repl', { id, title, url, language: result })
     } catch(error) {
       if (!this.state.dialogOpen) return
       this.setState({

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { StatusBar, AsyncStorage } from 'react-native'
-import { SplashScreen } from 'expo';
-import * as Font from 'expo-font';
+import { SplashScreen } from 'expo'
+import * as Font from 'expo-font'
 import { DarkTheme, DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
 import CustomHeader from './components/CustomHeader'

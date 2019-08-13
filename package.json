@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "expo start",
     "android": "expo start --android",
-    "build:android": "expo build:android"
+    "build:android": "expo build:android -t app-bundle",
+    "build:android:32": "expo build:android"
   },
   "dependencies": {
     "@zeit/fetch-retry": "^4.0.0",
@@ -17,6 +18,7 @@
     "react-native-reanimated": "~1.1.0",
     "react-native-tab-view": "^2.2.0",
     "react-native-vector-icons": "^6.4.2",
+    "react-native-webview": "~5.12.0",
     "react-navigation": "^3.9.1"
   },
   "devDependencies": {

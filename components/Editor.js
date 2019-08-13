@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react'
-import { View, WebView } from 'react-native'
+import { View } from 'react-native'
+import { WebView } from 'react-native-webview'
 
 import editorCode from '../lib/editor'
 import withSettings from '../lib/withSettings'

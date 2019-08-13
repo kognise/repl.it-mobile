@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 
 import consoleBridge from '../../lib/consoleBridge'
-import { View, ScrollView, WebView, RefreshControl, Image } from 'react-native'
+import { View, ScrollView, RefreshControl, Image } from 'react-native'
+import { WebView } from 'react-native-webview'
 import { Menu, Text, withTheme } from 'react-native-paper'
 import { getUrls, readFile, writeFile, deleteFile, getWebUrl } from '../../lib/network'
 

@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
-import { View, WebView } from 'react-native'
+import { View } from 'react-native'
+import { WebView } from 'react-native-webview'
+
 import reCaptchaCode from '../lib/reCaptcha'
 
 export default class extends Component {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 
+import consoleBridge from '../../lib/consoleBridge'
 import { View, ScrollView, WebView, RefreshControl, Image } from 'react-native'
 import { Menu, Text, withTheme } from 'react-native-paper'
 import { getUrls, readFile, writeFile, deleteFile, getWebUrl } from '../../lib/network'
@@ -138,7 +139,7 @@ const ConsoleScene = withTheme(class extends Component {
 
 class WebScene extends Component {
   state = {
-    url: undefined,
+    source: {},
     loading: true,
     reloading: false,
     key: 0
@@ -161,11 +162,12 @@ class WebScene extends Component {
             style={{ backgroundColor: '#ffffff' }}
             useWebKit={true}
             originWhitelist={[ '*' ]}
-            source={{ uri: this.state.url }}
+            source={this.state.source}
             ref={(webView) => this.webView = webView}
             renderLoading={() => null}
             onLoadEnd={this.onLoadEnd}
             key={this.state.key}
+            onMessage={this.onMessage}
           />}
         </ScrollView>
       </Theme> 
@@ -176,16 +178,28 @@ class WebScene extends Component {
     this.mounted = true
 
     const url = await getWebUrl(this.props.id)
+    const res = await fetch(url)
+    const html = consoleBridge + await res.text()
+
     if (!this.mounted) return
-    this.setState({ url, loading: false })
+    this.setState({
+      source: { baseUrl: url, html },
+      loading: false
+    })
   }
   reload = () => {
     this.setState({ reloading: true })
     this.webView && this.setState({ key: this.state.key + 1 })
   }
-  onLoadEnd = () => this.setState({ reloading: false })
+  onLoadEnd = () => {
+    this.setState({ reloading: false })
+  }
   componentWillUnmount() {
     this.mounted = false
+  }
+  onMessage = (event) => {
+    const [ error, message ] = JSON.parse(event.nativeEvent.data)
+    this.props.logMessage(message, error)
   }
 }
 
@@ -249,7 +263,7 @@ export default class extends Component {
       ]
       this.scenes = {
         editor: () => <EditorScene id={id} path={path} />,
-        web: () => <WebScene id={id} />,
+        web: () => <WebScene id={id} logMessage={this.logMessage} />,
         console: () => <ConsoleScene ref={this.consoleRef} />
       }
     } else {

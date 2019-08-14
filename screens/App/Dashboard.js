@@ -43,7 +43,7 @@ export default class extends Component {
           <Dashboard
             folderId={folderId}
             onFolderPress={({ id, name }) => navigateSame(this.props.navigation, { folderId: id, name })}
-            onReplPress={({ id, title, url, language }) => navigate('Repl', { id, title, url, language, reload: this.reload })}
+            onReplPress={({ id, title, url, language, canWrite }) => navigate('Repl', { id, title, url, language, canWrite, reload: this.reload })}
             reload={this.reload}
             navigate={navigate}
             ref={(dashboard) => this.dashboard = dashboard}
@@ -54,6 +54,12 @@ export default class extends Component {
     )
   }
 
+  componentDidMount() {
+    this.props.navigation.navigate('LoadRepl', {
+      url: '/@Xeborch/Never-gonna-give-you-up',
+      reload: this.reload
+    })
+  }
   updateSearch = (search) => {
     this.setState({ search }, () => {
       if (search === '') this.performSearch()

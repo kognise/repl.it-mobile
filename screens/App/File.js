@@ -39,6 +39,7 @@ class EditorScene extends Component {
             code={this.state.code}
             path={this.state.path}
             onChange={this.saveCode}
+            canWrite={this.props.canWrite}
           />
           <Text style={{
             position: 'absolute',
@@ -207,7 +208,7 @@ class WebScene extends Component {
 export default class extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam('path', 'File'),
-    menu: (closeMenu) => (
+    menu: navigation.getParam('canWrite') ? (closeMenu) => (
       <Menu.Item
         title='Delete'
         onPress={async () => {
@@ -224,7 +225,7 @@ export default class extends Component {
           navigation.goBack()
         }}
       />
-    ),
+    ) : null,
     hasAddon: true
   })
 
@@ -248,6 +249,7 @@ export default class extends Component {
     const id = this.props.navigation.getParam('id')
     const path = this.props.navigation.getParam('path')
     const language = this.props.navigation.getParam('language')
+    const canWrite = this.props.navigation.getParam('canWrite')
 
     if (isImage(path)) {
       this.state.routes = [
@@ -261,7 +263,7 @@ export default class extends Component {
         { key: 'editor', title: 'Code' }
       ]
       this.scenes = {
-        editor: () => <EditorScene id={id} path={path} />
+        editor: () => <EditorScene canWrite={canWrite} id={id} path={path} />
       }
     }
 

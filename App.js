@@ -20,6 +20,7 @@ import FacebookProviderScreen from './screens/Auth/Providers/Facebook'
 
 import DashboardScreen from './screens/App/Dashboard'
 import SettingsScreen from './screens/App/Settings'
+import LoadReplScreen from './screens/App/LoadRepl'
 import ReplScreen from './screens/App/Repl'
 import FileScreen from './screens/App/File'
 
@@ -42,6 +43,7 @@ const AuthNavigator = createStackNavigator({
 const AppNavigator = createStackNavigator({
   Dashboard: DashboardScreen,
   Settings: SettingsScreen,
+  LoadRepl: LoadReplScreen,
   Repl: ReplScreen,
   File: FileScreen
 }, {

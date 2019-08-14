@@ -37,6 +37,7 @@ export default withSettings(class extends PureComponent {
         code: this.props.code,
         path: this.props.path,
         dark: this.props.context.theme,
+        canWrite: this.props.canWrite,
         softWrapping: this.props.context.softWrapping,
         indentSize: this.props.context.indentSize,
         softTabs: this.props.context.softTabs

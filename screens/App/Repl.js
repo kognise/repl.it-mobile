@@ -67,12 +67,13 @@ export default class extends Component {
     const id = getParam('id')
     const url = getParam('url')
     const language = getParam('language')
+    const canWrite = getParam('canWrite')
     return (
       <Theme>
         <View style={{ flex: 1 }}>
           <Files
             url={url}
-            onPress={(path) => navigate('File', { id, path, language, reload: this.reload })}
+            onPress={(path) => navigate('File', { id, path, language, canWrite, reload: this.reload })}
             ref={(files) => this.files = files}
           />
           <NewFile id={id} reload={this.reload} navigate={navigate} />

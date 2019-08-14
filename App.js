@@ -70,12 +70,6 @@ const primary = '#e83d39'
 const accent = '#687d85'
 const roundness = 0
 
-// const fonts = {
-//   regular: 'Questrial',
-//   medium: 'Questrial',
-//   light: 'Questrial',
-//   thin: 'Questrial'
-// }
 const fonts = {
   regular: 'Montserrat',
   medium: 'Montserrat Medium',
@@ -180,7 +174,6 @@ export default class extends Component {
 
     await Font.loadAsync({
       'Inconsolata': require('./assets/Inconsolata-Regular.ttf'),
-      'Questrial': require('./assets/Questrial-Regular.ttf'),
       'Montserrat': require('./assets/Montserrat-Regular.ttf'),
       'Montserrat Medium': require('./assets/Montserrat-Medium.ttf'),
       'Montserrat Light': require('./assets/Montserrat-Light.ttf'),

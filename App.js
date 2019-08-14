@@ -68,9 +68,22 @@ const primary = '#e83d39'
 const accent = '#687d85'
 const roundness = 0
 
+// const fonts = {
+//   regular: 'Questrial',
+//   medium: 'Questrial',
+//   light: 'Questrial',
+//   thin: 'Questrial'
+// }
+const fonts = {
+  regular: 'Montserrat',
+  medium: 'Montserrat Medium',
+  light: 'Montserrat Light',
+  thin: 'Montserrat Thin'
+}
+
 const darkTheme = {
   ...DarkTheme,
-  roundness,
+  roundness, fonts,
   colors: {
     ...DarkTheme.colors,
     primary, accent,
@@ -81,7 +94,7 @@ const darkTheme = {
 }
 const lightTheme = {
   ...DefaultTheme,
-  roundness,
+  roundness, fonts,
   colors: {
     ...DefaultTheme.colors,
     primary, accent,
@@ -163,6 +176,14 @@ export default class extends Component {
     const indentSize = await AsyncStorage.getItem('@indent')
     this.setIndentSize(indentSize || '2')
 
+    await Font.loadAsync({
+      'Inconsolata': require('./assets/Inconsolata-Regular.ttf'),
+      'Questrial': require('./assets/Questrial-Regular.ttf'),
+      'Montserrat': require('./assets/Montserrat-Regular.ttf'),
+      'Montserrat Medium': require('./assets/Montserrat-Medium.ttf'),
+      'Montserrat Light': require('./assets/Montserrat-Light.ttf'),
+      'Montserrat Thin': require('./assets/Montserrat-Thin.ttf')
+    })
     await Font.loadAsync('inconsolata', require('./assets/Inconsolata-Regular.ttf'))
     await this.asyncSetState({ ready: true })
     SplashScreen.hide()

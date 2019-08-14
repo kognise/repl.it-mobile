@@ -54,12 +54,6 @@ export default class extends Component {
     )
   }
 
-  componentDidMount() {
-    this.props.navigation.navigate('LoadRepl', {
-      url: '/@Xeborch/Never-gonna-give-you-up',
-      reload: this.reload
-    })
-  }
   updateSearch = (search) => {
     this.setState({ search }, () => {
       if (search === '') this.performSearch()

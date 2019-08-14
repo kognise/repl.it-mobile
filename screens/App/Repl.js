@@ -41,11 +41,12 @@ export default class extends Component {
               id: newRepl.id,
               title: newRepl.title,
               url: newRepl.url,
-              language: newRepl.language
+              language: newRepl.language,
+              canWrite: true
             })
           }}
         />
-        <Menu.Item
+        {navigation.getParam('canWrite') ? <Menu.Item
           title='Delete'
           onPress={async () => {
             closeMenu()
@@ -57,7 +58,7 @@ export default class extends Component {
             reload()
             navigation.goBack()
           }}
-        />
+        /> : null}
       </>
     )
   })

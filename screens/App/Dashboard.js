@@ -54,6 +54,12 @@ export default class extends Component {
     )
   }
 
+  componentDidMount() {
+    this.props.navigation.navigate('LoadRepl', {
+      url: '/@Kognise/useless-bot',
+      reload: this.reload
+    })
+  }
   updateSearch = (search) => {
     this.setState({ search }, () => {
       if (search === '') this.performSearch()

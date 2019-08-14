@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
+import * as WebBrowser from 'expo-web-browser'
 
 import consoleBridge from '../../lib/consoleBridge'
 import { View, ScrollView, RefreshControl, Image } from 'react-native'
 import { WebView } from 'react-native-webview'
-import { Menu, Text, withTheme } from 'react-native-paper'
-import { getUrls, readFile, writeFile, deleteFile, getWebUrl } from '../../lib/network'
+import { Menu, Button, Text, withTheme } from 'react-native-paper'
+import { getUrls, readFile, isFileBinary, writeFile, deleteFile, getWebUrl } from '../../lib/network'
 
 import ActivityIndicator from '../../components/ActivityIndicator'
 import TabView from '../../components/TabView'
@@ -56,8 +57,7 @@ class EditorScene extends Component {
   async componentDidMount() {
     this.mounted = true
 
-    const { id, path } = this.props
-    const urls = await getUrls(id, path)
+    const { path, urls } = this.props
     const code = await readFile(urls)
 
     if (!this.mounted) return
@@ -75,38 +75,44 @@ class EditorScene extends Component {
 }
 
 class ImageScene extends Component {
-  state = {
-    url: undefined,
-    loading: true
-  }
-
   render() {
     return (
       <Theme>
         <View style={{ flex: 1 }}>
-          {this.state.loading ? <ActivityIndicator /> : (
-            <Image
-              source={{ uri: this.state.url }}
-              style={{ flex: 1, resizeMode: 'center' }}
-            />
-          )}
+          <Image
+            source={{ uri: this.props.urls.read }}
+            style={{ flex: 1, resizeMode: 'center' }}
+          />
+        </View>
+      </Theme> 
+    )
+  }
+}
+
+class BinaryScene extends Component {
+  render() {
+    return (
+      <Theme>
+        <View style={{ 
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Text style={{
+            fontSize: 18,
+            padding: 16,
+            textAlign: 'center',
+            marginBottom: 10
+          }}>
+            This is a binary file and can't be displayed in Repl.it mobile.
+          </Text>
+          <Button mode='contained' onPress={this.download}>Download</Button>
         </View>
       </Theme> 
     )
   }
 
-  async componentDidMount() {
-    this.mounted = true
-
-    const { id, path } = this.props
-    const urls = await getUrls(id, path)
-
-    if (!this.mounted) return
-    this.setState({ url: urls.read, loading: false })
-  }
-  componentWillUnmount() {
-    this.mounted = false
-  }
+  download = async () => await WebBrowser.openBrowserAsync(this.props.urls.read)
 }
 
 const ConsoleScene = withTheme(class extends Component {
@@ -231,11 +237,25 @@ export default class extends Component {
 
   state = {
     index: 0,
-    routes: []
+    routes: [],
+    loading: true
   }
   scenes = {}
 
   render() {
+    if (this.state.loading) {
+      return (
+        <Theme>
+          <View style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <ActivityIndicator />
+          </View>
+        </Theme>
+      )
+    }
     return (
       <TabView
         state={this.state}
@@ -251,31 +271,44 @@ export default class extends Component {
     const language = this.props.navigation.getParam('language')
     const canWrite = this.props.navigation.getParam('canWrite')
 
+    const urls = await getUrls(id, path)
+    const newState = this.state
+
     if (isImage(path)) {
-      this.state.routes = [
+      newState.routes = [
         { key: 'image', title: 'Image' }
       ]
       this.scenes = {
-        image: () => <ImageScene id={id} path={path} />
+        image: () => <ImageScene urls={urls} />
+      }
+    } else if (await isFileBinary(urls)) {
+      newState.routes = [
+        { key: 'binary', title: 'File' }
+      ]
+      this.scenes = {
+        binary: () => <BinaryScene urls={urls} />
       }
     } else {
-      this.state.routes = [
+      newState.routes = [
         { key: 'editor', title: 'Code' }
       ]
       this.scenes = {
-        editor: () => <EditorScene canWrite={canWrite} id={id} path={path} />
+        editor: () => <EditorScene canWrite={canWrite} urls={urls} path={path} />
       }
     }
 
     if (language === 'html') {
-      this.state.routes.push({ key: 'web', title: 'Web' })
+      newState.routes.push({ key: 'web', title: 'Web' })
       this.scenes.web = () => <WebScene id={id} logMessage={this.logMessage} />
     } else {
       this.logMessage('Sorry, running repls isn\'t currently supported! We\'re working on it.', true)
     }
 
-    this.state.routes.push({ key: 'console', title: 'Console' })
+    newState.routes.push({ key: 'console', title: 'Console' })
     this.scenes.console = () => <ConsoleScene ref={this.consoleRef} />
+
+    newState.loading = false
+    this.setState(newState)
   }
 
   logQueue = []

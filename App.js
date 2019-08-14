@@ -173,13 +173,12 @@ export default class extends Component {
     this.setIndentSize(indentSize || '2')
 
     await Font.loadAsync({
-      'Inconsolata': require('./assets/Inconsolata-Regular.ttf'),
-      'Montserrat': require('./assets/Montserrat-Regular.ttf'),
-      'Montserrat Medium': require('./assets/Montserrat-Medium.ttf'),
-      'Montserrat Light': require('./assets/Montserrat-Light.ttf'),
-      'Montserrat Thin': require('./assets/Montserrat-Thin.ttf')
+      'Inconsolata': require('./assets/fonts/Inconsolata-Regular.ttf'),
+      'Montserrat': require('./assets/fonts/Montserrat-Regular.ttf'),
+      'Montserrat Medium': require('./assets/fonts/Montserrat-Medium.ttf'),
+      'Montserrat Light': require('./assets/fonts/Montserrat-Light.ttf'),
+      'Montserrat Thin': require('./assets/fonts/Montserrat-Thin.ttf')
     })
-    await Font.loadAsync('inconsolata', require('./assets/Inconsolata-Regular.ttf'))
     await this.asyncSetState({ ready: true })
     SplashScreen.hide()
   }

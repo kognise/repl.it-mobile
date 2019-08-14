@@ -10,9 +10,9 @@
     ],
     "version": "0.0.1",
     "orientation": "default",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/app/icon.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/images/app/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -29,8 +29,8 @@
     "android": {
       "package": "com.replit.mobile",
       "adaptiveIcon": {
-        "backgroundColor": "#ffffff",
-        "foregroundImage": "./assets/foreground.png"
+        "backgroundColor": "#333333",
+        "foregroundImage": "./assets/images/app/foreground.png"
       }
     },
     "description": "The mobile app for Repl.it. It's a work in progress and this is meant for testers.",

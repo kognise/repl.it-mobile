@@ -197,7 +197,7 @@ class WebScene extends Component {
   }
   reload = () => {
     this.setState({ reloading: true })
-    this.webView && this.setState({ key: this.state.key + 1 })
+    this.webView.injectJavaScript(`window.location.href = '${this.state.source.baseUrl}'`)
   }
   onLoadEnd = () => {
     this.setState({ reloading: false })

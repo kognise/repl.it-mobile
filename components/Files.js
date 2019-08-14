@@ -5,8 +5,6 @@ import { List } from 'react-native-paper'
 import moisten from '../lib/moisten'
 import { fetchFiles } from '../lib/network'
 
-import ActivityIndicator from './ActivityIndicator'
-
 function renderFiles(files, onPress) {
   const children = []
   for (let name in files) {
@@ -38,8 +36,7 @@ function renderFiles(files, onPress) {
 export default class extends Component {
   state = {
     files: {},
-    loading: true,
-    refreshing: false
+    loading: true
   }
 
   render() {
@@ -47,14 +44,13 @@ export default class extends Component {
       <ScrollView
         refreshControl={
           <RefreshControl
-            refreshing={this.state.refreshing}
+            refreshing={this.state.loading}
             onRefresh={this.refresh}
           />
         }
         contentContainerStyle={{ minHeight: '100%' }}
       >
         {renderFiles(this.state.files, this.props.onPress)}
-        {this.state.loading && <ActivityIndicator />}
       </ScrollView>
     )
   }
@@ -73,13 +69,13 @@ export default class extends Component {
   }
 
   refresh = async () => {
-    this.setState({ refreshing: true })
+    this.setState({ loading: true })
 
     const flatFiles = await fetchFiles(this.props.url)
     const files = moisten(flatFiles)
     if (!this.mounted) return
 
-    this.setState({ files, refreshing: false })
+    this.setState({ files, loading: false })
   }
   reload = async () => {
     this.setState({ files: {}, loading: true })

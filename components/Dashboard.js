@@ -3,14 +3,11 @@ import { ScrollView, RefreshControl } from 'react-native'
 import { List } from 'react-native-paper'
 import { fetchRepls, fetchFolders } from '../lib/network'
 
-import ActivityIndicator from './ActivityIndicator'
-
 export default class extends PureComponent {
   state = {
     repls: [],
     folders: [],
-    loading: true,
-    refreshing: false
+    loading: true
   }
   pageInfo = {}
   search = ''
@@ -23,7 +20,7 @@ export default class extends PureComponent {
         onMomentumScrollEnd={this.onScroll}
         refreshControl={
           <RefreshControl
-            refreshing={this.state.refreshing}
+            refreshing={this.state.loading}
             onRefresh={this.refresh}
           />
         }
@@ -46,7 +43,6 @@ export default class extends PureComponent {
             left={(props) => <List.Icon {...props} icon='insert-drive-file' />}
           />
         ))}
-        {this.state.loading && <ActivityIndicator />}
       </ScrollView>
     )
   }
@@ -70,7 +66,7 @@ export default class extends PureComponent {
   }
 
   refresh = async () => {
-    this.setState({ refreshing: true })
+    this.setState({ loading: true })
 
     const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId, this.state.search)
     const folders = await fetchFolders(this.props.folderId)
@@ -79,7 +75,7 @@ export default class extends PureComponent {
 
     this.setState({
       repls: items,
-      refreshing: false,
+      loading: false,
       folders
     })
   }

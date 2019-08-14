@@ -126,7 +126,7 @@ const ConsoleScene = withTheme(class extends Component {
         <ScrollView style={{ minHeight: '100%' }}>
           {this.state.messages.map(({ message, error }, index) => (
             <Text style={{
-              fontFamily: 'inconsolata',
+              fontFamily: 'Inconsolata',
               fontSize: 18,
               color: error ? this.props.theme.colors.error : this.props.theme.colors.text
             }} selectable key={index}>

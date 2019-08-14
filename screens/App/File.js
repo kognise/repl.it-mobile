@@ -256,29 +256,24 @@ export default class extends Component {
       this.scenes = {
         image: () => <ImageScene id={id} path={path} />
       }
-    } else if (language === 'html') {
-      this.state.routes = [
-        { key: 'editor', title: 'Code' },
-        { key: 'web', title: 'Web' },
-        { key: 'console', title: 'Console' }
-      ]
-      this.scenes = {
-        editor: () => <EditorScene id={id} path={path} />,
-        web: () => <WebScene id={id} logMessage={this.logMessage} />,
-        console: () => <ConsoleScene ref={this.consoleRef} />
-      }
     } else {
       this.state.routes = [
-        { key: 'editor', title: 'Code' },
-        { key: 'console', title: 'Console' }
+        { key: 'editor', title: 'Code' }
       ]
       this.scenes = {
-        editor: () => <EditorScene id={id} path={path} />,
-        console: () => <ConsoleScene ref={this.consoleRef} />
+        editor: () => <EditorScene id={id} path={path} />
       }
-
-      this.logMessage('Sorry, but it turns out running won\'t work until June.', true)
     }
+
+    if (language === 'html') {
+      this.state.routes.push({ key: 'web', title: 'Web' })
+      this.scenes.web = () => <WebScene id={id} logMessage={this.logMessage} />
+    } else {
+      this.logMessage('Sorry, running repls isn\'t currently supported! We\'re working on it.', true)
+    }
+
+    this.state.routes.push({ key: 'console', title: 'Console' })
+    this.scenes.console = () => <ConsoleScene ref={this.consoleRef} />
   }
 
   logQueue = []

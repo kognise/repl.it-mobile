@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
 
-import { fetchInfo, fetchCanWrite } from '../../lib/network'
+import { fetchCanWrite } from '../../lib/network'
 
 import Theme from '../../components/Theme'
 import ActivityIndicator from '../../components/ActivityIndicator'
@@ -23,8 +23,7 @@ export default class extends Component {
 
   async componentDidMount() {
     const { replace, getParam } = this.props.navigation
-    const info = await fetchInfo(getParam('url'))
-    const canWrite = await fetchCanWrite(info.id)
+    const canWrite = await fetchCanWrite(getParam('url'))
     replace('Repl', {
       id: info.id,
       title: info.title,

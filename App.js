@@ -10,20 +10,20 @@ import SettingsContext from './components/wrappers/SettingsContext'
 
 import InitialScreen from './screens/Initial'
 
-import WelcomeScreen from './screens/Auth/Welcome'
-import LogInScreen from './screens/Auth/LogIn'
-import SignUpScreen from './screens/Auth/SignUp'
-import HelloScreen from './screens/Auth/Hello'
+import WelcomeScreen from './screens/auth/Welcome'
+import LogInScreen from './screens/auth/LogIn'
+import SignUpScreen from './screens/auth/SignUp'
+import HelloScreen from './screens/auth/Hello'
 
-import GoogleProviderScreen from './screens/Auth/Providers/Google'
-import GitHubProviderScreen from './screens/Auth/Providers/GitHub'
-import FacebookProviderScreen from './screens/Auth/Providers/Facebook'
+import GoogleProviderScreen from './screens/auth/providers/Google'
+import GitHubProviderScreen from './screens/auth/providers/GitHub'
+import FacebookProviderScreen from './screens/auth/providers/Facebook'
 
-import DashboardScreen from './screens/App/Dashboard'
-import SettingsScreen from './screens/App/Settings'
-import LoadReplScreen from './screens/App/LoadRepl'
-import ReplScreen from './screens/App/Repl'
-import FileScreen from './screens/App/File'
+import DashboardScreen from './screens/app/Dashboard'
+import SettingsScreen from './screens/app/Settings'
+import LoadReplScreen from './screens/app/LoadRepl'
+import ReplScreen from './screens/app/Repl'
+import FileScreen from './screens/app/File'
 
 const AuthNavigator = createStackNavigator(
   {

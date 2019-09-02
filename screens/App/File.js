@@ -7,10 +7,10 @@ import { WebView } from 'react-native-webview'
 import { Menu, Button, Text, withTheme } from 'react-native-paper'
 import { getUrls, readFile, isFileBinary, writeFile, deleteFile, getWebUrl } from '../../lib/network'
 
-import ActivityIndicator from '../../components/ActivityIndicator'
-import TabView from '../../components/TabView'
-import Editor from '../../components/Editor'
-import Theme from '../../components/Theme'
+import ActivityIndicator from '../../components/customized/ActivityIndicator'
+import TabView from '../../components/customized/TabView'
+import Editor from '../../components/webViews/Editor'
+import Theme from '../../components/wrappers/Theme'
 
 const imageExtensions = [ 'png', 'jpg', 'jpeg', 'bmp', 'gif' ]
 function isImage(file) {

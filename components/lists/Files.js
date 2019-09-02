@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { ScrollView, RefreshControl } from 'react-native'
 import { List } from 'react-native-paper'
 
-import moisten from '../lib/moisten'
-import { fetchFiles } from '../lib/network'
+import moisten from '../../lib/moisten'
+import { fetchFiles } from '../../lib/network'
 
 function renderFiles(files, onPress) {
   const children = []

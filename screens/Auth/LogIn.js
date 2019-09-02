@@ -5,8 +5,8 @@ import { Button, Text, withTheme } from 'react-native-paper'
 import { logIn } from '../../lib/network'
 import withSettings from '../../lib/withSettings'
 
-import FormInput from '../../components/FormInput'
-import Theme from '../../components/Theme'
+import FormInput from '../../components/customized/FormInput'
+import Theme from '../../components/wrappers/Theme'
 
 export default withSettings(withTheme(class extends Component {
   static navigationOptions = {

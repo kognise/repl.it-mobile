@@ -2,9 +2,9 @@ import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Title, Text, Button } from 'react-native-paper'
 
-import ImageButton from '../../components/ImageButton'
-import HorizontalList from '../../components/HorizontalList'
-import Theme from '../../components/Theme'
+import ImageButton from '../../components/customized/ImageButton'
+import HorizontalList from '../../components/lists/HorizontalList'
+import Theme from '../../components/wrappers/Theme'
 
 export default class extends Component {
   render() {

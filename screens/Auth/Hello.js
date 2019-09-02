@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Title, Text, Button } from 'react-native-paper'
 
-import Theme from '../../components/Theme'
+import Theme from '../../components/wrappers/Theme'
 
 export default class extends Component {
   static navigationOptions = {

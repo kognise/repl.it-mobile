@@ -4,8 +4,9 @@ import { SplashScreen } from 'expo'
 import * as Font from 'expo-font'
 import { DarkTheme, DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
-import CustomHeader from './components/CustomHeader'
-import SettingsContext from './components/SettingsContext'
+
+import CustomHeader from './components/customized/CustomHeader'
+import SettingsContext from './components/wrappers/SettingsContext'
 
 import InitialScreen from './screens/Initial'
 

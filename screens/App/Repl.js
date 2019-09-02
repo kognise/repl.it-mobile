@@ -6,9 +6,9 @@ import { NavigationEvents } from 'react-navigation'
 import { navigateSame } from '../../lib/navigation'
 import { deleteRepl, forkRepl } from '../../lib/network'
 
-import NewFile from '../../components/NewFile'
-import Files from '../../components/Files'
-import Theme from '../../components/Theme'
+import NewFile from '../../components/dialogButtons/fabs/NewFile'
+import Files from '../../components/lists/Files'
+import Theme from '../../components/wrappers/Theme'
 
 export default class extends Component {
   static navigationOptions = ({ navigation }) => ({

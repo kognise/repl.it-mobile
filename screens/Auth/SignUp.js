@@ -3,9 +3,9 @@ import { KeyboardAvoidingView } from 'react-native'
 import { Button, Text, withTheme } from 'react-native-paper'
 import { signUp } from '../../lib/network'
 
-import ReCaptcha from '../../components/ReCaptcha'
-import FormInput from '../../components/FormInput'
-import Theme from '../../components/Theme'
+import ReCaptcha from '../../components/webViews/ReCaptcha'
+import FormInput from '../../components/customized/FormInput'
+import Theme from '../../components/wrappers/Theme'
 
 function waitForCaptcha(state) {
   return new Promise((resolve) => {

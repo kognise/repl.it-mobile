@@ -3,8 +3,8 @@ import { View } from 'react-native'
 
 import { fetchCanWrite } from '../../lib/network'
 
-import Theme from '../../components/Theme'
-import ActivityIndicator from '../../components/ActivityIndicator'
+import Theme from '../../components/wrappers/Theme'
+import ActivityIndicator from '../../components/customized/ActivityIndicator'
 
 export default class extends Component {
   render() {

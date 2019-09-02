@@ -25,46 +25,58 @@ import LoadReplScreen from './screens/App/LoadRepl'
 import ReplScreen from './screens/App/Repl'
 import FileScreen from './screens/App/File'
 
-const AuthNavigator = createStackNavigator({
-  Welcome: WelcomeScreen,
-  LogIn: LogInScreen,
-  SignUp: SignUpScreen,
-  Hello: HelloScreen,
+const AuthNavigator = createStackNavigator(
+  {
+    Welcome: WelcomeScreen,
+    LogIn: LogInScreen,
+    SignUp: SignUpScreen,
+    Hello: HelloScreen,
 
-  GoogleProvider: GoogleProviderScreen,
-  GitHubProvider: GitHubProviderScreen,
-  FacebookProvider: FacebookProviderScreen
-}, {
-  initialRouteName: 'Welcome',
-  defaultNavigationOptions: {
-    header: (props) => <CustomHeader {...props} />
-  }
-})
-
-const AppNavigator = createStackNavigator({
-  Dashboard: DashboardScreen,
-  Settings: SettingsScreen,
-  LoadRepl: LoadReplScreen,
-  Repl: ReplScreen,
-  File: FileScreen
-}, {
-  initialRouteName: 'Dashboard',
-  defaultNavigationOptions: {
-    header: (props) => <CustomHeader {...props} />
-  }
-})
-
-const Navigator = createSwitchNavigator({
-  Initial: createStackNavigator({
-    Initial: InitialScreen
-  }, {
+    GoogleProvider: GoogleProviderScreen,
+    GitHubProvider: GitHubProviderScreen,
+    FacebookProvider: FacebookProviderScreen
+  },
+  {
+    initialRouteName: 'Welcome',
     defaultNavigationOptions: {
       header: (props) => <CustomHeader {...props} />
     }
-  }),
-  Auth: AuthNavigator,
-  App: AppNavigator
-}, { initialRouteName: 'Initial' })
+  }
+)
+
+const AppNavigator = createStackNavigator(
+  {
+    Dashboard: DashboardScreen,
+    Settings: SettingsScreen,
+    LoadRepl: LoadReplScreen,
+    Repl: ReplScreen,
+    File: FileScreen
+  },
+  {
+    initialRouteName: 'Dashboard',
+    defaultNavigationOptions: {
+      header: (props) => <CustomHeader {...props} />
+    }
+  }
+)
+
+const Navigator = createSwitchNavigator(
+  {
+    Initial: createStackNavigator(
+      {
+        Initial: InitialScreen
+      },
+      {
+        defaultNavigationOptions: {
+          header: (props) => <CustomHeader {...props} />
+        }
+      }
+    ),
+    Auth: AuthNavigator,
+    App: AppNavigator
+  },
+  { initialRouteName: 'Initial' }
+)
 const App = createAppContainer(Navigator)
 
 const primary = '#e83d39'
@@ -80,10 +92,12 @@ const fonts = {
 
 const darkTheme = {
   ...DarkTheme,
-  roundness, fonts,
+  roundness,
+  fonts,
   colors: {
     ...DarkTheme.colors,
-    primary, accent,
+    primary,
+    accent,
     background: '#121212',
     surface: '#373737',
     appBar: '#1f1f1f'
@@ -91,10 +105,12 @@ const darkTheme = {
 }
 const lightTheme = {
   ...DefaultTheme,
-  roundness, fonts,
+  roundness,
+  fonts,
   colors: {
     ...DefaultTheme.colors,
-    primary, accent,
+    primary,
+    accent,
     appBar: primary
   }
 }
@@ -116,26 +132,29 @@ export default class extends Component {
   render() {
     return (
       <PaperProvider theme={this.state.theme}>
-        <StatusBar barStyle='light-content' />
-        <SettingsContext.Provider value={{
-          theme: this.state.theme.dark,
-          setTheme: this.setTheme,
-          softWrapping: this.state.softWrapping,
-          setSoftWrapping: this.setSoftWrapping,
-          softTabs: this.state.softTabs,
-          setSoftTabs: this.setSoftTabs,
-          indentSize: this.state.indentSize,
-          setIndentSize: this.setIndentSize
-        }}>
+        <StatusBar barStyle="light-content" />
+        <SettingsContext.Provider
+          value={{
+            theme: this.state.theme.dark,
+            setTheme: this.setTheme,
+            softWrapping: this.state.softWrapping,
+            setSoftWrapping: this.setSoftWrapping,
+            softTabs: this.state.softTabs,
+            setSoftTabs: this.setSoftTabs,
+            indentSize: this.state.indentSize,
+            setIndentSize: this.setIndentSize
+          }}
+        >
           {this.state.ready && <App />}
         </SettingsContext.Provider>
       </PaperProvider>
     )
   }
 
-  asyncSetState = (newState) => new Promise((resolve) => {
-    this.setState(newState, resolve)
-  })
+  asyncSetState = (newState) =>
+    new Promise((resolve) => {
+      this.setState(newState, resolve)
+    })
 
   setTheme = async (dark) => {
     await this.asyncSetState({
@@ -174,8 +193,8 @@ export default class extends Component {
     this.setIndentSize(indentSize || '2')
 
     await Font.loadAsync({
-      'Inconsolata': require('./assets/fonts/Inconsolata-Regular.ttf'),
-      'Montserrat': require('./assets/fonts/Montserrat-Regular.ttf'),
+      Inconsolata: require('./assets/fonts/Inconsolata-Regular.ttf'),
+      Montserrat: require('./assets/fonts/Montserrat-Regular.ttf'),
       'Montserrat Medium': require('./assets/fonts/Montserrat-Medium.ttf'),
       'Montserrat Light': require('./assets/fonts/Montserrat-Light.ttf'),
       'Montserrat Thin': require('./assets/fonts/Montserrat-Thin.ttf')

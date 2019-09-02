@@ -14,7 +14,7 @@ function renderFiles(files, onPress) {
         <List.Item
           title={name}
           key={name}
-          left={(props) => <List.Icon {...props} icon='insert-drive-file' />}
+          left={(props) => <List.Icon {...props} icon="insert-drive-file" />}
           onPress={() => onPress(file.path)}
         />
       )
@@ -23,7 +23,7 @@ function renderFiles(files, onPress) {
         <List.Accordion
           title={name}
           key={name}
-          left={(props) => <List.Icon {...props} icon='folder' />}
+          left={(props) => <List.Icon {...props} icon="folder" />}
         >
           {renderFiles(file.content, onPress)}
         </List.Accordion>
@@ -42,12 +42,7 @@ export default class extends Component {
   render() {
     return (
       <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.loading}
-            onRefresh={this.refresh}
-          />
-        }
+        refreshControl={<RefreshControl refreshing={this.state.loading} onRefresh={this.refresh} />}
         contentContainerStyle={{ minHeight: '100%' }}
       >
         {renderFiles(this.state.files, this.props.onPress)}
@@ -55,19 +50,21 @@ export default class extends Component {
     )
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     this.mounted = true
-
-    const flatFiles = await fetchFiles(this.props.url)
-    const files = moisten(flatFiles)
-    if (!this.mounted) return
-    
-    this.setState({ files, loading: false })
+    this.load()
   }
   componentWillUnmount() {
     this.mounted = false
   }
 
+  load = async () => {
+    const flatFiles = await fetchFiles(this.props.url)
+    const files = moisten(flatFiles)
+    if (!this.mounted) return
+
+    this.setState({ files, loading: false })
+  }
   refresh = async () => {
     this.setState({ loading: true })
 
@@ -79,7 +76,7 @@ export default class extends Component {
   }
   reload = async () => {
     this.setState({ files: {}, loading: true })
-    
+
     const flatFiles = await fetchFiles(this.props.url)
     const files = moisten(flatFiles)
     if (!this.mounted) return

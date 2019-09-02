@@ -9,8 +9,8 @@ export default class extends Component {
     return (
       <View style={{ opacity: 0 }}>
         <WebView
-          useWebKit={true}
-          originWhitelist={[ '*' ]}
+          useWebKit
+          originWhitelist={['*']}
           source={{ html: reCaptchaCode, baseUrl: 'https://repl.it/' }}
           onMessage={this.onReady}
         />

@@ -15,29 +15,31 @@ export default class extends Component {
     const root = !navigation.getParam('name')
     return {
       title: navigation.getParam('name', 'Your Repls'),
-      menu: (closeMenu) => (<>
-        <NewFolder
-          closeMenu={closeMenu}
-          id={navigation.getParam('folderId')}
-          navigation={navigation}
-        />
-        {navigation.getParam('name') !== 'Unnamed' && !root ? (
-          <DeleteFolder
+      menu: (closeMenu) => (
+        <>
+          <NewFolder
             closeMenu={closeMenu}
             id={navigation.getParam('folderId')}
             navigation={navigation}
           />
-        ) : null}
-        {root ? (
-          <Menu.Item
-            title='Settings'
-            onPress={() => {
-              closeMenu()
-              navigation.navigate('Settings')
-            }}
-          />
-        ) : null}
-      </>)
+          {navigation.getParam('name') !== 'Unnamed' && !root ? (
+            <DeleteFolder
+              closeMenu={closeMenu}
+              id={navigation.getParam('folderId')}
+              navigation={navigation}
+            />
+          ) : null}
+          {root ? (
+            <Menu.Item
+              title="Settings"
+              onPress={() => {
+                closeMenu()
+                navigation.navigate('Settings')
+              }}
+            />
+          ) : null}
+        </>
+      )
     }
   }
 
@@ -53,7 +55,7 @@ export default class extends Component {
       <Theme>
         <View style={{ padding: 10 }}>
           <Searchbar
-            placeholder='Search'
+            placeholder="Search"
             onChangeText={this.updateSearch}
             onSubmitEditing={this.performSearch}
             value={this.state.search}
@@ -62,11 +64,15 @@ export default class extends Component {
         <View style={{ flex: 1 }}>
           <Dashboard
             folderId={folderId}
-            onFolderPress={({ id, name }) => navigateSame(this.props.navigation, { folderId: id, reload: this.reload, name })}
-            onReplPress={({ id, title, url, language, canWrite }) => navigate('Repl', { id, title, url, language, canWrite, reload: this.reload })}
+            onFolderPress={({ id, name }) =>
+              navigateSame(this.props.navigation, { folderId: id, reload: this.reload, name })
+            }
+            onReplPress={({ id, title, url, language, canWrite }) =>
+              navigate('Repl', { id, title, url, language, canWrite, reload: this.reload })
+            }
             reload={this.reload}
             navigate={navigate}
-            ref={(dashboard) => this.dashboard = dashboard}
+            ref={(dashboard) => (this.dashboard = dashboard)}
           />
           <NewRepl folderId={folderId} reload={this.reload} navigate={navigate} />
         </View>
@@ -83,6 +89,6 @@ export default class extends Component {
       if (search === '') this.performSearch()
     })
   }
-  performSearch = async () => this.dashboard && await this.dashboard.search(this.state.search)
-  reload = async () => this.dashboard && await this.dashboard.reload()
+  performSearch = async () => this.dashboard && (await this.dashboard.search(this.state.search))
+  reload = async () => this.dashboard && (await this.dashboard.reload())
 }

@@ -16,7 +16,7 @@ export default class extends Component {
     menu: (closeMenu) => (
       <>
         <Menu.Item
-          title='Copy link'
+          title="Copy link"
           onPress={() => {
             closeMenu()
             const url = navigation.getParam('url')
@@ -27,7 +27,7 @@ export default class extends Component {
           }}
         />
         <Menu.Item
-          title='Fork'
+          title="Fork"
           onPress={async () => {
             closeMenu()
 
@@ -46,19 +46,21 @@ export default class extends Component {
             })
           }}
         />
-        {navigation.getParam('canWrite') ? <Menu.Item
-          title='Delete'
-          onPress={async () => {
-            closeMenu()
+        {navigation.getParam('canWrite') ? (
+          <Menu.Item
+            title="Delete"
+            onPress={async () => {
+              closeMenu()
 
-            const id = navigation.getParam('id')
-            const reload = navigation.getParam('reload')
+              const id = navigation.getParam('id')
+              const reload = navigation.getParam('reload')
 
-            await deleteRepl(id)
-            reload()
-            navigation.goBack()
-          }}
-        /> : null}
+              await deleteRepl(id)
+              reload()
+              navigation.goBack()
+            }}
+          />
+        ) : null}
       </>
     )
   })
@@ -74,8 +76,10 @@ export default class extends Component {
         <View style={{ flex: 1 }}>
           <Files
             url={url}
-            onPress={(path) => navigate('File', { id, path, language, canWrite, reload: this.reload })}
-            ref={(files) => this.files = files}
+            onPress={(path) =>
+              navigate('File', { id, path, language, canWrite, reload: this.reload })
+            }
+            ref={(files) => (this.files = files)}
           />
           <NewFile id={id} reload={this.reload} navigate={navigate} />
           <NavigationEvents onDidFocus={this.didFocus} />
@@ -83,5 +87,5 @@ export default class extends Component {
       </Theme>
     )
   }
-  reload = async () => this.files && await this.files.reload()
+  reload = async () => this.files && (await this.files.reload())
 }

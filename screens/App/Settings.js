@@ -20,16 +20,11 @@ export default class extends Component {
               <List.Section>
                 <List.Subheader>General</List.Subheader>
                 <List.Item
-                  title='Dark theme'
-                  right={() => (
-                    <Switch
-                      value={context.theme}
-                      onValueChange={context.setTheme}
-                    />
-                  )}
+                  title="Dark theme"
+                  right={() => <Switch value={context.theme} onValueChange={context.setTheme} />}
                 />
                 <Button
-                  mode='outlined'
+                  mode="outlined"
                   style={{ margin: 16, marginTop: 8 }}
                   onPress={this.doLogOut}
                 >
@@ -41,25 +36,19 @@ export default class extends Component {
               <List.Section>
                 <List.Subheader>Editor</List.Subheader>
                 <List.Item
-                  title='Soft wrapping'
+                  title="Soft wrapping"
                   right={() => (
-                    <Switch
-                      value={context.softWrapping}
-                      onValueChange={context.setSoftWrapping}
-                    />
+                    <Switch value={context.softWrapping} onValueChange={context.setSoftWrapping} />
                   )}
                 />
                 <List.Item
-                  title='Indent with spaces'
+                  title="Indent with spaces"
                   right={() => (
-                    <Switch
-                      value={context.softTabs}
-                      onValueChange={context.setSoftTabs}
-                    />
+                    <Switch value={context.softTabs} onValueChange={context.setSoftTabs} />
                   )}
                 />
                 <List.Item
-                  title='Indent size'
+                  title="Indent size"
                   right={() => (
                     <TextInput
                       value={context.indentSize}
@@ -67,8 +56,8 @@ export default class extends Component {
                       render={(props) => (
                         <RNTextInput
                           {...props}
-                          style={[ ...props.style, { textAlign: 'center' } ]}
-                          keyboardType='number-pad'
+                          style={[...props.style, { textAlign: 'center' }]}
+                          keyboardType="number-pad"
                           maxLength={2}
                         />
                       )}

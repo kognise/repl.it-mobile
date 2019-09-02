@@ -11,7 +11,7 @@ export default class extends Component {
           marginBottom: this.props.hasNext ? 10 : 20,
           backgroundColor: this.props.background
         }}
-        mode='outlined'
+        mode="outlined"
         render={(props) => (
           <RNTextInput
             {...props}
@@ -19,15 +19,15 @@ export default class extends Component {
             returnKeyType={this.props.hasNext ? 'next' : 'done'}
             blurOnSubmit={false}
             onSubmitEditing={this.props.onSubmit}
-            autoCapitalize='none'
+            autoCapitalize="none"
             autoCorrect={false}
-            enablesReturnKeyAutomatically={true}
+            enablesReturnKeyAutomatically
           />
         )}
         value={this.props.value}
         onChangeText={this.props.onChangeText}
         disabled={this.props.disabled}
-        ref={(input) => this.input = input}
+        ref={(input) => (this.input = input)}
       />
     )
   }

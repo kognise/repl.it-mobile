@@ -18,12 +18,7 @@ export default class extends PureComponent {
         scrollEventThrottle={16}
         onScroll={this.onScroll}
         onMomentumScrollEnd={this.onScroll}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.loading}
-            onRefresh={this.refresh}
-          />
-        }
+        refreshControl={<RefreshControl refreshing={this.state.loading} onRefresh={this.refresh} />}
         contentContainerStyle={{ minHeight: '100%' }}
       >
         {this.state.folders.map((folder) => (
@@ -31,7 +26,7 @@ export default class extends PureComponent {
             title={folder.name}
             key={folder.id}
             onPress={() => this.props.onFolderPress(folder)}
-            left={(props) => <List.Icon {...props} icon='folder' />}
+            left={(props) => <List.Icon {...props} icon="folder" />}
           />
         ))}
         {this.state.repls.map((repl) => (
@@ -40,16 +35,22 @@ export default class extends PureComponent {
             description={`A ${repl.language} repl`}
             key={repl.id}
             onPress={() => this.props.onReplPress(repl)}
-            left={(props) => <List.Icon {...props} icon='insert-drive-file' />}
+            left={(props) => <List.Icon {...props} icon="insert-drive-file" />}
           />
         ))}
       </ScrollView>
     )
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     this.mounted = true
+    this.load()
+  }
+  componentWillUnmount() {
+    this.mounted = false
+  }
 
+  load = async () => {
     const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId, this.state.search)
     const folders = await fetchFolders(this.props.folderId)
     this.pageInfo = pageInfo
@@ -61,10 +62,6 @@ export default class extends PureComponent {
       folders
     })
   }
-  componentWillUnmount() {
-    this.mounted = false
-  }
-
   refresh = async () => {
     this.setState({ loading: true })
 
@@ -85,7 +82,7 @@ export default class extends PureComponent {
       folders: [],
       loading: true
     })
-    
+
     const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId, this.state.search)
     const folders = await fetchFolders(this.props.folderId)
     this.pageInfo = pageInfo
@@ -104,7 +101,7 @@ export default class extends PureComponent {
       loading: true,
       search
     })
-    
+
     const { items, pageInfo } = await fetchRepls(undefined, this.props.folderId, search)
     this.pageInfo = pageInfo
     if (!this.mounted) return
@@ -127,7 +124,11 @@ export default class extends PureComponent {
     if (!this.pageInfo.hasNextPage) return
 
     this.setState({ loading: true })
-    const { items, pageInfo } = await fetchRepls(this.pageInfo.nextCursor, this.props.folderId, this.state.search)
+    const { items, pageInfo } = await fetchRepls(
+      this.pageInfo.nextCursor,
+      this.props.folderId,
+      this.state.search
+    )
     if (!this.mounted) return
     this.pageInfo = pageInfo
 

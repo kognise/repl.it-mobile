@@ -9,11 +9,13 @@ export default class extends Component {
   render() {
     return (
       <Theme>
-        <View style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
           <ActivityIndicator />
         </View>
       </Theme>

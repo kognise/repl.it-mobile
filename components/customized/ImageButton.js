@@ -9,12 +9,6 @@ const images = {
 
 export default class extends Component {
   render() {
-    return (
-      <IconButton
-        icon={images[this.props.image]}
-        size={26}
-        onPress={this.props.onPress}
-      />
-    )
+    return <IconButton icon={images[this.props.image]} size={26} onPress={this.props.onPress} />
   }
 }

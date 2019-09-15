@@ -11,6 +11,7 @@
   "dependencies": {
     "@zeit/fetch-retry": "^4.0.0",
     "expo": "^34.0.1",
+    "expo-asset-utils": "^1.2.0",
     "expo-font": "~6.0.1",
     "expo-web-browser": "~6.0.0",
     "fuse.js": "^3.4.4",

@@ -1,14 +1,19 @@
 import React, { PureComponent } from 'react'
 import { View } from 'react-native'
 import { WebView } from 'react-native-webview'
+import AssetUtils from 'expo-asset-utils'
 
-import editorCode from '../../lib/editor'
+import editorCode from '../../html/editor.html'
 import withSettings from '../../lib/withSettings'
-
-import Theme from '../../components/wrappers/Theme'
+import Theme from '../wrappers/Theme'
 
 export default withSettings(
   class extends PureComponent {
+    loaded = false
+    state = {
+      source: null
+    }
+
     render() {
       return (
         <View
@@ -18,20 +23,42 @@ export default withSettings(
           }}
         >
           <Theme>
-            <WebView
-              useWebKit
-              originWhitelist={['*']}
-              source={{ html: editorCode }}
-              ref={(webView) => (this.webView = webView)}
-              onMessage={this.onMessage}
-            />
+            {this.state.source ? (
+              <WebView
+                useWebKit
+                originWhitelist={['*']}
+                source={{ html: this.state.source }}
+                ref={(webView) => (this.webView = webView)}
+                onMessage={this.onMessage}
+              />
+            ) : null}
           </Theme>
         </View>
       )
     }
 
+    componentDidMount() {
+      this.loadHtml()
+    }
+
+    async loadHtml() {
+      const { uri } = await AssetUtils.resolveAsync(editorCode)
+      const res = await fetch(uri)
+      const html = await res.text()
+      this.setState({ source: html })
+    }
+
     componentDidUpdate() {
-      if (this.props.code !== undefined && this.props.path !== undefined && this.webView) {
+      this.updateWebView()
+    }
+
+    updateWebView() {
+      if (
+        this.loaded &&
+        this.props.code !== undefined &&
+        this.props.path !== undefined &&
+        this.webView
+      ) {
         this.webView.postMessage(
           JSON.stringify({
             code: this.props.code,
@@ -47,8 +74,13 @@ export default withSettings(
     }
 
     onMessage = (event) => {
-      const code = event.nativeEvent.data
-      this.props.onChange && this.props.onChange(code)
+      const json = JSON.parse(event.nativeEvent.data)
+      if (json.type === 'load') {
+        this.loaded = true
+        this.updateWebView()
+      } else if (json.type === 'update') {
+        this.props.onChange && this.props.onChange(json.data)
+      }
     }
   }
 )

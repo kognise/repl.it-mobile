@@ -33,7 +33,8 @@ Some files and directories are excluded due to boringness.
   - `lists/` - Lists of items
   - `webViews/` - Components that are primarily `WebView`s
   - `wrappers/` - Components meant to be used as wrappers
-- `lib/` - Library and utility functions and JavaScript constants
+- `lib/` - Library and utility functions
+- `html/` - Static HTML files for `WebView`s
 - *`node_modules/`  - The black hole that keeps everything running*
 - `screens/` - App screens
   - `app/` - Main app interface screens

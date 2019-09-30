@@ -4,6 +4,8 @@ A mobile client for the online coding platform and community [Repl.it](https://r
 
 If you want to try it out, I will sometimes be hosting a "tunnel." If you want to access this, download the [Expo mobile app](https://expo.io/tools#client) and open [mobile.repl.co](https://mobile.repl.co/) on your phone.
 
+If you're on Android and want to test out a more stable build, you can download that [here](https://mobile.repl.co/download.html).
+
 ## Motivation
 
 Repl.it is amazing but the site isn't very mobile friendly. This app's development will enable programmers to edit code on the go, and empower students who only have access to tablets or phones to learn how to program.

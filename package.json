@@ -30,6 +30,7 @@
     "babel-preset-expo": "^5.0.0",
     "eslint": "^6.3.0",
     "eslint-config-universe": "^1.0.7",
+    "eslint-plugin-react-hooks": "^2.1.2",
     "prettier": "^1.18.2"
   },
   "private": true

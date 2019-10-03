@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { StatusBar, AsyncStorage } from 'react-native'
 import { SplashScreen } from 'expo'
 import * as Font from 'expo-font'
@@ -115,91 +115,71 @@ const lightTheme = {
   }
 }
 
-export default class extends Component {
-  state = {
-    theme: lightTheme,
-    softWrapping: false,
-    softTabs: true,
-    indentSize: '2',
-    ready: false
-  }
+export default () => {
+  const [dark, setDark] = useState(false)
+  const theme = useMemo(() => (dark ? darkTheme : lightTheme), [dark])
+  const [softWrapping, setSoftWrapping] = useState(false)
+  const [softTabs, setSoftTabs] = useState(true)
+  const [indentSize, setIndentSize] = useState(2)
+  const [ready, setReady] = useState(false)
 
-  constructor(props) {
-    super(props)
-    SplashScreen.preventAutoHide()
-  }
+  useEffect(() => AsyncStorage.setItem('@dark', dark ? 'glory' : '') && undefined, [dark])
+  useEffect(() => AsyncStorage.setItem('@wrapping', softWrapping ? 'soft' : 'hard') && undefined, [
+    softWrapping
+  ])
+  useEffect(() => AsyncStorage.setItem('@tabs', softTabs ? 'soft' : 'hard') && undefined, [
+    softTabs
+  ])
+  useEffect(() => AsyncStorage.setItem('@indent', (indentSize || 2).toString()) && undefined, [
+    indentSize
+  ])
 
-  render() {
-    return (
-      <PaperProvider theme={this.state.theme}>
-        <StatusBar barStyle="light-content" />
-        <SettingsContext.Provider
-          value={{
-            theme: this.state.theme.dark,
-            setTheme: this.setTheme,
-            softWrapping: this.state.softWrapping,
-            setSoftWrapping: this.setSoftWrapping,
-            softTabs: this.state.softTabs,
-            setSoftTabs: this.setSoftTabs,
-            indentSize: this.state.indentSize,
-            setIndentSize: this.setIndentSize
-          }}
-        >
-          {this.state.ready && <App />}
-        </SettingsContext.Provider>
-      </PaperProvider>
-    )
-  }
+  useEffect(() => {
+    ;(async () => {
+      SplashScreen.preventAutoHide()
 
-  asyncSetState = (newState) =>
-    new Promise((resolve) => {
-      this.setState(newState, resolve)
-    })
+      const loadedDark = await AsyncStorage.getItem('@dark')
+      setDark(loadedDark === 'glory')
 
-  setTheme = async (dark) => {
-    await this.asyncSetState({
-      theme: dark ? darkTheme : lightTheme
-    })
-    await AsyncStorage.setItem('@dark', dark ? 'glory' : '')
-  }
+      const loadedSoftWrapping = await AsyncStorage.getItem('@wrapping')
+      setSoftWrapping(loadedSoftWrapping === 'soft')
 
-  setSoftWrapping = async (softWrapping) => {
-    await this.asyncSetState({ softWrapping })
-    await AsyncStorage.setItem('@wrapping', softWrapping ? 'soft' : 'hard')
-  }
+      const loadedSoftTabs = await AsyncStorage.getItem('@tabs')
+      setSoftTabs(loadedSoftTabs !== 'hard')
 
-  setSoftTabs = async (softTabs) => {
-    await this.asyncSetState({ softTabs })
-    await AsyncStorage.setItem('@tabs', softTabs ? 'soft' : 'hard')
-  }
+      const loadedIndentSize = await AsyncStorage.getItem('@indent')
+      setIndentSize(parseInt(loadedIndentSize, 10) || 2)
 
-  setIndentSize = async (indentSize) => {
-    if (!/^[0-9]+$/.test(indentSize)) return
-    await this.asyncSetState({ indentSize })
-    await AsyncStorage.setItem('@indent', indentSize)
-  }
+      await Font.loadAsync({
+        Inconsolata: require('./assets/fonts/Inconsolata-Regular.ttf'),
+        Montserrat: require('./assets/fonts/Montserrat-Regular.ttf'),
+        'Montserrat Medium': require('./assets/fonts/Montserrat-Medium.ttf'),
+        'Montserrat Light': require('./assets/fonts/Montserrat-Light.ttf'),
+        'Montserrat Thin': require('./assets/fonts/Montserrat-Thin.ttf')
+      })
 
-  async componentDidMount() {
-    const theme = await AsyncStorage.getItem('@dark')
-    this.setTheme(theme === 'glory')
+      setReady(true)
+      SplashScreen.hide()
+    })()
+  }, [])
 
-    const wrapping = await AsyncStorage.getItem('@wrapping')
-    this.setSoftWrapping(wrapping === 'soft')
-
-    const tabs = await AsyncStorage.getItem('@tabs')
-    this.setSoftTabs(tabs !== 'hard')
-
-    const indentSize = await AsyncStorage.getItem('@indent')
-    this.setIndentSize(indentSize || '2')
-
-    await Font.loadAsync({
-      Inconsolata: require('./assets/fonts/Inconsolata-Regular.ttf'),
-      Montserrat: require('./assets/fonts/Montserrat-Regular.ttf'),
-      'Montserrat Medium': require('./assets/fonts/Montserrat-Medium.ttf'),
-      'Montserrat Light': require('./assets/fonts/Montserrat-Light.ttf'),
-      'Montserrat Thin': require('./assets/fonts/Montserrat-Thin.ttf')
-    })
-    await this.asyncSetState({ ready: true })
-    SplashScreen.hide()
-  }
+  return (
+    <PaperProvider theme={theme}>
+      <StatusBar barStyle="light-content" />
+      <SettingsContext.Provider
+        value={{
+          dark,
+          setDark,
+          softWrapping,
+          setSoftWrapping,
+          softTabs,
+          setSoftTabs,
+          indentSize,
+          setIndentSize
+        }}
+      >
+        {ready && <App />}
+      </SettingsContext.Provider>
+    </PaperProvider>
+  )
 }

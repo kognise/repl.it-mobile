@@ -23,7 +23,8 @@
     "react-native-tab-view": "^2.2.0",
     "react-native-vector-icons": "^6.4.2",
     "react-native-webview": "~5.12.0",
-    "react-navigation": "^3.9.1"
+    "react-navigation": "^3.9.1",
+    "react-navigation-hooks": "^1.1.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",

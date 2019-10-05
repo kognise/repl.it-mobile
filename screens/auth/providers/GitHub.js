@@ -1,21 +1,19 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { View } from 'react-native'
 import { Text } from 'react-native-paper'
 
-export default class extends Component {
-  static navigationOptions = {
-    title: 'GitHub'
-  }
+import Theme from '../../../components/wrappers/Theme'
 
-  state = {
-    loading: false
-  }
+const Screen = () => (
+  <Theme>
+    <View>
+      <Text>Yeet! GitHub login isn't implemented yet :smirk:</Text>
+    </View>
+  </Theme>
+)
 
-  render() {
-    return (
-      <View>
-        <Text>Yeet! GitHub login isn't implemented yet :smirk:</Text>
-      </View>
-    )
-  }
+Screen.navigationOptions = {
+  title: 'GitHub Login'
 }
+
+export default Screen

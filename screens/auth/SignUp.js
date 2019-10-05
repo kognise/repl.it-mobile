@@ -1,16 +1,19 @@
-import React, { Component } from 'react'
+import React, { useState, useRef } from 'react'
 import { KeyboardAvoidingView } from 'react-native'
 import { Button, Text, withTheme } from 'react-native-paper'
+import { useNavigation } from 'react-navigation-hooks'
+
 import { signUp } from '../../lib/network'
+import useMounted from '../../lib/useMounted'
 
 import ReCaptcha from '../../components/webViews/ReCaptcha'
 import FormInput from '../../components/customized/FormInput'
 import Theme from '../../components/wrappers/Theme'
 
-function waitForCaptcha(state) {
+const waitFor = (thing) => {
   return new Promise((resolve) => {
     const interval = setInterval(() => {
-      if (state.captcha) {
+      if (thing) {
         clearInterval(interval)
         resolve()
       }
@@ -18,109 +21,90 @@ function waitForCaptcha(state) {
   })
 }
 
-export default withTheme(
-  class extends Component {
-    static navigationOptions = {
-      title: 'Sign Up'
-    }
+const Screen = (props) => {
+  const mounted = useMounted()
+  const { navigate } = useNavigation()
 
-    state = {
-      username: '',
-      email: '',
-      password: '',
-      error: null,
-      loading: false
-    }
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState()
+  const [loading, setLoading] = useState(false)
 
-    render() {
-      return (
-        <Theme>
-          <KeyboardAvoidingView
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              padding: 20
-            }}
-            behavior="padding"
-          >
-            {this.state.error && (
-              <Text style={{ color: this.props.theme.colors.error }}>{this.state.error}</Text>
-            )}
+  const captchaRef = useRef()
+  const emailRef = useRef()
+  const passwordRef = useRef()
 
-            <FormInput
-              label="Username"
-              value={this.state.username}
-              onChangeText={this.updateUsername}
-              onSubmit={this.focusEmail}
-              disabled={this.state.loading}
-              hasNext
-            />
-            <FormInput
-              label="Email"
-              value={this.state.email}
-              onChangeText={this.updateEmail}
-              ref={(input) => (this.emailInput = input)}
-              disabled={this.state.loading}
-              onSubmit={this.focusPassword}
-              hasNext
-            />
-            <FormInput
-              label="Password"
-              value={this.state.password}
-              onChangeText={this.updatePassword}
-              ref={(input) => (this.passwordInput = input)}
-              disabled={this.state.loading}
-              onSubmit={this.submit}
-              password
-            />
+  const submit = async () => {
+    setLoading(true)
+    try {
+      await waitFor(captchaRef.current)
+      await signUp(username, email, password, captchaRef.current)
+      if (!mounted) return
 
-            <Button
-              mode="contained"
-              onPress={this.submit}
-              disabled={this.state.loading}
-              loading={this.state.loading}
-            >
-              Sign up
-            </Button>
-            <ReCaptcha onExecute={this.updateCaptcha} />
-          </KeyboardAvoidingView>
-        </Theme>
-      )
-    }
-
-    focusEmail = () => this.emailInput && this.emailInput.focus()
-    focusPassword = () => this.passwordInput && this.passwordInput.focus()
-    submit = async () => {
-      this.setState({ loading: true })
-      try {
-        await waitForCaptcha(this)
-        await signUp(this.state.username, this.state.email, this.state.password, this.captcha)
-        if (!this.mounted) return
-
-        const username = this.state.username
-        this.setState({
-          username: '',
-          email: '',
-          password: '',
-          error: null,
-          loading: false
-        })
-        this.props.navigation.navigate('Hello', { username })
-      } catch (error) {
-        if (!this.mounted) return
-        this.setState({ loading: false, error: error.message })
-      }
-    }
-    updateCaptcha = (captcha) => (this.captcha = captcha)
-    updateUsername = (username) => this.setState({ username })
-    updateEmail = (email) => this.setState({ email })
-    updatePassword = (password) => this.setState({ password })
-
-    componentDidMount() {
-      this.mounted = true
-    }
-    componentWillUnmount() {
-      this.mounted = false
+      setUsername('')
+      setEmail('')
+      setPassword('')
+      setError(undefined)
+      setLoading(false)
+      navigate('Hello', { username })
+    } catch (error) {
+      if (!mounted) return
+      setLoading(false)
+      setError(error.message)
     }
   }
-)
+
+  return (
+    <Theme>
+      <KeyboardAvoidingView
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          padding: 20
+        }}
+        behavior="padding"
+      >
+        {error && <Text style={{ color: props.theme.colors.error }}>{error}</Text>}
+
+        <FormInput
+          label="Username"
+          value={username}
+          onChangeText={setUsername}
+          onSubmit={() => emailRef.current.focus()}
+          disabled={loading}
+          hasNext
+        />
+        <FormInput
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          ref={emailRef}
+          disabled={loading}
+          onSubmit={() => passwordRef.current.focus()}
+          hasNext
+        />
+        <FormInput
+          label="Password"
+          value={password}
+          onChangeText={setPassword}
+          ref={passwordRef}
+          disabled={loading}
+          onSubmit={submit}
+          password
+        />
+
+        <Button mode="contained" onPress={submit} disabled={loading} loading={loading}>
+          Sign up
+        </Button>
+        <ReCaptcha onExecute={(captcha) => (captchaRef.current = captcha)} />
+      </KeyboardAvoidingView>
+    </Theme>
+  )
+}
+
+Screen.navigationOptions = {
+  title: 'Sign Up'
+}
+
+export default withTheme(Screen)

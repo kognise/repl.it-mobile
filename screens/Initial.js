@@ -1,29 +1,44 @@
-import React, { Component } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { View } from 'react-native'
-import { isLoggedIn } from '../lib/network'
+import { useNavigation } from 'react-navigation-hooks'
 
+import { isLoggedIn } from '../lib/network'
 import ActivityIndicator from '../components/customized/ActivityIndicator'
+import SettingsContext from '../components/wrappers/SettingsContext'
 import Theme from '../components/wrappers/Theme'
 
-export default class extends Component {
-  render() {
-    return (
-      <Theme>
-        <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <ActivityIndicator />
-        </View>
-      </Theme>
-    )
-  }
+export default () => {
+  const settings = useContext(SettingsContext)
+  const { navigate } = useNavigation()
 
-  async componentDidMount() {
-    const loggedIn = await isLoggedIn()
-    this.props.navigation.navigate(loggedIn ? 'App' : 'Auth')
-  }
+  useEffect(() => {
+    ;(async () => {
+      const { success, editor_preferences } = await isLoggedIn()
+
+      if (success) {
+        const { theme, indentIsSpaces, indentSize, wrapping } = editor_preferences
+
+        settings.setTheme(theme)
+        settings.setSoftTabs(indentIsSpaces)
+        settings.setIndentSize(indentSize.toString())
+        settings.setSoftWrapping(wrapping)
+
+        navigate('App')
+      } else navigate('Auth')
+    })()
+  })
+
+  return (
+    <Theme>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <ActivityIndicator />
+      </View>
+    </Theme>
+  )
 }

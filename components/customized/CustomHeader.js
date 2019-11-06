@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Platform } from 'react-native'
 import { Appbar, Menu, withTheme } from 'react-native-paper'
+
 import { goBack } from '../../lib/navigation'
 
 export default withTheme(

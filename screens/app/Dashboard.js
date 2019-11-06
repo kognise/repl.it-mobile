@@ -3,7 +3,6 @@ import { View } from 'react-native'
 import { Menu, Searchbar } from 'react-native-paper'
 
 import { navigateSame } from '../../lib/navigation'
-
 import NewRepl from '../../components/dialogButtons/fabs/NewRepl'
 import NewFolder from '../../components/dialogButtons/menuItems/NewFolder'
 import DeleteFolder from '../../components/dialogButtons/menuItems/DeleteFolder'

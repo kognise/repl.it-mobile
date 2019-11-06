@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { View } from 'react-native'
 
 import { fetchInfo } from '../../lib/network'
-
 import Theme from '../../components/wrappers/Theme'
 import ActivityIndicator from '../../components/customized/ActivityIndicator'
 

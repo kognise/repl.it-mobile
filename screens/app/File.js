@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import * as WebBrowser from 'expo-web-browser'
-
 import { View, ScrollView, RefreshControl, Image } from 'react-native'
 import { WebView } from 'react-native-webview'
 import { Menu, Button, Text, withTheme } from 'react-native-paper'
+
 import consoleBridge from '../../lib/consoleBridge'
 import {
   getUrls,
@@ -13,7 +13,6 @@ import {
   deleteFile,
   getWebUrl
 } from '../../lib/network'
-
 import ActivityIndicator from '../../components/customized/ActivityIndicator'
 import TabView from '../../components/customized/TabView'
 import Editor from '../../components/webViews/Editor'

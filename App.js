@@ -7,18 +7,14 @@ import { createStackNavigator, createSwitchNavigator, createAppContainer } from 
 
 import CustomHeader from './components/customized/CustomHeader'
 import SettingsContext from './components/wrappers/SettingsContext'
-
 import InitialScreen from './screens/Initial'
-
 import WelcomeScreen from './screens/auth/Welcome'
 import LogInScreen from './screens/auth/LogIn'
 import SignUpScreen from './screens/auth/SignUp'
 import HelloScreen from './screens/auth/Hello'
-
 import GoogleProviderScreen from './screens/auth/providers/Google'
 import GitHubProviderScreen from './screens/auth/providers/GitHub'
 import FacebookProviderScreen from './screens/auth/providers/Facebook'
-
 import DashboardScreen from './screens/app/Dashboard'
 import SettingsScreen from './screens/app/Settings'
 import LoadReplScreen from './screens/app/LoadRepl'
@@ -116,14 +112,13 @@ const lightTheme = {
 }
 
 export default () => {
-  const [dark, setDark] = useState(false)
-  const theme = useMemo(() => (dark ? darkTheme : lightTheme), [dark])
+  const [theme, setTheme] = useState('replitDark')
   const [softWrapping, setSoftWrapping] = useState(false)
   const [softTabs, setSoftTabs] = useState(true)
   const [indentSize, setIndentSize] = useState(2)
   const [ready, setReady] = useState(false)
 
-  useEffect(() => AsyncStorage.setItem('@dark', dark ? 'glory' : '') && undefined, [dark])
+  useEffect(() => AsyncStorage.setItem('@theme', theme) && undefined, [theme])
   useEffect(() => AsyncStorage.setItem('@wrapping', softWrapping ? 'soft' : 'hard') && undefined, [
     softWrapping
   ])
@@ -138,8 +133,8 @@ export default () => {
     ;(async () => {
       SplashScreen.preventAutoHide()
 
-      const loadedDark = await AsyncStorage.getItem('@dark')
-      setDark(loadedDark === 'glory')
+      const loadedTheme = await AsyncStorage.getItem('@theme')
+      setTheme(loadedTheme)
 
       const loadedSoftWrapping = await AsyncStorage.getItem('@wrapping')
       setSoftWrapping(loadedSoftWrapping === 'soft')
@@ -164,12 +159,12 @@ export default () => {
   }, [])
 
   return (
-    <PaperProvider theme={theme}>
+    <PaperProvider theme={theme === 'replitDark' ? darkTheme : lightTheme}>
       <StatusBar barStyle="light-content" />
       <SettingsContext.Provider
         value={{
-          dark,
-          setDark,
+          theme,
+          setTheme,
           softWrapping,
           setSoftWrapping,
           softTabs,

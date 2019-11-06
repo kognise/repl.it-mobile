@@ -1,109 +1,91 @@
-import React, { Component } from 'react'
+import React, { useState, useRef, useContext } from 'react'
 import { KeyboardAvoidingView } from 'react-native'
 import { Button, Text, withTheme } from 'react-native-paper'
+import { useNavigation } from 'react-navigation-hooks'
 
 import { logIn } from '../../lib/network'
-import withSettings from '../../lib/withSettings'
-
+import useMounted from '../../lib/useMounted'
 import FormInput from '../../components/customized/FormInput'
 import Theme from '../../components/wrappers/Theme'
+import SettingsContext from '../../components/wrappers/SettingsContext'
 
-export default withSettings(
-  withTheme(
-    class extends Component {
-      static navigationOptions = {
-        title: 'Log In'
-      }
+const Screen = (props) => {
+  const mounted = useMounted()
+  const settings = useContext(SettingsContext)
+  const { navigate } = useNavigation()
 
-      state = {
-        username: 'Xeborch',
-        password: 'xeborch',
-        error: null,
-        loading: false
-      }
+  const [username, setUsername] = useState('Xeborch')
+  const [password, setPassword] = useState('xeborch')
+  const [error, setError] = useState()
+  const [loading, setLoading] = useState(false)
 
-      render() {
-        return (
-          <Theme>
-            <KeyboardAvoidingView
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                padding: 20
-              }}
-              behavior="padding"
-            >
-              {this.state.error && (
-                <Text style={{ color: this.props.theme.colors.error }}>{this.state.error}</Text>
-              )}
+  const passwordRef = useRef()
 
-              <FormInput
-                label="Email or username"
-                value={this.state.username}
-                onChangeText={this.updateUsername}
-                onSubmit={this.focusPassword}
-                disabled={this.state.loading}
-                hasNext
-              />
-              <FormInput
-                label="Password"
-                value={this.state.password}
-                onChangeText={this.updatePassword}
-                ref={(input) => (this.passwordInput = input)}
-                disabled={this.state.loading}
-                onSubmit={this.submit}
-                password
-              />
+  const submit = async () => {
+    setLoading(true)
+    try {
+      const {
+        editor_preferences: { theme, indentIsSpaces, indentSize, wrapping }
+      } = await logIn(username, password)
+      if (!mounted) return
 
-              <Button
-                mode="contained"
-                onPress={this.submit}
-                disabled={this.state.loading}
-                loading={this.state.loading}
-              >
-                Log in
-              </Button>
-            </KeyboardAvoidingView>
-          </Theme>
-        )
-      }
+      settings.setTheme(theme)
+      settings.setSoftTabs(indentIsSpaces)
+      settings.setIndentSize(indentSize.toString())
+      settings.setSoftWrapping(wrapping)
 
-      focusPassword = () => this.passwordInput && this.passwordInput.focus()
-      submit = async (context) => {
-        this.setState({ loading: true })
-        try {
-          const {
-            username,
-            editor_preferences: { theme, indentIsSpaces, indentSize, wrapping }
-          } = await logIn(this.state.username, this.state.password)
-          if (!this.mounted) return
-          this.setState({
-            username: '',
-            password: '',
-            error: null,
-            loading: false
-          })
-
-          this.props.context.setTheme(theme === 'replitDark')
-          this.props.context.setSoftTabs(indentIsSpaces)
-          this.props.context.setIndentSize(indentSize.toString())
-          this.props.context.setSoftWrapping(wrapping)
-
-          this.props.navigation.navigate('Hello', { username })
-        } catch (error) {
-          if (!this.mounted) return
-          this.setState({ loading: false, error: error.message })
-        }
-      }
-      updateUsername = (username) => this.setState({ username })
-      updatePassword = (password) => this.setState({ password })
-
-      componentDidMount() {
-        this.mounted = true
-      }
-      componentWillUnmount() {
-        this.mounted = false
-      }
+      setUsername('')
+      setPassword('')
+      setError(undefined)
+      setLoading(false)
+      navigate('Hello', { username })
+    } catch (error) {
+      if (!mounted) return
+      setLoading(false)
+      setError(error.message)
     }
+  }
+
+  return (
+    <Theme>
+      <KeyboardAvoidingView
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          padding: 20
+        }}
+        behavior="padding"
+      >
+        {error && <Text style={{ color: props.theme.colors.error }}>{error}</Text>}
+
+        <FormInput
+          label="Email or username"
+          value={username}
+          onChangeText={setUsername}
+          onSubmit={() => passwordRef.current.focus()}
+          disabled={loading}
+          hasNext
+        />
+        <FormInput
+          label="Password"
+          value={password}
+          onChangeText={setPassword}
+          ref={passwordRef}
+          disabled={loading}
+          onSubmit={submit}
+          password
+        />
+
+        <Button mode="contained" onPress={submit} disabled={loading} loading={loading}>
+          Log in
+        </Button>
+      </KeyboardAvoidingView>
+    </Theme>
   )
-)
+}
+
+Screen.navigationOptions = {
+  title: 'Log In'
+}
+
+export default withTheme(Screen)

@@ -5,29 +5,26 @@ import { useNavigation } from 'react-navigation-hooks'
 
 import { signUp } from '../../lib/network'
 import useMounted from '../../lib/useMounted'
-
+import waitForRef from '../../lib/waitForRef'
 import ReCaptcha from '../../components/webViews/ReCaptcha'
 import FormInput from '../../components/customized/FormInput'
 import Theme from '../../components/wrappers/Theme'
 
-const waitFor = (thing) => {
-  return new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (thing) {
-        clearInterval(interval)
-        resolve()
-      }
-    }, 500)
-  })
-}
+const random =
+  Math.random()
+    .toString(36)
+    .substring(2, 8) +
+  Math.random()
+    .toString(36)
+    .substring(2, 8)
 
 const Screen = (props) => {
   const mounted = useMounted()
   const { navigate } = useNavigation()
 
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState(random)
+  const [email, setEmail] = useState(`${random}@gmail.com`)
+  const [password, setPassword] = useState([...random].join('1'))
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
 
@@ -38,7 +35,7 @@ const Screen = (props) => {
   const submit = async () => {
     setLoading(true)
     try {
-      await waitFor(captchaRef.current)
+      await waitForRef(captchaRef)
       await signUp(username, email, password, captchaRef.current)
       if (!mounted) return
 

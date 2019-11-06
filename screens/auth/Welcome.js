@@ -38,6 +38,16 @@ export default () => {
         >
           Just sign in or sign up and you'll be ready to start coding with Repl.it
         </Text>
+        <Text
+          style={{
+            fontSize: 14,
+            textAlign: 'center',
+            maxWidth: '84%',
+            marginBottom: 20
+          }}
+        >
+          I'm in the process of refactoring EVERYTHING, so don't @ me if everything breaks.
+        </Text>
 
         <HorizontalList style={{ marginBottom: 20 }}>
           <ImageButton image="google" onPress={() => navigate('GoogleProvider')} />

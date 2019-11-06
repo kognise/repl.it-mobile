@@ -11,7 +11,12 @@ module.exports = {
   },
   rules: {
     'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'warn'
+    'react-hooks/exhaustive-deps': 'warn',
+    'import/default': 'error',
+    'import/order': ['warn', {
+      groups: ['builtin', 'external', 'parent', 'sibling', 'index'],
+      'newlines-between': 'always'
+    }],
   },
-  plugins: [ 'react-hooks' ]
+  plugins: ['react-hooks', 'import']
 }

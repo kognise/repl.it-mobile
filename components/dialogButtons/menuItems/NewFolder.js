@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { Menu, Dialog, Portal, Button, withTheme } from 'react-native-paper'
 
 import { createFolder } from '../../../lib/network'
-import FormInput from '../../customized/FormInput'
-import ErrorMessage from '../../customized/ErrorMessage'
+import FormInput from '../../ui/FormInput'
+import ErrorMessage from '../../ui/ErrorMessage'
 
 export default withTheme(
   class extends Component {

@@ -3,7 +3,7 @@ import { View } from 'react-native'
 import { Title, Text, Button } from 'react-native-paper'
 import { useNavigation } from 'react-navigation-hooks'
 
-import ImageButton from '../../components/customized/ImageButton'
+import ImageButton from '../../components/ui/ImageButton'
 import HorizontalList from '../../components/lists/HorizontalList'
 import Theme from '../../components/wrappers/Theme'
 

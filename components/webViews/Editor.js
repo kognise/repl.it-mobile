@@ -6,7 +6,7 @@ import AssetUtils from 'expo-asset-utils'
 import editorCode from '../../html/editor.html'
 import withSettings from '../../lib/withSettings'
 import Theme from '../wrappers/Theme'
-import ActivityIndicator from '../customized/ActivityIndicator'
+import ActivityIndicator from '../ui/ActivityIndicator'
 
 export default withSettings(
   class extends PureComponent {
@@ -33,8 +33,8 @@ export default withSettings(
                 onMessage={this.onMessage}
               />
             ) : (
-              <ActivityIndicator />
-            )}
+                <ActivityIndicator />
+              )}
           </Theme>
         </View>
       )

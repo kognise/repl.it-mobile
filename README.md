@@ -28,7 +28,7 @@ Some files and directories are excluded due to boringness.
     - `app/` - Icons and splash screens
     - `logos/` - Other company logos
 - `components/` - React components
-  - `customized/` - Customized versions/wrappers of other components
+  - `ui/` - Custom UI elements/components
   - `dialogButtons/` - Self-contained buttons that trigger dialogs
     - `fabs/` - FAB-style buttons
     - `menuItems/` - Menu buttons

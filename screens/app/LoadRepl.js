@@ -3,7 +3,7 @@ import { View } from 'react-native'
 
 import { fetchInfo } from '../../lib/network'
 import Theme from '../../components/wrappers/Theme'
-import ActivityIndicator from '../../components/customized/ActivityIndicator'
+import ActivityIndicator from '../../components/ui/ActivityIndicator'
 
 export default class extends Component {
   render() {

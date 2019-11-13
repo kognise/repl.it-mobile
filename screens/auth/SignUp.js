@@ -7,9 +7,9 @@ import { signUp } from '../../lib/network'
 import useMounted from '../../lib/useMounted'
 import waitForRef from '../../lib/waitForRef'
 import ReCaptcha from '../../components/webViews/ReCaptcha'
-import FormInput from '../../components/customized/FormInput'
+import FormInput from '../../components/ui/FormInput'
 import Theme from '../../components/wrappers/Theme'
-import ErrorMessage from '../../components/customized/ErrorMessage'
+import ErrorMessage from '../../components/ui/ErrorMessage'
 
 const random =
   Math.random()

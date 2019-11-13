@@ -6,7 +6,7 @@ import { DarkTheme, DefaultTheme, Provider as PaperProvider } from 'react-native
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
 
 import { getUserInfo, updateEditorPreferences } from './lib/network'
-import CustomHeader from './components/customized/CustomHeader'
+import CustomHeader from './components/ui/CustomHeader'
 import SettingsContext from './components/wrappers/SettingsContext'
 import InitialScreen from './screens/Initial'
 import WelcomeScreen from './screens/auth/Welcome'
@@ -150,7 +150,7 @@ export default () => {
   }, [theme, softWrapping, softTabs, indentSize])
 
   useEffect(() => {
-    ; (async () => {
+    ;(async () => {
       SplashScreen.preventAutoHide()
 
       await Font.loadAsync({

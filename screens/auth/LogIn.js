@@ -5,8 +5,8 @@ import { useNavigation } from 'react-navigation-hooks'
 
 import { logIn } from '../../lib/network'
 import useMounted from '../../lib/useMounted'
-import FormInput from '../../components/customized/FormInput'
-import ErrorMessage from '../../components/customized/ErrorMessage'
+import FormInput from '../../components/ui/FormInput'
+import ErrorMessage from '../../components/ui/ErrorMessage'
 import Theme from '../../components/wrappers/Theme'
 import SettingsContext from '../../components/wrappers/SettingsContext'
 

@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from 'react'
 import { View } from 'react-native'
 import { useNavigation } from 'react-navigation-hooks'
 
-import ActivityIndicator from '../components/customized/ActivityIndicator'
+import ActivityIndicator from '../components/ui/ActivityIndicator'
 import SettingsContext from '../components/wrappers/SettingsContext'
 import Theme from '../components/wrappers/Theme'
 

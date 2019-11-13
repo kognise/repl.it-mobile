@@ -13,8 +13,8 @@ import {
   deleteFile,
   getWebUrl
 } from '../../lib/network'
-import ActivityIndicator from '../../components/customized/ActivityIndicator'
-import TabView from '../../components/customized/TabView'
+import ActivityIndicator from '../../components/ui/ActivityIndicator'
+import TabView from '../../components/ui/TabView'
 import Editor from '../../components/webViews/Editor'
 import Theme from '../../components/wrappers/Theme'
 
@@ -238,23 +238,23 @@ export default class extends Component {
     title: navigation.getParam('path', 'File'),
     menu: navigation.getParam('canWrite')
       ? (closeMenu) => (
-          <Menu.Item
-            title="Delete"
-            onPress={async () => {
-              closeMenu()
+        <Menu.Item
+          title="Delete"
+          onPress={async () => {
+            closeMenu()
 
-              const id = navigation.getParam('id')
-              const path = navigation.getParam('path')
-              const reload = navigation.getParam('reload')
+            const id = navigation.getParam('id')
+            const path = navigation.getParam('path')
+            const reload = navigation.getParam('reload')
 
-              const urls = await getUrls(id, path)
-              await deleteFile(urls)
+            const urls = await getUrls(id, path)
+            await deleteFile(urls)
 
-              reload()
-              navigation.goBack()
-            }}
-          />
-        )
+            reload()
+            navigation.goBack()
+          }}
+        />
+      )
       : null,
     hasAddon: true
   })

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Menu, Dialog, Portal, Text, Button } from 'react-native-paper'
 
 import { deleteFolder } from '../../../lib/network'
-import ErrorMessage from '../../customized/ErrorMessage'
+import ErrorMessage from '../../ui/ErrorMessage'
 
 export default class extends Component {
   state = {

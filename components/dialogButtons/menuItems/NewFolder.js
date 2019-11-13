@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Menu, Dialog, Portal, Text, Button, withTheme } from 'react-native-paper'
+import { Menu, Dialog, Portal, Button, withTheme } from 'react-native-paper'
 
 import { createFolder } from '../../../lib/network'
 import FormInput from '../../customized/FormInput'
+import ErrorMessage from '../../customized/ErrorMessage'
 
 export default withTheme(
   class extends Component {
@@ -23,16 +24,7 @@ export default withTheme(
               <Dialog.Title>New Folder</Dialog.Title>
 
               <Dialog.Content>
-                {this.state.error && (
-                  <Text
-                    style={{
-                      color: this.props.theme.colors.error,
-                      marginBottom: 10
-                    }}
-                  >
-                    {this.state.error}
-                  </Text>
-                )}
+                <ErrorMessage error={this.state.error} marginBottom={10} />
 
                 <FormInput
                   label="Name"

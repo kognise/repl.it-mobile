@@ -1,15 +1,16 @@
 import React, { useState, useRef, useContext } from 'react'
 import { KeyboardAvoidingView } from 'react-native'
-import { Button, Text, withTheme } from 'react-native-paper'
+import { Button } from 'react-native-paper'
 import { useNavigation } from 'react-navigation-hooks'
 
 import { logIn } from '../../lib/network'
 import useMounted from '../../lib/useMounted'
 import FormInput from '../../components/customized/FormInput'
+import ErrorMessage from '../../components/customized/ErrorMessage'
 import Theme from '../../components/wrappers/Theme'
 import SettingsContext from '../../components/wrappers/SettingsContext'
 
-const Screen = (props) => {
+const Screen = () => {
   const mounted = useMounted()
   const settings = useContext(SettingsContext)
   const { navigate } = useNavigation()
@@ -56,7 +57,7 @@ const Screen = (props) => {
         }}
         behavior="padding"
       >
-        {error && <Text style={{ color: props.theme.colors.error }}>{error}</Text>}
+        <ErrorMessage error={error} />
 
         <FormInput
           label="Email or username"
@@ -88,4 +89,4 @@ Screen.navigationOptions = {
   title: 'Log In'
 }
 
-export default withTheme(Screen)
+export default Screen

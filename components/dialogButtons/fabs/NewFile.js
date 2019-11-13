@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
-import { FAB, Dialog, Portal, Button, Text, withTheme } from 'react-native-paper'
+import { FAB, Dialog, Portal, Button, withTheme } from 'react-native-paper'
 
 import { getUrls, writeFile } from '../../../lib/network'
 import FormInput from '../../customized/FormInput'
+import ErrorMessage from '../../customized/ErrorMessage'
 
 export default withTheme(
   class extends Component {
@@ -33,9 +34,7 @@ export default withTheme(
               <Dialog.Title>New File</Dialog.Title>
 
               <Dialog.Content>
-                {this.state.error && (
-                  <Text style={{ color: this.props.theme.colors.error }}>{this.state.error}</Text>
-                )}
+                <ErrorMessage error={this.state.error} />
 
                 <FormInput
                   label="Name"

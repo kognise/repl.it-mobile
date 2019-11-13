@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { KeyboardAvoidingView } from 'react-native'
-import { Button, Text, withTheme } from 'react-native-paper'
+import { Button } from 'react-native-paper'
 import { useNavigation } from 'react-navigation-hooks'
 
 import { signUp } from '../../lib/network'
@@ -9,6 +9,7 @@ import waitForRef from '../../lib/waitForRef'
 import ReCaptcha from '../../components/webViews/ReCaptcha'
 import FormInput from '../../components/customized/FormInput'
 import Theme from '../../components/wrappers/Theme'
+import ErrorMessage from '../../components/customized/ErrorMessage'
 
 const random =
   Math.random()
@@ -18,7 +19,7 @@ const random =
     .toString(36)
     .substring(2, 8)
 
-const Screen = (props) => {
+const Screen = () => {
   const mounted = useMounted()
   const { navigate } = useNavigation()
 
@@ -62,7 +63,7 @@ const Screen = (props) => {
         }}
         behavior="padding"
       >
-        {error && <Text style={{ color: props.theme.colors.error }}>{error}</Text>}
+        <ErrorMessage error={error} />
 
         <FormInput
           label="Username"
@@ -104,4 +105,4 @@ Screen.navigationOptions = {
   title: 'Sign Up'
 }
 
-export default withTheme(Screen)
+export default Screen

@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react'
-import { StatusBar, AsyncStorage } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import { StatusBar } from 'react-native'
 import { SplashScreen } from 'expo'
 import * as Font from 'expo-font'
 import { DarkTheme, DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
 
+import { getUserInfo, updateEditorPreferences } from './lib/network'
 import CustomHeader from './components/customized/CustomHeader'
 import SettingsContext from './components/wrappers/SettingsContext'
 import InitialScreen from './screens/Initial'
@@ -111,39 +112,46 @@ const lightTheme = {
   }
 }
 
+const updateSettings = async (settings) => {
+  const { user: editor_preferences } = await getUserInfo()
+  await updateEditorPreferences({
+    ...editor_preferences,
+    theme: settings.theme,
+    wrapping: settings.softWrapping,
+    indentIsSpaces: settings.softTabs,
+    indentSize: settings.indentSize
+  })
+}
+
 export default () => {
   const [theme, setTheme] = useState('replitDark')
   const [softWrapping, setSoftWrapping] = useState(false)
   const [softTabs, setSoftTabs] = useState(true)
   const [indentSize, setIndentSize] = useState(2)
-  const [ready, setReady] = useState(false)
+  const [redirectRoute, setRedirectRoute] = useState(null)
 
-  useEffect(() => AsyncStorage.setItem('@theme', theme) && undefined, [theme])
-  useEffect(() => AsyncStorage.setItem('@wrapping', softWrapping ? 'soft' : 'hard') && undefined, [
-    softWrapping
-  ])
-  useEffect(() => AsyncStorage.setItem('@tabs', softTabs ? 'soft' : 'hard') && undefined, [
-    softTabs
-  ])
-  useEffect(() => AsyncStorage.setItem('@indent', (indentSize || 2).toString()) && undefined, [
-    indentSize
-  ])
+  const firstUpdate = useRef(true)
+  useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false
+      return
+    }
+
+    try {
+      updateSettings({
+        theme,
+        softWrapping,
+        softTabs,
+        indentSize
+      })
+    } catch (error) {
+      // Unhandled on purpose
+    }
+  }, [theme, softWrapping, softTabs, indentSize])
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       SplashScreen.preventAutoHide()
-
-      const loadedTheme = await AsyncStorage.getItem('@theme')
-      setTheme(loadedTheme)
-
-      const loadedSoftWrapping = await AsyncStorage.getItem('@wrapping')
-      setSoftWrapping(loadedSoftWrapping === 'soft')
-
-      const loadedSoftTabs = await AsyncStorage.getItem('@tabs')
-      setSoftTabs(loadedSoftTabs !== 'hard')
-
-      const loadedIndentSize = await AsyncStorage.getItem('@indent')
-      setIndentSize(parseInt(loadedIndentSize, 10) || 2)
 
       await Font.loadAsync({
         Inconsolata: require('./assets/fonts/Inconsolata-Regular.ttf'),
@@ -153,7 +161,21 @@ export default () => {
         'Montserrat Thin': require('./assets/fonts/Montserrat-Thin.ttf')
       })
 
-      setReady(true)
+      const { success, user } = await getUserInfo()
+
+      if (success) {
+        const {
+          editor_preferences: { theme, indentIsSpaces, indentSize, wrapping }
+        } = user
+
+        setTheme(theme)
+        setSoftTabs(indentIsSpaces)
+        setIndentSize(indentSize.toString())
+        setSoftWrapping(wrapping)
+
+        setRedirectRoute('App')
+      } else setRedirectRoute('Auth')
+
       SplashScreen.hide()
     })()
   }, [])
@@ -170,10 +192,15 @@ export default () => {
           softTabs,
           setSoftTabs,
           indentSize,
-          setIndentSize
+          setIndentSize,
+          redirectRoute,
+          updateSettings
         }}
       >
-        {ready && <App />}
+        {console.log(
+          `(${new Date().toLocaleTimeString()} rendering, redirectRoute=${redirectRoute}, theme=${theme})`
+        )}
+        {redirectRoute && <App />}
       </SettingsContext.Provider>
     </PaperProvider>
   )

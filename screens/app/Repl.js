@@ -31,10 +31,10 @@ export default class extends Component {
             closeMenu()
 
             const id = navigation.getParam('id')
-            const reload = navigation.getParam('reload')
+            const reloadPrevious = navigation.getParam('reloadPrevious')
 
             const newRepl = await forkRepl(id)
-            reload()
+            reloadPrevious()
             navigateSame(navigation, {
               ...navigation.state.params,
               id: newRepl.id,
@@ -52,10 +52,10 @@ export default class extends Component {
               closeMenu()
 
               const id = navigation.getParam('id')
-              const reload = navigation.getParam('reload')
+              const reloadPrevious = navigation.getParam('reloadPrevious')
 
               await deleteRepl(id)
-              reload()
+              reloadPrevious()
               navigation.goBack()
             }}
           />
@@ -76,15 +76,15 @@ export default class extends Component {
           <Files
             url={url}
             onPress={(path) =>
-              navigate('File', { id, path, language, canWrite, reload: this.reload })
+              navigate('File', { id, path, language, canWrite, reloadPrevious: this.reloadCurrent })
             }
             ref={(files) => (this.files = files)}
           />
-          <NewFile id={id} reload={this.reload} navigate={navigate} />
+          <NewFile id={id} reloadCurrent={this.reloadCurrent} navigate={navigate} />
           <NavigationEvents onDidFocus={this.didFocus} />
         </View>
       </Theme>
     )
   }
-  reload = async () => this.files && (await this.files.reload())
+  reloadCurrent = async () => this.files && (await this.files.reload())
 }

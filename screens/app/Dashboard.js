@@ -19,13 +19,14 @@ export default class extends Component {
           <NewFolder
             closeMenu={closeMenu}
             id={navigation.getParam('folderId')}
-            navigation={navigation}
+            reloadCurrent={() => navigation.getParam('reloadCurrent')()}
           />
           {navigation.getParam('name') !== 'Unnamed' && !root ? (
             <DeleteFolder
               closeMenu={closeMenu}
               id={navigation.getParam('folderId')}
-              navigation={navigation}
+              reloadPrevious={navigation.getParam('reloadPrevious')}
+              goBack={navigation.goBack}
             />
           ) : null}
           {root ? (
@@ -64,23 +65,32 @@ export default class extends Component {
           <Dashboard
             folderId={folderId}
             onFolderPress={({ id, name }) =>
-              navigateSame(this.props.navigation, { folderId: id, reload: this.reload, name })
+              navigateSame(this.props.navigation, {
+                folderId: id,
+                reloadPrevious: this.reloadCurrent,
+                name
+              })
             }
             onReplPress={({ id, title, url, language, canWrite }) =>
-              navigate('Repl', { id, title, url, language, canWrite, reload: this.reload })
+              navigate('Repl', {
+                id,
+                title,
+                url,
+                language,
+                canWrite,
+                reloadPrevious: this.reloadCurrent
+              })
             }
-            reload={this.reload}
-            navigate={navigate}
             ref={(dashboard) => (this.dashboard = dashboard)}
           />
-          <NewRepl folderId={folderId} reload={this.reload} navigate={navigate} />
+          <NewRepl folderId={folderId} reloadCurrent={this.reloadCurrent} navigate={navigate} />
         </View>
       </Theme>
     )
   }
 
   componentWillMount() {
-    this.props.navigation.setParams({ reloadThis: this.reload })
+    this.props.navigation.setParams({ reloadCurrent: this.reloadCurrent })
   }
 
   updateSearch = (search) => {
@@ -89,5 +99,5 @@ export default class extends Component {
     })
   }
   performSearch = async () => this.dashboard && (await this.dashboard.search(this.state.search))
-  reload = async () => this.dashboard && (await this.dashboard.reload())
+  reloadCurrent = async () => this.dashboard && (await this.dashboard.reload())
 }

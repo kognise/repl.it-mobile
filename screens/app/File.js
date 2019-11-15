@@ -238,23 +238,23 @@ export default class extends Component {
     title: navigation.getParam('path', 'File'),
     menu: navigation.getParam('canWrite')
       ? (closeMenu) => (
-        <Menu.Item
-          title="Delete"
-          onPress={async () => {
-            closeMenu()
+          <Menu.Item
+            title="Delete"
+            onPress={async () => {
+              closeMenu()
 
-            const id = navigation.getParam('id')
-            const path = navigation.getParam('path')
-            const reload = navigation.getParam('reload')
+              const id = navigation.getParam('id')
+              const path = navigation.getParam('path')
+              const reloadPrevious = navigation.getParam('reloadPrevious')
 
-            const urls = await getUrls(id, path)
-            await deleteFile(urls)
+              const urls = await getUrls(id, path)
+              await deleteFile(urls)
 
-            reload()
-            navigation.goBack()
-          }}
-        />
-      )
+              reloadPrevious()
+              navigation.goBack()
+            }}
+          />
+        )
       : null,
     hasAddon: true
   })

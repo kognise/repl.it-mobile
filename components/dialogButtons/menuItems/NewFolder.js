@@ -70,9 +70,7 @@ export default withTheme(
       try {
         await createFolder(this.state.name, this.props.id)
         if (!this.state.dialogOpen) return
-        const reload = this.props.navigation.getParam('reloadThis')
-
-        reload()
+        this.props.reloadCurrent()
         this.cancel()
       } catch (error) {
         if (!this.state.dialogOpen) return

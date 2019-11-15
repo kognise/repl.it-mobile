@@ -109,7 +109,7 @@ export default withTheme(
         const { id, title, url } = await createRepl(this.state.title, result, this.props.folderId)
         if (!this.state.dialogOpen) return
         this.cancel()
-        this.props.reload()
+        this.props.reloadCurrent()
         this.props.navigate('Repl', { id, title, url, language: result, canWrite: true })
       } catch (error) {
         if (!this.state.dialogOpen) return

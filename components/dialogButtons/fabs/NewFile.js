@@ -84,8 +84,8 @@ export default withTheme(
         if (!this.state.dialogOpen) return
 
         this.cancel()
-        this.props.reload()
-        this.props.navigate('File', { id, path: name })
+        this.props.reloadCurrent()
+        this.props.navigate('File', { id, path: name, canWrite: true })
       } catch (error) {
         if (!this.state.dialogOpen) return
         this.setState({

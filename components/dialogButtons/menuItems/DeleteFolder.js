@@ -62,10 +62,8 @@ export default class extends Component {
     try {
       await deleteFolder(this.props.id)
       if (!this.state.dialogOpen) return
-      const reload = this.props.navigation.getParam('reload')
-
-      reload()
-      this.props.navigation.goBack()
+      this.props.reloadPrevious()
+      this.props.goBack()
     } catch (error) {
       if (!this.state.dialogOpen) return
       this.setState({

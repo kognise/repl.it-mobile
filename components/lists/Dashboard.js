@@ -36,7 +36,7 @@ export default class extends PureComponent {
             description={`A ${repl.language} repl`}
             key={repl.id}
             onPress={() => this.props.onReplPress(repl)}
-            left={(props) => <List.Icon {...props} icon="insert-drive-file" />}
+            left={(props) => <List.Icon {...props} icon="file" />}
           />
         ))}
       </ScrollView>

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { Platform } from 'react-native'
 import { withTheme } from 'react-native-paper'
-import shadow from 'react-native-paper/src/styles/shadow'
+import shadow from 'react-native-paper/lib/module/styles/shadow'
+import overlay from 'react-native-paper/lib/module/styles/overlay'
 import { TabView, TabBar, SceneMap } from 'react-native-tab-view'
 
 export default withTheme(
@@ -12,14 +12,13 @@ export default withTheme(
           navigationState={this.props.state}
           renderScene={SceneMap(this.props.scenes)}
           onIndexChange={this.props.onIndexChange}
-          swipeEnabled={false}
           renderTabBar={(props) => (
             <TabBar
               {...props}
               indicatorStyle={{ backgroundColor: 'white' }}
               style={{
-                backgroundColor: this.props.theme.colors.appBar,
-                ...shadow(Platform.OS === 'ios' ? 4 : 0)
+                backgroundColor: overlay(4, this.props.theme.colors.surface),
+                ...shadow(4)
               }}
             />
           )}

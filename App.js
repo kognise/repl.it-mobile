@@ -2,7 +2,12 @@ import React, { useState, useEffect, useRef } from 'react'
 import { StatusBar } from 'react-native'
 import { SplashScreen } from 'expo'
 import * as Font from 'expo-font'
-import { DarkTheme, DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
+import {
+  configureFonts,
+  DarkTheme,
+  DefaultTheme,
+  Provider as PaperProvider
+} from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
 
 import { getUserInfo, updateEditorPreferences } from './lib/network'
@@ -80,12 +85,26 @@ const primary = '#e83d39'
 const accent = '#687d85'
 const roundness = 0
 
-const fonts = {
-  regular: 'Montserrat',
-  medium: 'Montserrat Medium',
-  light: 'Montserrat Light',
-  thin: 'Montserrat Thin'
-}
+const fonts = configureFonts({
+  default: {
+    regular: {
+      fontFamily: 'Montserrat',
+      fontWeight: 'normal'
+    },
+    medium: {
+      fontFamily: 'Montserrat Medium',
+      fontWeight: 'normal'
+    },
+    light: {
+      fontFamily: 'Montserrat Light',
+      fontWeight: 'normal'
+    },
+    thin: {
+      fontFamily: 'Montserrat Thin',
+      fontWeight: 'normal'
+    }
+  }
+})
 
 const darkTheme = {
   ...DarkTheme,
@@ -94,10 +113,7 @@ const darkTheme = {
   colors: {
     ...DarkTheme.colors,
     primary,
-    accent,
-    background: '#121212',
-    surface: '#373737',
-    appBar: '#1f1f1f'
+    accent
   }
 }
 const lightTheme = {
@@ -107,8 +123,7 @@ const lightTheme = {
   colors: {
     ...DefaultTheme.colors,
     primary,
-    accent,
-    appBar: primary
+    accent
   }
 }
 

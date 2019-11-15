@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Platform } from 'react-native'
 import { Appbar, Menu, withTheme } from 'react-native-paper'
+import overlay from 'react-native-paper/lib/module/styles/overlay'
 
 import { goBack } from '../../lib/navigation'
 
@@ -16,10 +17,14 @@ export default withTheme(
 
       return (
         <Appbar.Header
-          style={{
-            elevation: options.hasAddon ? 0 : 4,
-            backgroundColor: this.props.theme.colors.appBar
-          }}
+          style={
+            options.hasAddon
+              ? {
+                  elevation: 0,
+                  backgroundColor: overlay(4, this.props.theme.colors.surface)
+                }
+              : {}
+          }
         >
           {state.routes.length > 1 && <Appbar.BackAction onPress={this.goBack} />}
           <Appbar.Content title={options.title || 'Repl.it'} />
@@ -31,7 +36,7 @@ export default withTheme(
               anchor={
                 <Appbar.Action
                   onPress={this.openMenu}
-                  icon={Platform.OS === 'android' ? 'more-vert' : 'more-horiz'}
+                  icon={Platform.OS === 'android' ? 'dots-vertical' : 'dots-horizontal'}
                   color="#ffffff"
                 />
               }

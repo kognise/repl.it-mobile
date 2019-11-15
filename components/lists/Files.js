@@ -14,7 +14,7 @@ function renderFiles(files, onPress) {
         <List.Item
           title={name}
           key={name}
-          left={(props) => <List.Icon {...props} icon="insert-drive-file" />}
+          left={(props) => <List.Icon {...props} icon="file" />}
           onPress={() => onPress(file.path)}
         />
       )

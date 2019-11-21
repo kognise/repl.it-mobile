@@ -75,6 +75,7 @@ export default class extends Component {
         <View style={{ flex: 1 }}>
           <Files
             url={url}
+            id={id}
             onPress={(path) =>
               navigate('File', { id, path, language, canWrite, reloadPrevious: this.reloadCurrent })
             }

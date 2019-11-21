@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@replit/crosis": "^2.1.0",
+    "@replit/protocol": "^0.1.2",
     "@zeit/fetch-retry": "^4.0.0",
+    "events": "^3.0.0",
     "expo": "^34.0.1",
     "expo-asset-utils": "^1.2.0",
     "expo-font": "~6.0.1",
@@ -25,7 +27,8 @@
     "react-native-vector-icons": "^6.4.2",
     "react-native-webview": "~5.12.0",
     "react-navigation": "^3.9.1",
-    "react-navigation-hooks": "^1.1.0"
+    "react-navigation-hooks": "^1.1.0",
+    "url": "^0.11.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",

@@ -3,6 +3,7 @@
 A mobile client for the online coding platform and community [Repl.it](https://repl.it/). **This is a work in progress, [join the Discord server](https://discord.gg/sVxJJZA) if you're interested!**
 
 If you want to try it out, I will sometimes be hosting a "tunnel." If you want to access this, download the [Expo mobile app](https://expo.io/tools#client) and open [mobile.repl.co](https://mobile.repl.co/) on your phone.
+[![Run on Repl.it](https://repl.it/badge/github/kognise/repl.it-mobile)](https://repl.it/github/kognise/repl.it-mobile)
 
 If you're on Android and want to test out a more stable build, you can download that [here](https://mobile.repl.co/download.html).
 

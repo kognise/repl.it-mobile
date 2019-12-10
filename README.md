@@ -18,6 +18,10 @@ Repl.it is amazing but the site isn't very mobile friendly. This app's developme
 - Run `yarn dev` to start a development server
 - On your phone scan the QR code or enter in the address
 
+**Or, just click the button below!** Warning: this might be a little buggy.
+
+[![Run on Repl.it](https://repl.it/badge/github/kognise/repl.it-mobile)](https://repl.it/github/kognise/repl.it-mobile)
+
 ## File Structure
 
 Some files and directories are excluded due to boringness.

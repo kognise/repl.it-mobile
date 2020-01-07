@@ -7,11 +7,6 @@ import { logOut } from '../../lib/network'
 import SettingsContext from '../../components/wrappers/SettingsContext'
 import Theme from '../../components/wrappers/Theme'
 
-doLogOut = async () => {
-  await logOut()
-  this.props.navigation.navigate('Auth')
-}
-
 const Screen = () => {
   const settings = useContext(SettingsContext)
   const [tempIndentSize, setTempIndentSize] = useState(settings.indentSize.toString())
@@ -29,10 +24,6 @@ const Screen = () => {
   }, [tempIndentSize])
 
   const { navigate } = useNavigation()
-  const doLogOut = async () => {
-    await logOut()
-    navigate('Auth')
-  }
 
   return (
     <Theme>
@@ -48,7 +39,14 @@ const Screen = () => {
               />
             )}
           />
-          <Button mode="outlined" style={{ margin: 16, marginTop: 8 }} onPress={doLogOut}>
+          <Button
+            mode="outlined"
+            style={{ margin: 16, marginTop: 8 }}
+            onPress={async () => {
+              await logOut()
+              navigate('Auth')
+            }}
+          >
             Log out
           </Button>
         </List.Section>

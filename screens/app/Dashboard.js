@@ -8,6 +8,7 @@ import useMounted from '../../lib/useMounted'
 import { fetchRepls, fetchFolders } from '../../lib/network'
 import NewFolder from '../../components/dialogButtons/menuItems/NewFolder'
 import DeleteFolder from '../../components/dialogButtons/menuItems/DeleteFolder'
+import NewRepl from '../../components/dialogButtons/fabs/NewRepl'
 import Theme from '../../components/wrappers/Theme'
 
 const Screen = () => {
@@ -40,6 +41,7 @@ const Screen = () => {
     setLoading(false)
   }, [load, loading])
   useEffect(() => {
+    // So we can reload after creating folders in the menu
     setParams({ reloadCurrent })
   }, [reloadCurrent]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -113,28 +115,7 @@ const Screen = () => {
             />
           ))}
         </ScrollView>
-        {/* <Dashboard
-          folderId={folderId}
-          onFolderPress={({ id, name }) =>
-            navigateSame(this.props.navigation, {
-              folderId: id,
-              reloadPrevious: reloadCurrent,
-              name
-            })
-          }
-          onReplPress={({ id, title, url, language, canWrite }) =>
-            navigate('Repl', {
-              id,
-              title,
-              url,
-              language,
-              canWrite,
-              reloadPrevious: reloadCurrent
-            })
-          }
-          ref={dashboardRef}
-        />
-        <NewRepl folderId={folderId} reloadCurrent={this.reloadCurrent} navigate={navigate} /> */}
+        <NewRepl folderId={folderId} reloadCurrent={reloadCurrent} navigate={navigate} />
       </View>
     </Theme>
   )

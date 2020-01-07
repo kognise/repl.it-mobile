@@ -4,7 +4,7 @@ import { Title, Text, Button } from 'react-native-paper'
 import { useNavigation } from 'react-navigation-hooks'
 
 import ImageButton from '../../components/ui/ImageButton'
-import HorizontalList from '../../components/lists/HorizontalList'
+import HorizontalList from '../../components/ui/HorizontalList'
 import Theme from '../../components/wrappers/Theme'
 
 export default () => {

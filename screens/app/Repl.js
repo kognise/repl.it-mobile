@@ -1,91 +1,153 @@
-import React, { Component } from 'react'
-import { View, Clipboard, Platform, ToastAndroid } from 'react-native'
-import { Menu } from 'react-native-paper'
-import { NavigationEvents } from 'react-navigation'
+import React, { useState, useEffect, useCallback } from 'react'
+import { View, Clipboard, Platform, ToastAndroid, ScrollView, RefreshControl } from 'react-native'
+import { useNavigation } from 'react-navigation-hooks'
+import { Menu, List } from 'react-native-paper'
 
 import { navigateSame } from '../../lib/navigation'
-import { deleteRepl, forkRepl } from '../../lib/network'
+import useMounted from '../../lib/useMounted'
+import moisten from '../../lib/moisten'
+import { fetchFiles, deleteRepl, forkRepl } from '../../lib/network'
 import NewFile from '../../components/dialogButtons/fabs/NewFile'
-import Files from '../../components/lists/Files'
 import Theme from '../../components/wrappers/Theme'
 
-export default class extends Component {
-  static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam('title', 'Files'),
-    menu: (closeMenu) => (
-      <>
-        <Menu.Item
-          title="Copy link"
-          onPress={() => {
-            closeMenu()
-            const url = navigation.getParam('url')
-            Clipboard.setString(`https://repl.it${url}`)
-            if (Platform.OS === 'android') {
-              ToastAndroid.show('Link copied', ToastAndroid.SHORT)
-            }
-          }}
+const renderFiles = (files, onFilePress) => {
+  const children = []
+
+  for (let name in files) {
+    const file = files[name]
+    if (file.type === 'file') {
+      children.push(
+        <List.Item
+          title={name}
+          key={name}
+          left={(props) => <List.Icon {...props} icon="file" />}
+          onPress={() => onFilePress(file.path)}
         />
+      )
+    } else {
+      children.push(
+        <List.Accordion
+          title={name}
+          key={name}
+          left={(props) => <List.Icon {...props} icon="folder" />}
+        >
+          {renderFiles(file.content, onFilePress)}
+        </List.Accordion>
+      )
+    }
+  }
+
+  return children
+}
+
+const Screen = () => {
+  const mounted = useMounted()
+
+  const navigation = useNavigation()
+  const { navigate, getParam } = navigation
+  const id = getParam('id')
+  const url = getParam('url')
+  const language = getParam('language')
+  const canWrite = getParam('canWrite')
+
+  const [files, setFiles] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const load = useCallback(async () => {
+    const flatFiles = await fetchFiles(url)
+    const files = moisten(flatFiles)
+    if (!mounted.current) return
+    setFiles(files)
+  }, [mounted, url])
+
+  const reloadCurrent = useCallback(async () => {
+    if (loading) return
+    setLoading(true)
+    await load()
+    setLoading(false)
+  }, [load, loading])
+
+  const onFilePress = useCallback(
+    (path) => navigate('File', { id, path, language, canWrite, reloadPrevious: reloadCurrent }),
+    [canWrite, id, language, navigate, reloadCurrent]
+  )
+
+  useEffect(() => {
+    ;(async () => {
+      await load()
+      if (!mounted.current) return
+      setLoading(false)
+    })()
+  }, [load, mounted])
+
+  return (
+    <Theme>
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={reloadCurrent} />}
+          contentContainerStyle={{ minHeight: '100%' }}
+        >
+          {renderFiles(files, onFilePress)}
+        </ScrollView>
+
+        <NewFile id={id} reloadCurrent={reloadCurrent} navigate={navigate} />
+      </View>
+    </Theme>
+  )
+}
+
+Screen.navigationOptions = ({ navigation }) => ({
+  title: navigation.getParam('title', 'Files'),
+  menu: (closeMenu) => (
+    <>
+      <Menu.Item
+        title="Copy link"
+        onPress={() => {
+          closeMenu()
+          const url = navigation.getParam('url')
+          Clipboard.setString(`https://repl.it${url}`)
+          if (Platform.OS === 'android') {
+            ToastAndroid.show('Link copied', ToastAndroid.SHORT)
+          }
+        }}
+      />
+      <Menu.Item
+        title="Fork"
+        onPress={async () => {
+          closeMenu()
+
+          const id = navigation.getParam('id')
+          const reloadPrevious = navigation.getParam('reloadPrevious')
+
+          const newRepl = await forkRepl(id)
+          reloadPrevious() // So the repl listing is updated with the new repl
+          navigateSame(navigation, {
+            ...navigation.state.params,
+            id: newRepl.id,
+            title: newRepl.title,
+            url: newRepl.url,
+            language: newRepl.language,
+            canWrite: true
+          })
+        }}
+      />
+      {navigation.getParam('canWrite') ? (
         <Menu.Item
-          title="Fork"
+          title="Delete"
           onPress={async () => {
             closeMenu()
 
             const id = navigation.getParam('id')
             const reloadPrevious = navigation.getParam('reloadPrevious')
 
-            const newRepl = await forkRepl(id)
+            await deleteRepl(id)
             reloadPrevious()
-            navigateSame(navigation, {
-              ...navigation.state.params,
-              id: newRepl.id,
-              title: newRepl.title,
-              url: newRepl.url,
-              language: newRepl.language,
-              canWrite: true
-            })
+            navigation.goBack()
           }}
         />
-        {navigation.getParam('canWrite') ? (
-          <Menu.Item
-            title="Delete"
-            onPress={async () => {
-              closeMenu()
+      ) : null}
+    </>
+  )
+})
 
-              const id = navigation.getParam('id')
-              const reloadPrevious = navigation.getParam('reloadPrevious')
-
-              await deleteRepl(id)
-              reloadPrevious()
-              navigation.goBack()
-            }}
-          />
-        ) : null}
-      </>
-    )
-  })
-
-  render() {
-    const { navigate, getParam } = this.props.navigation
-    const id = getParam('id')
-    const url = getParam('url')
-    const language = getParam('language')
-    const canWrite = getParam('canWrite')
-    return (
-      <Theme>
-        <View style={{ flex: 1 }}>
-          <Files
-            url={url}
-            id={id}
-            onPress={(path) =>
-              navigate('File', { id, path, language, canWrite, reloadPrevious: this.reloadCurrent })
-            }
-            ref={(files) => (this.files = files)}
-          />
-          <NewFile id={id} reloadCurrent={this.reloadCurrent} navigate={navigate} />
-          <NavigationEvents onDidFocus={this.didFocus} />
-        </View>
-      </Theme>
-    )
-  }
-  reloadCurrent = async () => this.files && (await this.files.reload())
-}
+export default Screen

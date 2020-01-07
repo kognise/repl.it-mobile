@@ -33,8 +33,8 @@ export default withSettings(
                 onMessage={this.onMessage}
               />
             ) : (
-                <ActivityIndicator />
-              )}
+              <ActivityIndicator />
+            )}
           </Theme>
         </View>
       )

@@ -32,7 +32,6 @@ Some files and directories are excluded due to boringness.
   - `dialogButtons/` - Self-contained buttons that trigger dialogs
     - `fabs/` - FAB-style buttons
     - `menuItems/` - Menu buttons
-  - `lists/` - Lists of items
   - `webViews/` - Components that are primarily `WebView`s
   - `wrappers/` - Components meant to be used as wrappers
 - `lib/` - Library and utility functions

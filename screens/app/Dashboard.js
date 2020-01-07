@@ -1,103 +1,176 @@
-import React, { Component } from 'react'
-import { View } from 'react-native'
-import { Menu, Searchbar } from 'react-native-paper'
+import React, { useRef, useState, useEffect, useCallback } from 'react'
+import { View, ScrollView, RefreshControl } from 'react-native'
+import { useNavigation } from 'react-navigation-hooks'
+import { Menu, Searchbar, List } from 'react-native-paper'
 
 import { navigateSame } from '../../lib/navigation'
-import NewRepl from '../../components/dialogButtons/fabs/NewRepl'
+import useMounted from '../../lib/useMounted'
+import { fetchRepls, fetchFolders } from '../../lib/network'
 import NewFolder from '../../components/dialogButtons/menuItems/NewFolder'
 import DeleteFolder from '../../components/dialogButtons/menuItems/DeleteFolder'
 import Theme from '../../components/wrappers/Theme'
-import Dashboard from '../../components/lists/Dashboard'
 
-export default class extends Component {
-  static navigationOptions = ({ navigation }) => {
-    const root = !navigation.getParam('name')
-    return {
-      title: navigation.getParam('name', 'Your Repls'),
-      menu: (closeMenu) => (
-        <>
-          <NewFolder
-            closeMenu={closeMenu}
-            id={navigation.getParam('folderId')}
-            reloadCurrent={() => navigation.getParam('reloadCurrent')()}
-          />
-          {navigation.getParam('name') !== 'Unnamed' && !root ? (
-            <DeleteFolder
-              closeMenu={closeMenu}
-              id={navigation.getParam('folderId')}
-              reloadPrevious={navigation.getParam('reloadPrevious')}
-              goBack={navigation.goBack}
-            />
-          ) : null}
-          {root ? (
-            <Menu.Item
-              title="Settings"
-              onPress={() => {
-                closeMenu()
-                navigation.navigate('Settings')
-              }}
-            />
-          ) : null}
-        </>
-      )
+const Screen = () => {
+  const mounted = useMounted()
+
+  const navigation = useNavigation()
+  const { navigate, getParam, setParams } = navigation
+  const folderId = getParam('folderId')
+
+  const pageInfoRef = useRef({})
+  const [folders, setFolders] = useState([])
+  const [repls, setRepls] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const [search, setSearch] = useState('')
+
+  const load = useCallback(async () => {
+    const { items, pageInfo } = await fetchRepls(undefined, folderId, search)
+    const folders = await fetchFolders(folderId)
+    pageInfoRef.current = pageInfo
+    if (!mounted.current) return
+    setRepls(items)
+    setFolders(folders)
+  }, [folderId, mounted, search])
+
+  const reloadCurrent = useCallback(async () => {
+    if (loading) return
+    setLoading(true)
+    await load()
+    setLoading(false)
+  }, [load, loading])
+  useEffect(() => {
+    setParams({ reloadCurrent })
+  }, [reloadCurrent]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onScroll = (event) => {
+    if (loading) return
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent
+    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 60) {
+      setLoading(true)
+      // TODO: fetch
+      if (!mounted.current) return
+      setLoading(false)
     }
   }
 
-  state = {
-    search: ''
-  }
+  useEffect(() => {
+    ;(async () => {
+      await load()
+      if (!mounted.current) return
+      setLoading(false)
+    })()
+  }, [load, mounted])
 
-  render() {
-    const { navigate, getParam } = this.props.navigation
-    const folderId = getParam('folderId')
+  return (
+    <Theme>
+      <View style={{ padding: 10 }}>
+        <Searchbar
+          placeholder="Search"
+          onChangeText={setSearch}
+          onSubmitEditing={load}
+          value={search}
+        />
+      </View>
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          scrollEventThrottle={16}
+          onScroll={onScroll}
+          onMomentumScrollEnd={onScroll}
+          refreshControl={<RefreshControl refreshing={loading} onRefresh={reloadCurrent} />}
+          contentContainerStyle={{ minHeight: '100%' }}
+        >
+          {folders.map((folder) => (
+            <List.Item
+              title={folder.name}
+              key={folder.id}
+              onPress={() =>
+                navigateSame(navigation, {
+                  folderId: folder.id,
+                  reloadPrevious: reloadCurrent,
+                  name: folder.name
+                })
+              }
+              left={(props) => <List.Icon {...props} icon="folder" />}
+            />
+          ))}
+          {repls.map((repl) => (
+            <List.Item
+              title={repl.title}
+              description={`A ${repl.language} repl`}
+              key={repl.id}
+              onPress={() =>
+                navigate('Repl', {
+                  id: repl.id,
+                  title: repl.title,
+                  url: repl.url,
+                  language: repl.language,
+                  canWrite: repl.canWrite,
+                  reloadPrevious: reloadCurrent
+                })
+              }
+              left={(props) => <List.Icon {...props} icon="file" />}
+            />
+          ))}
+        </ScrollView>
+        {/* <Dashboard
+          folderId={folderId}
+          onFolderPress={({ id, name }) =>
+            navigateSame(this.props.navigation, {
+              folderId: id,
+              reloadPrevious: reloadCurrent,
+              name
+            })
+          }
+          onReplPress={({ id, title, url, language, canWrite }) =>
+            navigate('Repl', {
+              id,
+              title,
+              url,
+              language,
+              canWrite,
+              reloadPrevious: reloadCurrent
+            })
+          }
+          ref={dashboardRef}
+        />
+        <NewRepl folderId={folderId} reloadCurrent={this.reloadCurrent} navigate={navigate} /> */}
+      </View>
+    </Theme>
+  )
+}
 
-    return (
-      <Theme>
-        <View style={{ padding: 10 }}>
-          <Searchbar
-            placeholder="Search"
-            onChangeText={this.updateSearch}
-            onSubmitEditing={this.performSearch}
-            value={this.state.search}
+Screen.navigationOptions = ({ navigation }) => {
+  const root = !navigation.getParam('name')
+  return {
+    title: navigation.getParam('name', 'Your Repls'),
+    menu: (closeMenu) => (
+      <>
+        <NewFolder
+          closeMenu={closeMenu}
+          id={navigation.getParam('folderId')}
+          reloadCurrent={() => navigation.getParam('reloadCurrent')()}
+        />
+        {navigation.getParam('name') !== 'Unnamed' && !root ? (
+          <DeleteFolder
+            closeMenu={closeMenu}
+            id={navigation.getParam('folderId')}
+            reloadPrevious={navigation.getParam('reloadPrevious')}
+            goBack={navigation.goBack}
           />
-        </View>
-        <View style={{ flex: 1 }}>
-          <Dashboard
-            folderId={folderId}
-            onFolderPress={({ id, name }) =>
-              navigateSame(this.props.navigation, {
-                folderId: id,
-                reloadPrevious: this.reloadCurrent,
-                name
-              })
-            }
-            onReplPress={({ id, title, url, language, canWrite }) =>
-              navigate('Repl', {
-                id,
-                title,
-                url,
-                language,
-                canWrite,
-                reloadPrevious: this.reloadCurrent
-              })
-            }
-            ref={(dashboard) => (this.dashboard = dashboard)}
+        ) : null}
+        {root ? (
+          <Menu.Item
+            title="Settings"
+            onPress={() => {
+              closeMenu()
+              navigation.navigate('Settings')
+            }}
           />
-          <NewRepl folderId={folderId} reloadCurrent={this.reloadCurrent} navigate={navigate} />
-        </View>
-      </Theme>
+        ) : null}
+      </>
     )
   }
-
-  componentWillMount() {
-    this.props.navigation.setParams({ reloadCurrent: this.reloadCurrent })
-  }
-
-  updateSearch = (search) => {
-    this.setState({ search }, () => {
-      if (search === '') this.performSearch()
-    })
-  }
-  performSearch = async () => this.dashboard && (await this.dashboard.search(this.state.search))
-  reloadCurrent = async () => this.dashboard && (await this.dashboard.reload())
 }
+
+export default Screen

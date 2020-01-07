@@ -28,7 +28,7 @@ const Screen = () => {
       const {
         editor_preferences: { theme, indentIsSpaces, indentSize, wrapping }
       } = await logIn(username, password)
-      if (!mounted) return
+      if (!mounted.current) return
 
       settings.setTheme(theme)
       settings.setSoftTabs(indentIsSpaces)
@@ -41,7 +41,7 @@ const Screen = () => {
       setLoading(false)
       navigate('Hello', { username })
     } catch (error) {
-      if (!mounted) return
+      if (!mounted.current) return
       setLoading(false)
       setError(error.message)
     }

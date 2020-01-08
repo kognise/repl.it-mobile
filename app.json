@@ -8,6 +8,7 @@
       "ios",
       "android"
     ],
+    "userInterfaceStyle": "automatic",
     "version": "0.0.1",
     "orientation": "default",
     "icon": "./assets/images/app/icon.png",

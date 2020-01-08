@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { StatusBar } from 'react-native'
+import { Appearance, AppearanceProvider, useColorScheme } from 'react-native-appearance'
 import { SplashScreen } from 'expo'
 import * as Font from 'expo-font'
 import {
@@ -138,7 +139,7 @@ const updateSettings = async (settings) => {
   })
 }
 
-export default () => {
+const Main = () => {
   const [theme, setTheme] = useState('replitDark')
   const [softWrapping, setSoftWrapping] = useState(false)
   const [softTabs, setSoftTabs] = useState(true)
@@ -220,3 +221,9 @@ export default () => {
     </PaperProvider>
   )
 }
+
+export default () => (
+  <AppearanceProvider>
+    <Main />
+  </AppearanceProvider>
+)

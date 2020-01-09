@@ -89,19 +89,19 @@ const roundness = 3
 const fonts = configureFonts({
   default: {
     regular: {
-      fontFamily: 'Source Code Pro',
+      fontFamily: 'Montserrat',
       fontWeight: 'normal'
     },
     medium: {
-      fontFamily: 'Source Code Pro Medium',
+      fontFamily: 'Montserrat Medium',
       fontWeight: 'normal'
     },
     light: {
-      fontFamily: 'Source Code Pro Light',
+      fontFamily: 'Montserrat Light',
       fontWeight: 'normal'
     },
     thin: {
-      fontFamily: 'Source Code Pro Extra-Light',
+      fontFamily: 'Montserrat Thin',
       fontWeight: 'normal'
     }
   }
@@ -177,11 +177,7 @@ const Main = () => {
         Montserrat: require('./assets/fonts/Montserrat-Regular.ttf'),
         'Montserrat Medium': require('./assets/fonts/Montserrat-Medium.ttf'),
         'Montserrat Light': require('./assets/fonts/Montserrat-Light.ttf'),
-        'Montserrat Thin': require('./assets/fonts/Montserrat-Thin.ttf'),
-        'Source Code Pro': require('./assets/other-fonts/SourceCodePro-Regular.ttf'),
-        'Source Code Pro Medium': require('./assets/other-fonts/SourceCodePro-Medium.ttf'),
-        'Source Code Pro Light': require('./assets/other-fonts/SourceCodePro-Light.ttf'),
-        'Source Code Pro Extra-Light': require('./assets/other-fonts/SourceCodePro-ExtraLight.ttf')
+        'Montserrat Thin': require('./assets/fonts/Montserrat-Thin.ttf')
       })
 
       useSystemTheme.current = (await AsyncStorage.getItem('@useSystemTheme')) === 'yes'

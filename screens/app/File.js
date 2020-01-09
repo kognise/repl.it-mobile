@@ -285,7 +285,7 @@ export default class extends Component {
     return <TabView state={this.state} scenes={this.scenes} onIndexChange={this.updateIndex} />
   }
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     const id = this.props.navigation.getParam('id')
     const path = this.props.navigation.getParam('path')
     const language = this.props.navigation.getParam('language')

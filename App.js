@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { StatusBar } from 'react-native'
-import { Appearance, AppearanceProvider, useColorScheme } from 'react-native-appearance'
+import { StatusBar, AsyncStorage } from 'react-native'
+import { Appearance, AppearanceProvider } from 'react-native-appearance'
 import { SplashScreen } from 'expo'
 import * as Font from 'expo-font'
 import {
@@ -82,26 +82,26 @@ const Navigator = createSwitchNavigator(
 )
 const App = createAppContainer(Navigator)
 
-const primary = '#e83d39'
-const accent = '#687d85'
-const roundness = 0
+const primary = '#3d5afe'
+const accent = '#455a64'
+const roundness = 3
 
 const fonts = configureFonts({
   default: {
     regular: {
-      fontFamily: 'Montserrat',
+      fontFamily: 'Source Code Pro',
       fontWeight: 'normal'
     },
     medium: {
-      fontFamily: 'Montserrat Medium',
+      fontFamily: 'Source Code Pro Medium',
       fontWeight: 'normal'
     },
     light: {
-      fontFamily: 'Montserrat Light',
+      fontFamily: 'Source Code Pro Light',
       fontWeight: 'normal'
     },
     thin: {
-      fontFamily: 'Montserrat Thin',
+      fontFamily: 'Source Code Pro Extra-Light',
       fontWeight: 'normal'
     }
   }
@@ -140,7 +140,10 @@ const updateSettings = async (settings) => {
 }
 
 const Main = () => {
+  const useSystemTheme = useRef(false)
   const [theme, setTheme] = useState('replitDark')
+  const [systemTheme, setSystemTheme] = useState('replitDark')
+
   const [softWrapping, setSoftWrapping] = useState(false)
   const [softTabs, setSoftTabs] = useState(true)
   const [indentSize, setIndentSize] = useState(2)
@@ -174,8 +177,20 @@ const Main = () => {
         Montserrat: require('./assets/fonts/Montserrat-Regular.ttf'),
         'Montserrat Medium': require('./assets/fonts/Montserrat-Medium.ttf'),
         'Montserrat Light': require('./assets/fonts/Montserrat-Light.ttf'),
-        'Montserrat Thin': require('./assets/fonts/Montserrat-Thin.ttf')
+        'Montserrat Thin': require('./assets/fonts/Montserrat-Thin.ttf'),
+        'Source Code Pro': require('./assets/other-fonts/SourceCodePro-Regular.ttf'),
+        'Source Code Pro Medium': require('./assets/other-fonts/SourceCodePro-Medium.ttf'),
+        'Source Code Pro Light': require('./assets/other-fonts/SourceCodePro-Light.ttf'),
+        'Source Code Pro Extra-Light': require('./assets/other-fonts/SourceCodePro-ExtraLight.ttf')
       })
+
+      useSystemTheme.current = (await AsyncStorage.getItem('@useSystemTheme')) === 'yes'
+      const colorScheme = Appearance.getColorScheme()
+      if (colorScheme === 'dark') {
+        setSystemTheme('replitDark')
+      } else if (colorScheme === 'light') {
+        setSystemTheme('replitLight')
+      }
 
       const { success, user } = await getUserInfo()
 
@@ -196,13 +211,29 @@ const Main = () => {
     })()
   }, [])
 
+  useEffect(() => {
+    const subscription = Appearance.addChangeListener(({ colorScheme }) => {
+      console.log('change')
+      if (colorScheme === 'dark') {
+        setSystemTheme('replitDark')
+      } else if (colorScheme === 'light') {
+        setSystemTheme('replitLight')
+      } else return
+      AsyncStorage.setItem('@useSystemTheme', 'yes')
+    })
+    return () => subscription.remove()
+  })
+
   return (
     <PaperProvider theme={theme === 'replitDark' ? darkTheme : lightTheme}>
       <StatusBar barStyle="light-content" />
       <SettingsContext.Provider
         value={{
-          theme,
-          setTheme,
+          theme: useSystemTheme.current ? systemTheme : theme,
+          setTheme: (theme) => {
+            setTheme(theme)
+            AsyncStorage.setItem('@useSystemTheme', 'no')
+          },
           softWrapping,
           setSoftWrapping,
           softTabs,
@@ -214,7 +245,9 @@ const Main = () => {
         }}
       >
         {console.log(
-          `(${new Date().toLocaleTimeString()} rendering, redirectRoute=${redirectRoute}, theme=${theme})`
+          `(${new Date().toLocaleTimeString()} rendering, theme=${theme}, useSystemTheme=${
+            useSystemTheme.current
+          })`
         )}
         {redirectRoute && <App />}
       </SettingsContext.Provider>

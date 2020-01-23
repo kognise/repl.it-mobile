@@ -66,7 +66,7 @@ export default withSettings(
           JSON.stringify({
             code: this.props.code,
             path: this.props.path,
-            dark: this.props.context.theme,
+            dark: this.props.context.theme === 'replitDark',
             canWrite: this.props.canWrite,
             softWrapping: this.props.context.softWrapping,
             indentSize: this.props.context.indentSize,

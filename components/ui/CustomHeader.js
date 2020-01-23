@@ -16,16 +16,7 @@ export default withTheme(
       const { options } = this.props.scene.descriptor
 
       return (
-        <Appbar.Header
-          style={
-            options.hasAddon
-              ? {
-                  elevation: 0,
-                  backgroundColor: overlay(4, this.props.theme.colors.surface)
-                }
-              : {}
-          }
-        >
+        <Appbar.Header style={options.hasAddon ? { elevation: 0 } : {}}>
           {state.routes.length > 1 && <Appbar.BackAction onPress={this.goBack} />}
           <Appbar.Content title={options.title || 'Repl.it'} />
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { View, Clipboard, Platform, ToastAndroid, ScrollView, RefreshControl } from 'react-native'
 import { useNavigation } from 'react-navigation-hooks'
 import { Menu, List } from 'react-native-paper'
@@ -7,6 +7,7 @@ import { navigateSame } from '../../lib/navigation'
 import useMounted from '../../lib/useMounted'
 import moisten from '../../lib/moisten'
 import { fetchFiles, deleteRepl, forkRepl } from '../../lib/network'
+import CrosisConnector from '../../lib/crosis'
 import NewFile from '../../components/dialogButtons/fabs/NewFile'
 import Theme from '../../components/wrappers/Theme'
 
@@ -52,13 +53,15 @@ const Screen = () => {
 
   const [files, setFiles] = useState([])
   const [loading, setLoading] = useState(true)
+  const [crosis] = useState(new CrosisConnector(id))
 
   const load = useCallback(async () => {
     const flatFiles = await fetchFiles(url)
     const files = moisten(flatFiles)
     if (!mounted.current) return
     setFiles(files)
-  }, [mounted, url])
+    await crosis.connect()
+  }, [crosis, mounted, url])
 
   const reloadCurrent = useCallback(async () => {
     if (loading) return
@@ -78,7 +81,7 @@ const Screen = () => {
       if (!mounted.current) return
       setLoading(false)
     })()
-  }, [load, mounted])
+  }, [crosis, load, mounted])
 
   return (
     <Theme>

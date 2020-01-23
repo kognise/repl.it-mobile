@@ -282,7 +282,14 @@ export default class extends Component {
         </Theme>
       )
     }
-    return <TabView state={this.state} scenes={this.scenes} onIndexChange={this.updateIndex} />
+    return (
+      <TabView
+        state={this.state}
+        scenes={this.scenes}
+        swipeEnabled={this.state.routes[this.state.index].key !== 'editor'}
+        onIndexChange={this.updateIndex}
+      />
+    )
   }
 
   async UNSAFE_componentWillMount() {

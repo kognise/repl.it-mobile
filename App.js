@@ -82,26 +82,24 @@ const Navigator = createSwitchNavigator(
 )
 const App = createAppContainer(Navigator)
 
-const primary = '#3d5afe'
-const accent = '#455a64'
-const roundness = 3
+const roundness = 2
 
 const fonts = configureFonts({
   default: {
     regular: {
-      fontFamily: 'Montserrat',
+      fontFamily: 'IBM Plex Sans',
       fontWeight: 'normal'
     },
     medium: {
-      fontFamily: 'Montserrat Medium',
+      fontFamily: 'IBM Plex Sans Medium',
       fontWeight: 'normal'
     },
     light: {
-      fontFamily: 'Montserrat Light',
+      fontFamily: 'IBM Plex Sans Light',
       fontWeight: 'normal'
     },
     thin: {
-      fontFamily: 'Montserrat Thin',
+      fontFamily: 'IBM Plex Sans Thin',
       fontWeight: 'normal'
     }
   }
@@ -113,8 +111,8 @@ const darkTheme = {
   fonts,
   colors: {
     ...DarkTheme.colors,
-    primary,
-    accent
+    primary: '#ffffff',
+    accent: '#455a64'
   }
 }
 const lightTheme = {
@@ -123,8 +121,8 @@ const lightTheme = {
   fonts,
   colors: {
     ...DefaultTheme.colors,
-    primary,
-    accent
+    primary: '#222222',
+    accent: '#222222'
   }
 }
 
@@ -174,10 +172,10 @@ const Main = () => {
 
       await Font.loadAsync({
         Inconsolata: require('./assets/fonts/Inconsolata-Regular.ttf'),
-        Montserrat: require('./assets/fonts/Montserrat-Regular.ttf'),
-        'Montserrat Medium': require('./assets/fonts/Montserrat-Medium.ttf'),
-        'Montserrat Light': require('./assets/fonts/Montserrat-Light.ttf'),
-        'Montserrat Thin': require('./assets/fonts/Montserrat-Thin.ttf')
+        'IBM Plex Sans': require('./assets/fonts/IBMPlexSans-Regular.ttf'),
+        'IBM Plex Sans Medium': require('./assets/fonts/IBMPlexSans-Medium.ttf'),
+        'IBM Plex Sans Light': require('./assets/fonts/IBMPlexSans-Light.ttf'),
+        'IBM Plex Sans Thin': require('./assets/fonts/IBMPlexSans-Thin.ttf')
       })
 
       useSystemTheme.current = (await AsyncStorage.getItem('@useSystemTheme')) === 'yes'

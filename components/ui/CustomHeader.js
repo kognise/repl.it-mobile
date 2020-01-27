@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Platform } from 'react-native'
 import { Appbar, Menu, withTheme } from 'react-native-paper'
-import overlay from 'react-native-paper/lib/module/styles/overlay'
 
 import { goBack } from '../../lib/navigation'
 

@@ -12,6 +12,7 @@
     "@expo/vector-icons": "^10.0.6",
     "@replit/crosis": "^2.1.0",
     "@replit/protocol": "^0.1.2",
+    "anser": "^1.4.9",
     "events": "^3.0.0",
     "expo": "^36.0.0",
     "expo-asset-utils": "^1.2.0",

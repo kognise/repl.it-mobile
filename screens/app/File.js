@@ -1,8 +1,9 @@
-import React, { Component } from 'react'
+import React, { Component, useImperativeHandle, useState, forwardRef } from 'react'
 import * as WebBrowser from 'expo-web-browser'
 import { View, ScrollView, RefreshControl, Image } from 'react-native'
 import { WebView } from 'react-native-webview'
-import { Menu, Button, Text, withTheme } from 'react-native-paper'
+import { Menu, Button, Text, useTheme } from 'react-native-paper'
+import Anser from 'anser'
 
 import OTClient from '../../lib/ot'
 import consoleBridge from '../../lib/consoleBridge'
@@ -148,42 +149,6 @@ class BinaryScene extends Component {
   download = async () => await WebBrowser.openBrowserAsync(this.props.urls.read)
 }
 
-const ConsoleScene = withTheme(
-  class extends Component {
-    state = {
-      messages: []
-    }
-
-    render() {
-      return (
-        <Theme>
-          <ScrollView style={{ minHeight: '100%' }}>
-            {this.state.messages.map(({ message, error }, index) => (
-              <Text
-                style={{
-                  fontFamily: 'Inconsolata',
-                  fontSize: 18,
-                  color: error ? this.props.theme.colors.error : this.props.theme.colors.text
-                }}
-                selectable
-                key={index}
-              >
-                {message}
-              </Text>
-            ))}
-          </ScrollView>
-        </Theme>
-      )
-    }
-
-    appendMessage(message, error) {
-      this.setState((prevState) => ({
-        messages: [...prevState.messages, { message, error }]
-      }))
-    }
-  }
-)
-
 class WebScene extends Component {
   state = {
     source: {},
@@ -247,10 +212,44 @@ class WebScene extends Component {
     this.mounted = false
   }
   onMessage = (event) => {
+    // TODO: add color for error
     const [error, message] = JSON.parse(event.nativeEvent.data)
-    this.props.logMessage(message, error)
+    this.props.appendToLog((error ? `[error] ${message}` : message) + '\n')
   }
 }
+
+const ConsoleScene = forwardRef((_, ref) => {
+  const [log, setLog] = useState([])
+
+  useImperativeHandle(ref, () => ({
+    appendToLog: (content) => {
+      const parsed = Anser.ansiToJson(content.replace(/\uEEA7/g, '>'))
+      setLog(log.concat(parsed))
+    }
+  }))
+
+  return (
+    <Theme>
+      <ScrollView style={{ minHeight: '100%' }}>
+        <Text>
+          {log.map((chunk, index) => (
+            <Text
+              style={{
+                color: chunk.fg && `rgb(${chunk.fg})`,
+                backgroundColor: chunk.backgroundColor && `rgb(${chunk.bg})`,
+                fontFamily: 'Inconsolata',
+                fontSize: 18
+              }}
+              key={index}
+            >
+              {chunk.content}
+            </Text>
+          ))}
+        </Text>
+      </ScrollView>
+    </Theme>
+  )
+})
 
 export default class extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -281,9 +280,11 @@ export default class extends Component {
   state = {
     index: 0,
     routes: [],
-    loading: true
+    loading: true,
+    interpState: 'stopped'
   }
   scenes = {}
+  crosis = null
 
   render() {
     if (this.state.loading) {
@@ -310,13 +311,60 @@ export default class extends Component {
           onIndexChange={this.updateIndex}
         />
 
-        <FAB icon="play" onPress={this.run} />
+        {console.log('interp state is', this.state.interpState)}
+        <FAB
+          icon={
+            this.state.interpState === 'stopped'
+              ? 'play'
+              : this.state.interpState === 'installing'
+              ? 'dots-horizontal'
+              : this.state.interpState === 'running'
+              ? 'stop'
+              : 'exclamation'
+          }
+          onPress={this.runOrStop}
+        />
       </View>
     )
   }
 
-  run = async () => {
-    this.setState({ index: this.indexFromKey('console') })
+  runOrStop = async () => {
+    if (this.state.interpState === 'running' && this.interp) {
+      await this.interp.request({ clear: {} })
+    }
+
+    this.setState({ index: this.indexFromKey('console'), interpState: 'installing' })
+
+    if (!this.packager) {
+      this.packager = this.crosis.getChannel('packager3')
+      this.packager.on('command', (command) => {
+        if (command.output) {
+          this.appendToLog(command.output)
+        }
+      })
+    }
+    await this.packager.request({ packageInstall: {} })
+
+    this.setState({ interpState: 'running' })
+    if (!this.interp) {
+      this.interp = this.crosis.getChannel('interp')
+      this.interp.on('command', (command) => {
+        if (command.output) {
+          this.appendToLog(command.output)
+        } else if (command.state) {
+          console.log('got state update to', command.state)
+          this.setState({
+            interpState: command.state === 1 ? 'stopped' : 'running'
+          })
+        }
+      })
+    }
+    await this.interp.request({ runMain: {} })
+  }
+
+  componentWillUnmount() {
+    if (this.packager) this.packager.removeAllListeners()
+    if (this.interp) this.interp.removeAllListeners()
   }
 
   async UNSAFE_componentWillMount() {
@@ -348,13 +396,14 @@ export default class extends Component {
 
     if (language === 'html') {
       newState.routes.push({ key: 'web', title: 'Web' })
-      this.scenes.web = () => <WebScene id={id} logMessage={this.logMessage} />
+      this.scenes.web = () => <WebScene id={id} appendToLog={this.logMessage} />
     }
 
     newState.routes.push({ key: 'console', title: 'Console' })
     this.scenes.console = () => <ConsoleScene ref={this.consoleRef} />
 
     newState.loading = false
+    this.crosis = crosis
     this.setState(newState)
   }
 
@@ -362,21 +411,23 @@ export default class extends Component {
     return this.state.routes.findIndex((route) => route.key === key)
   }
 
-  logQueue = []
+  logQueue = ''
+  consoleScene = null
+
   consoleRef = (consoleScene) => {
-    this.console = consoleScene
+    this.consoleScene = consoleScene
     if (this.logQueue.length > 0) {
-      for (let [message, error] of this.logQueue) {
-        consoleScene.appendMessage(message, error)
-      }
-      this.logQueue = []
+      consoleScene.appendToLog(this.logQueue)
+      this.logQueue = ''
     }
   }
-  logMessage = (message, error) => {
-    if (this.console) {
-      this.console.appendMessage(message, error)
+
+  appendToLog = (content) => {
+    console.log('updating log with', content)
+    if (this.consoleScene) {
+      this.consoleScene.appendToLog(content)
     } else {
-      this.logQueue.push([message, error])
+      this.logQueue += content
     }
   }
 

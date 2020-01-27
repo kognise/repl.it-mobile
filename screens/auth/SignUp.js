@@ -11,21 +11,13 @@ import FormInput from '../../components/ui/FormInput'
 import Theme from '../../components/wrappers/Theme'
 import ErrorMessage from '../../components/ui/ErrorMessage'
 
-const random =
-  Math.random()
-    .toString(36)
-    .substring(2, 8) +
-  Math.random()
-    .toString(36)
-    .substring(2, 8)
-
 const Screen = () => {
   const mounted = useMounted()
   const { navigate } = useNavigation()
 
-  const [username, setUsername] = useState(random)
-  const [email, setEmail] = useState(`${random}@gmail.com`)
-  const [password, setPassword] = useState([...random].join('1'))
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
 

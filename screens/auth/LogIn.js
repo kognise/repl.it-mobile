@@ -7,16 +7,23 @@ import { logIn } from '../../lib/network'
 import useMounted from '../../lib/useMounted'
 import FormInput from '../../components/ui/FormInput'
 import ErrorMessage from '../../components/ui/ErrorMessage'
+import CheckboxWithLabel from '../../components/ui/CheckboxWithLabel'
 import Theme from '../../components/wrappers/Theme'
 import SettingsContext from '../../components/wrappers/SettingsContext'
+
+const testAccount = {
+  username: 'Xeborch',
+  password: 'xeborch'
+}
 
 const Screen = () => {
   const mounted = useMounted()
   const settings = useContext(SettingsContext)
   const { navigate } = useNavigation()
 
-  const [username, setUsername] = useState('Xeborch')
-  const [password, setPassword] = useState('xeborch')
+  const [testAccountEnabled, setTestAccountEnabled] = useState(false)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
 
@@ -26,8 +33,12 @@ const Screen = () => {
     setLoading(true)
     try {
       const {
+        username: actualUsername,
         editor_preferences: { theme, indentIsSpaces, indentSize, wrapping }
-      } = await logIn(username, password)
+      } = await logIn(
+        testAccountEnabled ? testAccount.username : username,
+        testAccountEnabled ? testAccount.password : password
+      )
       if (!mounted.current) return
 
       settings.setTheme(theme)
@@ -39,7 +50,7 @@ const Screen = () => {
       setPassword('')
       setError(undefined)
       setLoading(false)
-      navigate('Hello', { username })
+      navigate('Hello', { username: actualUsername })
     } catch (error) {
       if (!mounted.current) return
       setLoading(false)
@@ -59,12 +70,19 @@ const Screen = () => {
       >
         <ErrorMessage error={error} />
 
+        <CheckboxWithLabel
+          label="Use test account"
+          checked={testAccountEnabled}
+          setChecked={setTestAccountEnabled}
+          style={{ marginBottom: 10 }}
+        />
+
         <FormInput
           label="Email or username"
           value={username}
           onChangeText={setUsername}
           onSubmit={() => passwordRef.current.focus()}
-          disabled={loading}
+          disabled={loading || testAccountEnabled}
           hasNext
         />
         <FormInput
@@ -72,12 +90,17 @@ const Screen = () => {
           value={password}
           onChangeText={setPassword}
           ref={passwordRef}
-          disabled={loading}
+          disabled={loading || testAccountEnabled}
           onSubmit={submit}
           password
         />
 
-        <Button mode="contained" onPress={submit} disabled={loading} loading={loading}>
+        <Button
+          mode="contained"
+          onPress={submit}
+          disabled={loading || (!testAccountEnabled && (!username || !password))}
+          loading={loading}
+        >
           Log in
         </Button>
       </KeyboardAvoidingView>

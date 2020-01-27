@@ -71,8 +71,9 @@ const Screen = () => {
   }, [load, loading])
 
   const onFilePress = useCallback(
-    (path) => navigate('File', { id, path, language, canWrite, reloadPrevious: reloadCurrent }),
-    [canWrite, id, language, navigate, reloadCurrent]
+    (path) =>
+      navigate('File', { id, path, language, canWrite, crosis, reloadPrevious: reloadCurrent }),
+    [canWrite, crosis, id, language, navigate, reloadCurrent]
   )
 
   useEffect(() => {

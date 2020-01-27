@@ -7,6 +7,7 @@ import { navigateSame } from '../../lib/navigation'
 import useMounted from '../../lib/useMounted'
 import { fetchRepls, fetchFolders } from '../../lib/network'
 import NewFolder from '../../components/dialogButtons/menuItems/NewFolder'
+import ActivityIndicator from '../../components/ui/ActivityIndicator'
 import DeleteFolder from '../../components/dialogButtons/menuItems/DeleteFolder'
 import NewRepl from '../../components/dialogButtons/fabs/NewRepl'
 import Theme from '../../components/wrappers/Theme'
@@ -22,35 +23,43 @@ const Screen = () => {
   const [folders, setFolders] = useState([])
   const [repls, setRepls] = useState([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
   const [search, setSearch] = useState('')
 
-  const load = useCallback(async () => {
-    const { items, pageInfo } = await fetchRepls(undefined, folderId, search)
-    const folders = await fetchFolders(folderId)
-    pageInfoRef.current = pageInfo
-    if (!mounted.current) return
-    setRepls(items)
-    setFolders(folders)
-  }, [folderId, mounted, search])
+  const load = useCallback(
+    async (next) => {
+      const { items, pageInfo } = await fetchRepls(
+        next ? pageInfoRef.current.nextCursor : undefined,
+        folderId,
+        search
+      )
+      const folders = await fetchFolders(folderId)
+      pageInfoRef.current = pageInfo
+      if (!mounted.current) return
+      setRepls(next ? repls.concat(items) : items)
+      setFolders(folders)
+    },
+    [folderId, mounted, repls, search]
+  )
 
   const reloadCurrent = useCallback(async () => {
-    if (loading) return
-    setLoading(true)
+    if (loading || refreshing) return
+    setRefreshing(true)
     await load()
-    setLoading(false)
-  }, [load, loading])
+    setRefreshing(false)
+  }, [loading, refreshing, load])
   useEffect(() => {
     // So we can reload after creating folders in the menu
     setParams({ reloadCurrent })
   }, [reloadCurrent]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const onScroll = (event) => {
-    if (loading) return
+  const onScroll = async (event) => {
+    if (loading || refreshing || !pageInfoRef.current.hasNextPage) return
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent
     if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 60) {
       setLoading(true)
-      // TODO: fetch
+      await load(true)
       if (!mounted.current) return
       setLoading(false)
     }
@@ -62,7 +71,7 @@ const Screen = () => {
       if (!mounted.current) return
       setLoading(false)
     })()
-  }, [load, mounted])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Theme>
@@ -79,7 +88,9 @@ const Screen = () => {
           scrollEventThrottle={16}
           onScroll={onScroll}
           onMomentumScrollEnd={onScroll}
-          refreshControl={<RefreshControl refreshing={loading} onRefresh={reloadCurrent} />}
+          refreshControl={
+            <RefreshControl enabled={!loading} refreshing={refreshing} onRefresh={reloadCurrent} />
+          }
           contentContainerStyle={{ minHeight: '100%' }}
         >
           {folders.map((folder) => (
@@ -114,6 +125,7 @@ const Screen = () => {
               left={(props) => <List.Icon {...props} icon="file" />}
             />
           ))}
+          {loading && <ActivityIndicator />}
         </ScrollView>
         <NewRepl folderId={folderId} reloadCurrent={reloadCurrent} navigate={navigate} />
       </View>

@@ -1,89 +1,112 @@
-import React, { PureComponent } from 'react'
+import React, { memo, useRef, useCallback, useEffect } from 'react'
 import { View } from 'react-native'
 import { WebView } from 'react-native-webview'
-import AssetUtils from 'expo-asset-utils'
 
-import editorCode from '../../html/editor.html'
+import useSource from '../../lib/useSource'
 import withSettings from '../../lib/withSettings'
 import Theme from '../wrappers/Theme'
 import ActivityIndicator from '../ui/ActivityIndicator'
+import code from '../../html/editor.html'
 
 export default withSettings(
-  class extends PureComponent {
-    loaded = false
-    state = {
-      source: null
+  memo(({ otClient, path, canWrite, context }) => {
+    const source = useSource(code)
+
+    const webView = useRef()
+    const webViewReady = useRef(false)
+    const webViewQueue = useRef([])
+
+    const postMessage = (message) => {
+      if (webViewReady.current && webView.current) {
+        webView.current.postMessage(JSON.stringify(message))
+      } else {
+        webViewQueue.current.push(message)
+      }
     }
 
-    render() {
-      return (
-        <View
-          style={{
-            height: '100%',
-            display: this.props.hidden ? 'none' : 'flex'
-          }}
-        >
-          <Theme>
-            {this.state.source ? (
-              <WebView
-                useWebKit
-                originWhitelist={['*']}
-                source={{ html: this.state.source }}
-                ref={(webView) => (this.webView = webView)}
-                onMessage={this.onMessage}
-              />
-            ) : (
-              <ActivityIndicator />
-            )}
-          </Theme>
-        </View>
-      )
-    }
+    const onMessage = useCallback(
+      (event) => {
+        const json = JSON.parse(event.nativeEvent.data)
 
-    componentDidMount() {
-      this.loadHtml()
-    }
+        if (json.type === 'ready') {
+          webViewReady.current = true
 
-    async loadHtml() {
-      const { uri } = await AssetUtils.resolveAsync(editorCode)
-      const res = await fetch(uri)
-      const html = await res.text()
-      this.setState({ source: html })
-    }
+          for (let message of webViewQueue.current) {
+            postMessage(message)
+          }
+          webViewQueue.current = []
+        } else if (json.type === 'ot') {
+          otClient.sendOps(json.payload)
+        } else if (json.type === 'log') {
+          console.log('[webview log]', json.payload)
+        } else {
+          console.log(json)
+        }
+      },
+      [otClient]
+    )
 
-    componentDidUpdate() {
-      this.updateWebView()
-    }
-
-    updateWebView() {
-      if (
-        this.loaded &&
-        this.props.code !== undefined &&
-        this.props.path !== undefined &&
-        this.webView
-      ) {
-        this.webView.postMessage(
-          JSON.stringify({
-            code: this.props.code,
-            path: this.props.path,
-            dark: this.props.context.theme === 'replitDark',
-            canWrite: this.props.canWrite,
-            softWrapping: this.props.context.softWrapping,
-            indentSize: this.props.context.indentSize,
-            softTabs: this.props.context.softTabs
+    useEffect(() => {
+      if (otClient) {
+        const otListener = (ops) => {
+          postMessage({
+            type: 'ot',
+            payload: ops
           })
-        )
-      }
-    }
+        }
 
-    onMessage = (event) => {
-      const json = JSON.parse(event.nativeEvent.data)
-      if (json.type === 'load') {
-        this.loaded = true
-        this.updateWebView()
-      } else if (json.type === 'update') {
-        this.props.onChange && this.props.onChange(json.data)
+        const replaceListener = (content) => {
+          postMessage({
+            type: 'replace',
+            payload: content
+          })
+        }
+
+        otClient.on('ot', otListener)
+        otClient.on('replace', replaceListener)
+
+        return () => {
+          otClient.off('ot', otListener)
+          otClient.off('replace', replaceListener)
+        }
       }
-    }
-  }
+    }, [otClient])
+
+    useEffect(() => {
+      postMessage({
+        type: 'config',
+        payload: {
+          path,
+          canWrite,
+          dark: context.theme === 'replitDark',
+          softWrapping: context.softWrapping,
+          indentSize: context.indentSize,
+          softTabs: context.softTabs
+        }
+      })
+    }, [canWrite, context.indentSize, context.softTabs, context.softWrapping, context.theme, path])
+
+    return (
+      <View
+        style={{
+          height: '100%',
+          display: otClient ? 'flex' : 'none'
+        }}
+      >
+        <Theme>
+          {source ? (
+            <WebView
+              useWebKit
+              originWhitelist={['*']}
+              source={{ html: source }}
+              ref={webView}
+              onMessage={onMessage}
+            />
+          ) : (
+            <ActivityIndicator />
+          )}
+        </Theme>
+      </View>
+    )
+  })
 )

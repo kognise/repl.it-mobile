@@ -27,20 +27,38 @@
   <script src='https://cdn.jsdelivr.net/gh/ajaxorg/ace-builds@1.4.5/src-min/ace.js'></script>
   <script src='https://cdn.jsdelivr.net/gh/ajaxorg/ace-builds@1.4.5/src-min/ext-modelist.js'></script>
   <script>
-    function load(data) {
-      const editor = ace.edit('editor', {
-        cursorStyle: 'slim',
-        useWorker: false
-      })
-      const modeList = ace.require('ace/ext/modelist')
+    function acePositionToIndex(start, lines) {
+      let index = 0
+      const row = Math.min(start.row, lines.length)
+      for (let i = 0; i < row; ++i) {
+        index += lines[i].length + 1
+      }
+      return index + start.column
+    }
 
-      let listening = false
-      const { code, path, dark, canWrite, softWrapping, indentSize, softTabs } = JSON.parse(data)
+    const editor = ace.edit('editor', {
+      cursorStyle: 'slim',
+      useWorker: false
+    })
+    const modeList = ace.require('ace/ext/modelist')
+
+    let listening = false
+    let cancelEdits = { current: false }
+
+    function log(message) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        type: 'log',
+        payload: message
+      }))
+    }
+
+    function config(payload) {
+      const { path, dark, canWrite, softWrapping, indentSize, softTabs } = payload
       const mode = modeList.getModeForPath(path).mode
+
       editor.setTheme(dark ? 'ace/theme/dracula' : 'ace/theme/github')
       editor.session.setMode(mode)
       editor.session.setUseWrapMode(softWrapping)
-      editor.session.setValue(code)
       editor.session.setUseSoftTabs(softTabs)
       editor.session.setTabSize(indentSize)
 
@@ -54,34 +72,91 @@
         editor.textInput.getElement().tabIndex = -1
         editor.textInput.getElement().disabled = true
         editor.commands.commmandKeyBinding = {}
-      }
+      } else if (!listening) {
+        listening = true
 
-      let lastBounce = Date.now()
-      function update() {
-        const now = Date.now()
-        if (now - lastBounce > 100) {
+        editor.session.on('change', function(delta) {
+          if (cancelEdits.current) {
+            log('cancelling')
+            cancelEdits.current = false
+            return
+          }
+
+          const prevLines = editor.session.getValue().split('\n')
+          const skip = acePositionToIndex(delta.start, prevLines)
+
+          const ops = []
+          if (skip > 0) ops.push({ skip })
+          const text = delta.lines.join('\n')
+          if (delta.action === 'remove') {
+            ops.push({ delete: text.length })
+          } else {
+            for (let char of [...text]) ops.push({ insert: char })
+          }
+
           window.ReactNativeWebView.postMessage(JSON.stringify({
-            type: 'update',
-            data: editor.session.getValue()
+            type: 'ot',
+            payload: ops
           }))
-          lastBounce = now
-        }
+        })
       }
-      editor.container.addEventListener('keyup', update)
-      editor.container.addEventListener('change', update)
     }
 
-    document.addEventListener('message', (event) => load(event.data))
+    function applyOps(ops) {
+      log(`applying ot ops? count=${ops.length}`)
+      const document = editor.session.getDocument()
+      cancelEdits.current = true
+
+      let cursor = 0
+      for (const op of ops) {
+        if (op.skip) {
+          cursor += op.skip
+        } else if (op.insert) {
+          const position = document.indexToPosition(cursor, 0)
+          editor.session.insert(position, op.insert)
+        } else if (op.delete) {
+          const start = document.indexToPosition(cursor, 0)
+          const end = document.indexToPosition(cursor + op.delete)
+          const range = new ace.Range(
+            start.row,
+            start.column,
+            end.row,
+            end.column,
+          )
+          session.remove(range)
+        }
+      }
+
+      cancelEdits.current = false
+    }
+
+    document.addEventListener('message', (event) => {
+      const message = JSON.parse(event.data)
+
+      if (message.type === 'config') {
+        config(message.payload)
+      } else if (message.type === 'ot') {
+        applyOps(message.payload)
+      } else if (message.type === 'replace') {
+        log('replacing')
+        cancelEdits.current = true
+        editor.setValue(message.payload)
+        cancelEdits.current = false
+      } else {
+        log(`unknown ${message.type}`)
+      }
+    })
+
     if (window.ReactNativeWebView) {
       window.ReactNativeWebView.postMessage(JSON.stringify({
-        type: 'load'
+        type: 'ready'
       }))
     } else {
       const interval = setInterval(() => {
         if (window.ReactNativeWebView) {
           clearInterval(interval)
           window.ReactNativeWebView.postMessage(JSON.stringify({
-            type: 'load'
+            type: 'ready'
           }))
         }
       }, 100)

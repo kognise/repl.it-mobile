@@ -4,6 +4,7 @@ import { View, ScrollView, RefreshControl, Image } from 'react-native'
 import { WebView } from 'react-native-webview'
 import { Menu, Button, Text, withTheme } from 'react-native-paper'
 
+import OTClient from '../../lib/ot'
 import consoleBridge from '../../lib/consoleBridge'
 import {
   getUrls,
@@ -32,22 +33,17 @@ class EditorScene extends Component {
   state = {
     code: undefined,
     path: undefined,
-    loading: true,
     saving: false
   }
+
+  otClient = new OTClient()
 
   render() {
     return (
       <Theme>
         <View style={{ flex: 1 }}>
-          {this.state.loading && <ActivityIndicator />}
-          <Editor
-            hidden={this.state.loading}
-            code={this.state.code}
-            path={this.state.path}
-            onChange={this.saveCode}
-            canWrite={this.props.canWrite}
-          />
+          <Editor otClient={this.otClient} path={this.props.path} canWrite={this.props.canWrite} />
+
           <Text
             style={{
               position: 'absolute',
@@ -71,17 +67,24 @@ class EditorScene extends Component {
   }
 
   load = async () => {
-    const { path, urls } = this.props
-    const code = await readFile(urls)
+    if (this.otClient.version === -1) {
+      const channel = this.props.crosis.getChannel('ot', `ot:${this.props.path}`)
+      this.otClient.connect(channel)
 
-    if (!this.mounted) return
-    this.urls = urls
-    this.setState({ code, path, loading: false })
+      this.otClient.on('error', console.error)
+      // this.otClient.on('replace', (code) => {
+      //   if (!this.mounted) return
+      //   this.setState({ code, loa })
+      // })
+
+      await channel.request({
+        otLinkFile: { file: { path: this.props.path } }
+      })
+    }
   }
-  saveCode = async (code) => {
-    this.setState({ saving: true })
-    await writeFile(this.urls, code)
-    this.setState({ saving: false })
+
+  ot = async (ops) => {
+    await this.otClient.sendOps(ops)
   }
 }
 
@@ -297,6 +300,7 @@ export default class extends Component {
     const path = this.props.navigation.getParam('path')
     const language = this.props.navigation.getParam('language')
     const canWrite = this.props.navigation.getParam('canWrite')
+    const crosis = this.props.navigation.getParam('crosis')
 
     const urls = await getUrls(id, path)
     const newState = this.state
@@ -314,7 +318,7 @@ export default class extends Component {
     } else {
       newState.routes = [{ key: 'editor', title: 'Code' }]
       this.scenes = {
-        editor: () => <EditorScene canWrite={canWrite} urls={urls} path={path} />
+        editor: () => <EditorScene crosis={crosis} canWrite={canWrite} urls={urls} path={path} />
       }
     }
 

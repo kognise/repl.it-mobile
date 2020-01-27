@@ -31,9 +31,19 @@ const Screen = () => {
         <List.Section>
           <List.Subheader>General</List.Subheader>
           <List.Item
+            title="Use system theme"
+            right={() => (
+              <Switch
+                value={settings.systemTheme}
+                onValueChange={(systemTheme) => settings.setSystemTheme(systemTheme)}
+              />
+            )}
+          />
+          <List.Item
             title="Dark theme"
             right={() => (
               <Switch
+                disabled={settings.systemTheme}
                 value={settings.theme === 'replitDark'}
                 onValueChange={(dark) => settings.setTheme(dark ? 'replitDark' : 'replitLight')}
               />

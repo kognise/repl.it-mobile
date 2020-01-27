@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { StatusBar, AsyncStorage } from 'react-native'
-import { Appearance, AppearanceProvider } from 'react-native-appearance'
+import { useColorScheme, AppearanceProvider } from 'react-native-appearance'
 import { SplashScreen } from 'expo'
 import * as Font from 'expo-font'
 import {
@@ -127,7 +127,10 @@ const lightTheme = {
 }
 
 const updateSettings = async (settings) => {
-  const { user: editor_preferences } = await getUserInfo()
+  const {
+    user: { editor_preferences }
+  } = await getUserInfo()
+
   await updateEditorPreferences({
     ...editor_preferences,
     theme: settings.theme,
@@ -135,17 +138,30 @@ const updateSettings = async (settings) => {
     indentIsSpaces: settings.softTabs,
     indentSize: settings.indentSize
   })
+
+  await AsyncStorage.setItem('@useSystemTheme', settings.systemTheme ? 'yes' : 'no')
+}
+
+const systemThemeToTheme = (systemTheme) => {
+  switch (systemTheme) {
+    case 'dark':
+      return 'replitDark'
+    default:
+      return 'replitLight'
+  }
 }
 
 const Main = () => {
-  const useSystemTheme = useRef(false)
   const [theme, setTheme] = useState('replitDark')
-  const [systemTheme, setSystemTheme] = useState('replitDark')
+  const [systemTheme, setSystemTheme] = useState(true)
+  const scheme = useColorScheme()
 
   const [softWrapping, setSoftWrapping] = useState(false)
   const [softTabs, setSoftTabs] = useState(true)
   const [indentSize, setIndentSize] = useState(2)
   const [redirectRoute, setRedirectRoute] = useState(null)
+
+  const finalTheme = systemTheme ? systemThemeToTheme(scheme) : theme
 
   const firstUpdate = useRef(true)
   useEffect(() => {
@@ -159,12 +175,13 @@ const Main = () => {
         theme,
         softWrapping,
         softTabs,
-        indentSize
+        indentSize,
+        systemTheme
       })
     } catch (error) {
       // Unhandled on purpose
     }
-  }, [theme, softWrapping, softTabs, indentSize])
+  }, [theme, softWrapping, softTabs, indentSize, systemTheme])
 
   useEffect(() => {
     ;(async () => {
@@ -178,13 +195,7 @@ const Main = () => {
         'IBM Plex Sans Thin': require('./assets/fonts/IBMPlexSans-Thin.ttf')
       })
 
-      useSystemTheme.current = (await AsyncStorage.getItem('@useSystemTheme')) === 'yes'
-      const colorScheme = Appearance.getColorScheme()
-      if (colorScheme === 'dark') {
-        setSystemTheme('replitDark')
-      } else if (colorScheme === 'light') {
-        setSystemTheme('replitLight')
-      }
+      setSystemTheme((await AsyncStorage.getItem('@useSystemTheme')) === 'yes')
 
       const { success, user } = await getUserInfo()
 
@@ -205,29 +216,15 @@ const Main = () => {
     })()
   }, [])
 
-  useEffect(() => {
-    const subscription = Appearance.addChangeListener(({ colorScheme }) => {
-      console.log('change')
-      if (colorScheme === 'dark') {
-        setSystemTheme('replitDark')
-      } else if (colorScheme === 'light') {
-        setSystemTheme('replitLight')
-      } else return
-      AsyncStorage.setItem('@useSystemTheme', 'yes')
-    })
-    return () => subscription.remove()
-  })
-
   return (
-    <PaperProvider theme={theme === 'replitDark' ? darkTheme : lightTheme}>
+    <PaperProvider theme={finalTheme === 'replitDark' ? darkTheme : lightTheme}>
       <StatusBar barStyle="light-content" />
       <SettingsContext.Provider
         value={{
-          theme: useSystemTheme.current ? systemTheme : theme,
-          setTheme: (theme) => {
-            setTheme(theme)
-            AsyncStorage.setItem('@useSystemTheme', 'no')
-          },
+          theme,
+          setTheme,
+          systemTheme,
+          setSystemTheme,
           softWrapping,
           setSoftWrapping,
           softTabs,
@@ -239,9 +236,9 @@ const Main = () => {
         }}
       >
         {console.log(
-          `(${new Date().toLocaleTimeString()} rendering, theme=${theme}, useSystemTheme=${
-            useSystemTheme.current
-          })`
+          `rendering, theme=${theme}, system scheme=${scheme}, using ${
+            systemTheme ? 'system theme' : 'repl.it theme'
+          }, final theme=${finalTheme}`
         )}
         {redirectRoute && <App />}
       </SettingsContext.Provider>

@@ -39,8 +39,6 @@ export default withSettings(
           otClient.sendOps(json.payload)
         } else if (json.type === 'log') {
           console.log('[webview log]', json.payload)
-        } else {
-          console.log(json)
         }
       },
       [otClient]

@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
-import { FAB, Dialog, Portal, Button } from 'react-native-paper'
+import { Dialog, Portal, Button } from 'react-native-paper'
 
 import { getUrls, writeFile } from '../../../lib/network'
+import FAB from '../../ui/FAB'
 import FormInput from '../../ui/FormInput'
 import ErrorMessage from '../../ui/ErrorMessage'
 
@@ -17,16 +18,7 @@ export default class extends Component {
   render() {
     return (
       <View>
-        <FAB
-          style={{
-            position: 'absolute',
-            margin: 16,
-            right: 0,
-            bottom: 0
-          }}
-          icon="pencil"
-          onPress={this.open}
-        />
+        <FAB icon="pencil" onPress={this.open} />
 
         <Portal>
           <Dialog visible={this.state.dialogOpen} onDismiss={this.cancel}>
@@ -78,7 +70,7 @@ export default class extends Component {
       const { name } = this.state
 
       const urls = await getUrls(id, name)
-      await writeFile(urls, '')
+      await writeFile(urls, '') // TODO: move to crosis
       if (!this.state.dialogOpen) return
 
       this.cancel()

@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import Fuse from 'fuse.js'
 import { View } from 'react-native'
-import { FAB, Dialog, Portal, Button } from 'react-native-paper'
+import { Dialog, Portal, Button } from 'react-native-paper'
 
 import { fetchLanguages, createRepl } from '../../../lib/network'
+import FAB from '../../ui/FAB'
 import FormInput from '../../ui/FormInput'
 import ErrorMessage from '../../ui/ErrorMessage'
 
@@ -19,16 +20,7 @@ export default class extends Component {
   render() {
     return (
       <View>
-        <FAB
-          style={{
-            position: 'absolute',
-            margin: 16,
-            right: 0,
-            bottom: 0
-          }}
-          icon="plus"
-          onPress={this.open}
-        />
+        <FAB icon="plus" onPress={this.open} />
 
         <Portal>
           <Dialog visible={this.state.dialogOpen} onDismiss={this.cancel}>

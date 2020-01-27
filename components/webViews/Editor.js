@@ -1,5 +1,6 @@
 import React, { memo, useRef, useCallback, useEffect } from 'react'
 import { View } from 'react-native'
+import { useTheme } from 'react-native-paper'
 import { WebView } from 'react-native-webview'
 
 import useSource from '../../lib/useSource'
@@ -11,6 +12,7 @@ import code from '../../html/editor.html'
 export default withSettings(
   memo(({ otClient, path, canWrite, context }) => {
     const source = useSource(code)
+    const theme = useTheme()
 
     const webView = useRef()
     const webViewReady = useRef(false)
@@ -76,13 +78,21 @@ export default withSettings(
         payload: {
           path,
           canWrite,
-          dark: context.theme === 'replitDark',
+          dark: theme.dark,
           softWrapping: context.softWrapping,
           indentSize: context.indentSize,
           softTabs: context.softTabs
         }
       })
-    }, [canWrite, context.indentSize, context.softTabs, context.softWrapping, context.theme, path])
+    }, [
+      canWrite,
+      context.indentSize,
+      context.softTabs,
+      context.softWrapping,
+      context.theme,
+      path,
+      theme.dark
+    ])
 
     return (
       <View

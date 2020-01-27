@@ -6,15 +6,9 @@ import { Menu, Button, Text, withTheme } from 'react-native-paper'
 
 import OTClient from '../../lib/ot'
 import consoleBridge from '../../lib/consoleBridge'
-import {
-  getUrls,
-  readFile,
-  isFileBinary,
-  writeFile,
-  deleteFile,
-  getWebUrl
-} from '../../lib/network'
+import { getUrls, isFileBinary, deleteFile, getWebUrl } from '../../lib/network'
 import ActivityIndicator from '../../components/ui/ActivityIndicator'
+import FAB from '../../components/ui/FAB'
 import TabView from '../../components/ui/TabView'
 import Editor from '../../components/webViews/Editor'
 import Theme from '../../components/wrappers/Theme'
@@ -69,13 +63,10 @@ class EditorScene extends Component {
   load = async () => {
     if (this.otClient.version === -1) {
       const channel = this.props.crosis.getChannel('ot', `ot:${this.props.path}`)
-      this.otClient.connect(channel)
 
+      this.otClient.connect(channel)
+      this.otClient.on('outgoing', this.debouncedSave)
       this.otClient.on('error', console.error)
-      // this.otClient.on('replace', (code) => {
-      //   if (!this.mounted) return
-      //   this.setState({ code, loa })
-      // })
 
       await channel.request({
         otLinkFile: { file: { path: this.props.path } }
@@ -85,6 +76,31 @@ class EditorScene extends Component {
 
   ot = async (ops) => {
     await this.otClient.sendOps(ops)
+  }
+
+  saveTimeout = null
+  debouncedSave = () => {
+    clearTimeout(this.saveTimeout)
+
+    this.saveTimeout = setTimeout(() => {
+      this.saveTimeout = null
+      this.save()
+    }, 2000)
+
+    if (!this.saveTimeout) this.save()
+  }
+
+  save = async () => {
+    console.log('saving...')
+    if (!this.mounted || this.saving) return
+    this.setState({ saving: true })
+
+    await this.otClient.channel.request({ flush: {} })
+    await this.props.crosis.getChannel('snapshot').request({ fsSnapshot: {} })
+
+    if (!this.mounted) return
+    this.setState({ saving: false })
+    console.log('flushed and took snapshot')
   }
 }
 
@@ -286,13 +302,21 @@ export default class extends Component {
       )
     }
     return (
-      <TabView
-        state={this.state}
-        scenes={this.scenes}
-        swipeEnabled={this.state.routes[this.state.index].key !== 'editor'}
-        onIndexChange={this.updateIndex}
-      />
+      <View style={{ flex: 1 }}>
+        <TabView
+          state={this.state}
+          scenes={this.scenes}
+          swipeEnabled={this.state.routes[this.state.index].key !== 'editor'}
+          onIndexChange={this.updateIndex}
+        />
+
+        <FAB icon="play" onPress={this.run} />
+      </View>
     )
+  }
+
+  run = async () => {
+    this.setState({ index: this.indexFromKey('console') })
   }
 
   async UNSAFE_componentWillMount() {
@@ -325,8 +349,6 @@ export default class extends Component {
     if (language === 'html') {
       newState.routes.push({ key: 'web', title: 'Web' })
       this.scenes.web = () => <WebScene id={id} logMessage={this.logMessage} />
-    } else {
-      this.logMessage("Sorry, running repls isn't currently supported! We're working on it.", true)
     }
 
     newState.routes.push({ key: 'console', title: 'Console' })
@@ -334,6 +356,10 @@ export default class extends Component {
 
     newState.loading = false
     this.setState(newState)
+  }
+
+  indexFromKey(key) {
+    return this.state.routes.findIndex((route) => route.key === key)
   }
 
   logQueue = []

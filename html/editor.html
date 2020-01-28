@@ -140,7 +140,7 @@
       cancelEdits.current = false
     }
 
-    document.addEventListener('message', (event) => {
+    function onMessage(event) {
       const message = JSON.parse(event.data)
 
       if (message.type === 'config') {
@@ -156,14 +156,17 @@
       } else {
         log(`unknown ${message.type}`)
       }
-    })
+    }
+
+    document.addEventListener('message', onMessage)
+    window.addEventListener('message', onMessage)
 
     if (window.ReactNativeWebView) {
       window.ReactNativeWebView.postMessage(JSON.stringify({
         type: 'ready'
       }))
     } else {
-      const interval = setInterval(() => {
+      const interval = setInterval(function() {
         if (window.ReactNativeWebView) {
           clearInterval(interval)
           window.ReactNativeWebView.postMessage(JSON.stringify({

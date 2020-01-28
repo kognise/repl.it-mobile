@@ -327,8 +327,10 @@ export default class extends Component {
 
   runOrStop = async () => {
     if (this.state.interpState === 'running' && this.interp) {
-      this.clearLog()
       await this.interp.request({ clear: {} })
+      return
+    } else {
+      this.clearLog()
     }
 
     this.setState({ index: this.indexFromKey('console'), interpState: 'installing' })

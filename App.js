@@ -84,25 +84,29 @@ const App = createAppContainer(Navigator)
 
 const roundness = 2
 
-const fonts = configureFonts({
-  default: {
-    regular: {
-      fontFamily: 'IBM Plex Sans',
-      fontWeight: 'normal'
-    },
-    medium: {
-      fontFamily: 'IBM Plex Sans Medium',
-      fontWeight: 'normal'
-    },
-    light: {
-      fontFamily: 'IBM Plex Sans Light',
-      fontWeight: 'normal'
-    },
-    thin: {
-      fontFamily: 'IBM Plex Sans Thin',
-      fontWeight: 'normal'
-    }
+const allFonts = {
+  regular: {
+    fontFamily: 'IBM Plex Sans',
+    fontWeight: 'normal'
+  },
+  medium: {
+    fontFamily: 'IBM Plex Sans Medium',
+    fontWeight: 'normal'
+  },
+  light: {
+    fontFamily: 'IBM Plex Sans Light',
+    fontWeight: 'normal'
+  },
+  thin: {
+    fontFamily: 'IBM Plex Sans Thin',
+    fontWeight: 'normal'
   }
+}
+
+const fonts = configureFonts({
+  default: allFonts,
+  ios: allFonts,
+  android: allFonts
 })
 
 const darkTheme = {

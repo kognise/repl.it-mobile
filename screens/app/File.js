@@ -223,7 +223,7 @@ const ConsoleScene = forwardRef((_, ref) => {
       const parsed = Anser.ansiToJson(content.replace(/\uEEA7/g, '>'))
       setLog(log.concat(parsed))
     },
-    clearLog: () => setLog('')
+    clearLog: () => setLog([])
   }))
 
   return (
@@ -355,12 +355,13 @@ export default class extends Component {
             break
           }
 
-          case 'state':
+          case 'state': {
             console.log('got state update to', command.state)
             this.setState({
               interpState: command.state === api.State.Running ? 'running' : 'stopped'
             })
             break
+          }
         }
       })
     }

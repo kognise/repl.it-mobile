@@ -52,7 +52,7 @@ const Screen = () => {
   useEffect(() => {
     // So we can reload after creating folders in the menu
     setParams({ reloadCurrent })
-  }, [reloadCurrent]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [reloadCurrent, setParams]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const onScroll = async (event) => {
     if (loading || refreshing || !pageInfoRef.current.hasNextPage) return
@@ -71,7 +71,7 @@ const Screen = () => {
       if (!mounted.current) return
       setLoading(false)
     })()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [load, mounted]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Theme>

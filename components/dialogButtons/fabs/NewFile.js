@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Dialog, Portal, Button } from 'react-native-paper'
 
-import { getUrls, writeFile } from '../../../lib/network'
 import FAB from '../../ui/FAB'
 import FormInput from '../../ui/FormInput'
 import ErrorMessage from '../../ui/ErrorMessage'

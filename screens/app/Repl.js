@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { View, Clipboard, Platform, ToastAndroid, ScrollView, RefreshControl } from 'react-native'
 import { useNavigation } from 'react-navigation-hooks'
 import { Menu, List } from 'react-native-paper'

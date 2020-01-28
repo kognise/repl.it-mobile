@@ -148,10 +148,12 @@ const updateSettings = async (settings) => {
 
 const systemThemeToTheme = (systemTheme) => {
   switch (systemTheme) {
-    case 'dark':
+    case 'dark': {
       return 'replitDark'
-    default:
+    }
+    default: {
       return 'replitLight'
+    }
   }
 }
 

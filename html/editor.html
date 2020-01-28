@@ -42,6 +42,8 @@
     })
     const modeList = ace.require('ace/ext/modelist')
 
+    let ready = false
+    let readOnlyGlobal = false
     let listening = false
     let cancelEdits = { current: false }
 
@@ -52,8 +54,26 @@
       }))
     }
 
+    function setReadOnly(readOnly) {
+      editor.setOptions({
+        readOnly,
+        highlightActiveLine: !readOnly,
+        highlightGutterLine: !readOnly
+      })
+      editor.renderer.$cursorLayer.element.style.opacity = readOnly ? 0 : 1
+      editor.textInput.getElement().disabled = readOnly
+    }
+
+    function enable() {
+      if (!ready && !readOnlyGlobal) {
+        ready = true
+        setReadOnly(false)
+      }
+    }
+
     function config(payload) {
       const { path, dark, canWrite, softWrapping, indentSize, softTabs } = payload
+      readOnlyGlobal = !canWrite
       const mode = modeList.getModeForPath(path).mode
 
       editor.setTheme(dark ? 'ace/theme/dracula' : 'ace/theme/github')
@@ -62,22 +82,12 @@
       editor.session.setUseSoftTabs(softTabs)
       editor.session.setTabSize(indentSize)
 
-      if (!canWrite) {
-        editor.setOptions({
-          readOnly: true,
-          highlightActiveLine: false,
-          highlightGutterLine: false
-        })
-        editor.renderer.$cursorLayer.element.style.opacity = 0
-        editor.textInput.getElement().tabIndex = -1
-        editor.textInput.getElement().disabled = true
-        editor.commands.commmandKeyBinding = {}
-      } else if (!listening) {
+      if (!ready || !canWrite) setReadOnly(true)
+      if (canWrite && !listening) {
         listening = true
 
         editor.session.on('change', function(delta) {
           if (cancelEdits.current) {
-            log('cancelling')
             cancelEdits.current = false
             return
           }
@@ -136,9 +146,10 @@
       if (message.type === 'config') {
         config(message.payload)
       } else if (message.type === 'ot') {
+        enable()
         applyOps(message.payload)
       } else if (message.type === 'replace') {
-        log('replacing')
+        enable()
         cancelEdits.current = true
         editor.setValue(message.payload)
         cancelEdits.current = false

@@ -66,16 +66,16 @@ export default class extends Component {
     this.setState({ loading: true })
     try {
       if (!this.state.name) throw new Error('Please enter a filename!')
-      const { id } = this.props
+      const { id, crosis } = this.props
       const { name } = this.state
 
-      const urls = await getUrls(id, name)
-      await writeFile(urls, '') // TODO: move to crosis
+      const files = crosis.getChannel('gcsfiles')
+      await files.request({ write: { path: name, content: '' } })
       if (!this.state.dialogOpen) return
 
       this.cancel()
       this.props.reloadCurrent()
-      this.props.navigate('File', { id, path: name, canWrite: true })
+      this.props.navigate('File', { id, crosis, path: name, canWrite: true })
     } catch (error) {
       if (!this.state.dialogOpen) return
       this.setState({

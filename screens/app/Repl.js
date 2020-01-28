@@ -94,7 +94,7 @@ const Screen = () => {
           {renderFiles(files, onFilePress)}
         </ScrollView>
 
-        <NewFile id={id} reloadCurrent={reloadCurrent} navigate={navigate} />
+        <NewFile id={id} reloadCurrent={reloadCurrent} navigate={navigate} crosis={crosis} />
       </View>
     </Theme>
   )

@@ -195,7 +195,7 @@ const Main = () => {
         'IBM Plex Sans Thin': require('./assets/fonts/IBMPlexSans-Thin.ttf')
       })
 
-      setSystemTheme((await AsyncStorage.getItem('@useSystemTheme')) === 'yes')
+      setSystemTheme((await AsyncStorage.getItem('@useSystemTheme')) !== 'no')
 
       const { success, user } = await getUserInfo()
 

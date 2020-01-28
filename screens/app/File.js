@@ -2,7 +2,8 @@ import React, { Component, useImperativeHandle, useState, forwardRef } from 'rea
 import * as WebBrowser from 'expo-web-browser'
 import { View, ScrollView, RefreshControl, Image } from 'react-native'
 import { WebView } from 'react-native-webview'
-import { Menu, Button, Text, useTheme } from 'react-native-paper'
+import { Menu, Button, Text } from 'react-native-paper'
+import { api } from '@replit/protocol'
 import Anser from 'anser'
 
 import OTClient from '../../lib/ot'
@@ -65,13 +66,9 @@ class EditorScene extends Component {
     if (this.otClient.version === -1) {
       const channel = this.props.crosis.getChannel('ot', `ot:${this.props.path}`)
 
-      this.otClient.connect(channel)
       this.otClient.on('outgoing', this.debouncedSave)
       this.otClient.on('error', console.error)
-
-      await channel.request({
-        otLinkFile: { file: { path: this.props.path } }
-      })
+      this.otClient.connect(channel, this.props.path)
     }
   }
 
@@ -225,7 +222,8 @@ const ConsoleScene = forwardRef((_, ref) => {
     appendToLog: (content) => {
       const parsed = Anser.ansiToJson(content.replace(/\uEEA7/g, '>'))
       setLog(log.concat(parsed))
-    }
+    },
+    clearLog: () => setLog('')
   }))
 
   return (
@@ -311,7 +309,6 @@ export default class extends Component {
           onIndexChange={this.updateIndex}
         />
 
-        {console.log('interp state is', this.state.interpState)}
         <FAB
           icon={
             this.state.interpState === 'stopped'
@@ -330,6 +327,7 @@ export default class extends Component {
 
   runOrStop = async () => {
     if (this.state.interpState === 'running' && this.interp) {
+      this.clearLog()
       await this.interp.request({ clear: {} })
     }
 
@@ -338,7 +336,7 @@ export default class extends Component {
     if (!this.packager) {
       this.packager = this.crosis.getChannel('packager3')
       this.packager.on('command', (command) => {
-        if (command.output) {
+        if (command.body === 'output') {
           this.appendToLog(command.output)
         }
       })
@@ -349,13 +347,18 @@ export default class extends Component {
     if (!this.interp) {
       this.interp = this.crosis.getChannel('interp')
       this.interp.on('command', (command) => {
-        if (command.output) {
-          this.appendToLog(command.output)
-        } else if (command.state) {
-          console.log('got state update to', command.state)
-          this.setState({
-            interpState: command.state === 1 ? 'stopped' : 'running'
-          })
+        switch (command.body) {
+          case 'output': {
+            this.appendToLog(command.output)
+            break
+          }
+
+          case 'state':
+            console.log('got state update to', command.state)
+            this.setState({
+              interpState: command.state === api.State.Running ? 'running' : 'stopped'
+            })
+            break
         }
       })
     }
@@ -423,11 +426,18 @@ export default class extends Component {
   }
 
   appendToLog = (content) => {
-    console.log('updating log with', content)
     if (this.consoleScene) {
       this.consoleScene.appendToLog(content)
     } else {
       this.logQueue += content
+    }
+  }
+
+  clearLog = () => {
+    if (this.consoleScene) {
+      this.consoleScene.clearLog()
+    } else {
+      this.logQueue = ''
     }
   }
 

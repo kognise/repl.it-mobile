@@ -78,6 +78,7 @@ class EditorScene extends Component {
 
   saveTimeout = null
   debouncedSave = () => {
+    // FIXME: this runs on an interval even if not updated
     clearTimeout(this.saveTimeout)
 
     this.saveTimeout = setTimeout(() => {
@@ -172,6 +173,7 @@ class WebScene extends Component {
               source={this.state.source}
               ref={(webView) => (this.webView = webView)}
               renderLoading={() => null}
+              onNavigationStateChange={(event) => console.log(`navigated to ${event.url}`)}
               onLoadEnd={this.onLoadEnd}
               key={this.state.key}
               onMessage={this.onMessage}
@@ -199,6 +201,7 @@ class WebScene extends Component {
   }
 
   reload = () => {
+    console.log('reloading lmao')
     this.setState({ reloading: true })
     this.webView.injectJavaScript(`window.location.href = '${this.state.source.baseUrl}'`)
   }
@@ -282,6 +285,7 @@ export default class extends Component {
     interpState: 'stopped'
   }
   scenes = {}
+  isWebRepl = false
   crosis = null
 
   render() {
@@ -326,46 +330,51 @@ export default class extends Component {
   }
 
   runOrStop = async () => {
-    if (this.state.interpState === 'running' && this.interp) {
-      await this.interp.request({ clear: {} })
-      return
+    if (this.isWebRepl) {
+      this.setState({ index: this.indexFromKey('console'), interpState: 'web' })
+      console.warn("I'm too lazy to reload the page so pull down to reload manually lol")
     } else {
-      this.clearLog()
-    }
+      if (this.state.interpState === 'running' && this.interp) {
+        await this.interp.request({ clear: {} })
+        return
+      } else {
+        this.clearLog()
+      }
 
-    this.setState({ index: this.indexFromKey('console'), interpState: 'installing' })
+      this.setState({ index: this.indexFromKey('console'), interpState: 'installing' })
 
-    if (!this.packager) {
-      this.packager = this.crosis.getChannel('packager3')
-      this.packager.on('command', (command) => {
-        if (command.body === 'output') {
-          this.appendToLog(command.output)
-        }
-      })
-    }
-    await this.packager.request({ packageInstall: {} })
-
-    this.setState({ interpState: 'running' })
-    if (!this.interp) {
-      this.interp = this.crosis.getChannel('interp')
-      this.interp.on('command', (command) => {
-        switch (command.body) {
-          case 'output': {
+      if (!this.packager) {
+        this.packager = this.crosis.getChannel('packager3')
+        this.packager.on('command', (command) => {
+          if (command.body === 'output') {
             this.appendToLog(command.output)
-            break
           }
+        })
+      }
+      await this.packager.request({ packageInstall: {} })
 
-          case 'state': {
-            console.log('got state update to', command.state)
-            this.setState({
-              interpState: command.state === api.State.Running ? 'running' : 'stopped'
-            })
-            break
+      this.setState({ interpState: 'running' })
+      if (!this.interp) {
+        this.interp = this.crosis.getChannel('interp')
+        this.interp.on('command', (command) => {
+          switch (command.body) {
+            case 'output': {
+              this.appendToLog(command.output)
+              break
+            }
+
+            case 'state': {
+              console.log('got state update to', command.state)
+              this.setState({
+                interpState: command.state === api.State.Running ? 'running' : 'stopped'
+              })
+              break
+            }
           }
-        }
-      })
+        })
+      }
+      await this.interp.request({ runMain: {} })
     }
-    await this.interp.request({ runMain: {} })
   }
 
   componentWillUnmount() {
@@ -382,6 +391,7 @@ export default class extends Component {
 
     const urls = await getUrls(id, path)
     const newState = this.state
+    this.isWebRepl = language === 'web_project' || language === 'html' // TODO: refactor
 
     if (isImage(path)) {
       newState.routes = [{ key: 'image', title: 'Image' }]
@@ -400,9 +410,9 @@ export default class extends Component {
       }
     }
 
-    if (language === 'html') {
+    if (this.isWebRepl) {
       newState.routes.push({ key: 'web', title: 'Web' })
-      this.scenes.web = () => <WebScene id={id} appendToLog={this.logMessage} />
+      this.scenes.web = () => <WebScene id={id} appendToLog={this.appendToLog} />
     }
 
     newState.routes.push({ key: 'console', title: 'Console' })

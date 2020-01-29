@@ -89,10 +89,11 @@ export default class extends Component {
         distance: 100,
         maxPatternLength: 16,
         minMatchCharLength: 1,
-        keys: ['title', 'displayName'],
+        keys: ['name', 'displayName'],
         id: 'name'
       })
       const result = fuse.search(this.state.language)[0]
+      console.log(`got ${result} from ${this.state.language}`)
       if (!result) throw new Error("Sorry, we don't know what language that is!")
 
       const { id, title, url } = await createRepl(this.state.title, result, this.props.folderId)

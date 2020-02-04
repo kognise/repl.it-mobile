@@ -341,6 +341,8 @@ export default class extends Component {
 
       this.setState({ index: this.indexFromKey('console'), interpState: 'installing' })
 
+      // FIXME: Check for channel compatibility
+
       if (!this.packager) {
         this.packager = this.crosis.getChannel('packager3')
         this.packager.on('command', (command) => {
@@ -353,7 +355,7 @@ export default class extends Component {
 
       this.setState({ interpState: 'running' })
       if (!this.interp) {
-        this.interp = this.crosis.getChannel('interp')
+        this.interp = this.crosis.getChannel('interp2')
         this.interp.on('command', (command) => {
           switch (command.body) {
             case 'output': {

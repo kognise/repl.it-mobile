@@ -32,7 +32,7 @@ class EditorScene extends Component {
     saving: false
   }
 
-  otClient = new OTClient()
+  otClient = new OTClient(this.props.crosis) // FIXME: flow blocking issues?
 
   render() {
     return (
@@ -64,11 +64,9 @@ class EditorScene extends Component {
 
   load = async () => {
     if (this.otClient.version === -1) {
-      const channel = this.props.crosis.getChannel('ot', `ot:${this.props.path}`)
-
       this.otClient.on('outgoing', this.debouncedSave)
       this.otClient.on('error', console.error)
-      this.otClient.connect(channel, this.props.path)
+      this.otClient.connect(this.props.path)
     }
   }
 
@@ -331,7 +329,7 @@ export default class extends Component {
 
   runOrStop = async () => {
     if (this.isWebRepl) {
-      this.setState({ index: this.indexFromKey('console'), interpState: 'web' })
+      this.setState({ index: this.indexFromKey('web') })
       console.warn("I'm too lazy to reload the page so pull down to reload manually lol")
     } else {
       if (this.state.interpState === 'running' && this.interp) {

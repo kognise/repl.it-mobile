@@ -114,45 +114,47 @@
 
     function applyOps(ops) {
       log(`applying ot ops? count=${ops.length}`)
-      const document = editor.session.getDocument()
-      cancelEdits.current = true
+      const aceDocument = editor.session.getDocument()
 
       let cursor = 0
+      let length = editor.session.getValue().length
       for (const op of ops) {
         if (op.skip) {
           cursor += op.skip
         } else if (op.insert) {
-          const position = document.indexToPosition(cursor, 0)
+          const position = aceDocument.indexToPosition(cursor, 0)
           editor.session.insert(position, op.insert)
         } else if (op.delete) {
-          const start = document.indexToPosition(cursor, 0)
-          const end = document.indexToPosition(cursor + op.delete)
+          const start = aceDocument.indexToPosition(cursor, 0)
+          const end = aceDocument.indexToPosition(cursor + op.delete)
           const range = new ace.Range(
             start.row,
             start.column,
             end.row,
             end.column,
           )
-          session.remove(range)
+          editor.session.remove(range)
+          length -= op.delete
         }
       }
-
-      cancelEdits.current = false
     }
 
     function onMessage(event) {
       const message = JSON.parse(event.data)
 
       if (message.type === 'config') {
+        log('got config')
         config(message.payload)
       } else if (message.type === 'ot') {
-        enable()
-        applyOps(message.payload)
-      } else if (message.type === 'replace') {
-        enable()
         cancelEdits.current = true
-        editor.setValue(message.payload)
+        applyOps(message.payload)
         cancelEdits.current = false
+        enable()
+      } else if (message.type === 'replace') {
+        cancelEdits.current = true
+        editor.session.setValue(message.payload)
+        cancelEdits.current = false
+        enable()
       } else {
         log(`unknown ${message.type}`)
       }

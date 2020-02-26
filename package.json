@@ -20,6 +20,7 @@
     "expo-font": "~8.0.0",
     "expo-web-browser": "~8.0.0",
     "fuse.js": "^3.4.4",
+    "object-path-immutable": "^4.1.0",
     "react": "16.9.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.1.tar.gz",
     "react-native-appearance": "~0.3.1",

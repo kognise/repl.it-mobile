@@ -330,7 +330,7 @@ export default class extends Component {
   runOrStop = async () => {
     if (this.isWebRepl) {
       this.setState({ index: this.indexFromKey('web') })
-      console.warn("I'm too lazy to reload the page so pull down to reload manually lol")
+      alert("I'm too lazy to reload the page so pull down to reload manually lol")
     } else {
       if (this.state.interpState === 'running' && this.interp) {
         await this.interp.request({ clear: {} })

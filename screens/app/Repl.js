@@ -2,10 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { View, Clipboard, Platform, ToastAndroid, ScrollView, RefreshControl } from 'react-native'
 import { useNavigation } from 'react-navigation-hooks'
 import { Menu, List } from 'react-native-paper'
+import { api } from '@replit/protocol'
 
 import { navigateSame } from '../../lib/navigation'
 import useMounted from '../../lib/useMounted'
-import moisten from '../../lib/moisten'
+import { moisten, setAtPath } from '../../lib/moisten'
 import { fetchFiles, deleteRepl, forkRepl } from '../../lib/network'
 import CrosisConnector from '../../lib/crosis'
 import NewFile from '../../components/dialogButtons/fabs/NewFile'
@@ -58,9 +59,47 @@ const Screen = () => {
   const load = useCallback(async () => {
     const flatFiles = await fetchFiles(url)
     const files = moisten(flatFiles)
+    await crosis.connect()
+
+    let closureFiles = files // For performance reasons, refactor later
+    const fsevents = crosis.getChannel('fsevents')
+    fsevents.on('command', (command) => {
+      if (!mounted.current || command.body !== 'fileEvent') return
+
+      switch (command.fileEvent.op) {
+        case api.FileEvent.Op.Create: {
+          console.log('type is', command.fileEvent.file.type)
+          closureFiles = setAtPath(
+            closureFiles,
+            command.fileEvent.file.path,
+            command.fileEvent.file.type === api.File.Type.DIRECTORY ? 'folder' : 'file'
+          )
+
+          if (command.fileEvent.file.type === api.File.Type.DIRECTORY) {
+            // TODO: Subscribe on first load too
+            fsevents.send({
+              subscribeFile: { files: [command.fileEvent.file.path] }
+            })
+          }
+
+          setFiles(closureFiles)
+          break
+        }
+
+        default: {
+          console.log(`unknown fsevents op ${command.fileEvent.op}`)
+        }
+      }
+    })
+
+    console.log('requesting')
+    await fsevents.send({
+      subscribeFile: { files: ['.'] }
+    })
+    console.log('requested')
+
     if (!mounted.current) return
     setFiles(files)
-    await crosis.connect()
   }, [crosis, mounted, url])
 
   const reloadCurrent = useCallback(async () => {
@@ -82,6 +121,8 @@ const Screen = () => {
       if (!mounted.current) return
       setLoading(false)
     })()
+
+    return () => crosis.closeChannel('fsevents')
   }, [crosis, load, mounted])
 
   return (

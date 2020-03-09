@@ -155,6 +155,9 @@
         editor.session.setValue(message.payload)
         cancelEdits.current = false
         enable()
+      } else if (message.type === 'bottomInset') {
+        log(`updating bottom inset to ${message.payload}px`)
+        editor.renderer.setScrollMargin(0, message.payload)
       } else {
         log(`unknown ${message.type}`)
       }

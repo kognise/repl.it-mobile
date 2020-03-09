@@ -1,6 +1,6 @@
 import React, { Component, useImperativeHandle, useState, forwardRef } from 'react'
 import * as WebBrowser from 'expo-web-browser'
-import { View, ScrollView, RefreshControl, Image } from 'react-native'
+import { View, ScrollView, RefreshControl, Image, SafeAreaView } from 'react-native'
 import { WebView } from 'react-native-webview'
 import { Menu, Button, Text } from 'react-native-paper'
 import { api } from '@replit/protocol'
@@ -229,23 +229,25 @@ const ConsoleScene = forwardRef((_, ref) => {
 
   return (
     <Theme>
-      <ScrollView style={{ minHeight: '100%' }}>
-        <Text>
-          {log.map((chunk, index) => (
-            <Text
-              style={{
-                color: chunk.fg && `rgb(${chunk.fg})`,
-                backgroundColor: chunk.backgroundColor && `rgb(${chunk.bg})`,
-                fontFamily: 'Inconsolata',
-                fontSize: 18
-              }}
-              key={index}
-            >
-              {chunk.content}
-            </Text>
-          ))}
-        </Text>
-      </ScrollView>
+      <SafeAreaView>
+        <ScrollView style={{ minHeight: '100%' }}>
+          <Text>
+            {log.map((chunk, index) => (
+              <Text
+                style={{
+                  color: chunk.fg && `rgb(${chunk.fg})`,
+                  backgroundColor: chunk.backgroundColor && `rgb(${chunk.bg})`,
+                  fontFamily: 'Inconsolata',
+                  fontSize: 18
+                }}
+                key={index}
+              >
+                {chunk.content}
+              </Text>
+            ))}
+          </Text>
+        </ScrollView>
+      </SafeAreaView>
     </Theme>
   )
 })

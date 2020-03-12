@@ -1,29 +1,30 @@
-import React, { Component } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { View } from 'react-native'
-import { isLoggedIn } from '../lib/network'
+import { useNavigation } from 'react-navigation-hooks'
 
-import ActivityIndicator from '../components/customized/ActivityIndicator'
+import ActivityIndicator from '../components/ui/ActivityIndicator'
+import SettingsContext from '../components/wrappers/SettingsContext'
 import Theme from '../components/wrappers/Theme'
 
-export default class extends Component {
-  render() {
-    return (
-      <Theme>
-        <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <ActivityIndicator />
-        </View>
-      </Theme>
-    )
-  }
+export default () => {
+  const settings = useContext(SettingsContext)
+  const { navigate } = useNavigation()
 
-  async componentDidMount() {
-    const loggedIn = await isLoggedIn()
-    this.props.navigation.navigate(loggedIn ? 'App' : 'Auth')
-  }
+  useEffect(() => {
+    navigate(settings.redirectRoute)
+  })
+
+  return (
+    <Theme>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <ActivityIndicator />
+      </View>
+    </Theme>
+  )
 }

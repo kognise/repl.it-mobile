@@ -1,20 +1,19 @@
-import React, { Component } from 'react'
-import { View, Linking } from 'react-native'
+import React from 'react'
+import { View } from 'react-native'
+import { Text } from 'react-native-paper'
 
-export default class extends Component {
-  static navigationOptions = {
-    title: 'Google'
-  }
+import Theme from '../../../components/wrappers/Theme'
 
-  state = {
-    loading: false
-  }
+const Screen = () => (
+  <Theme>
+    <View>
+      <Text>Yeet! Google login isn't implemented yet :smirk:</Text>
+    </View>
+  </Theme>
+)
 
-  render() {
-    return <View />
-  }
-
-  async componentDidMount() {
-    Linking.openURL('https://google.com')
-  }
+Screen.navigationOptions = {
+  title: 'Google Login'
 }
+
+export default Screen

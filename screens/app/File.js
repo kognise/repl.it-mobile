@@ -1,21 +1,17 @@
-import React, { Component } from 'react'
+import React, { Component, useImperativeHandle, useState, forwardRef } from 'react'
 import * as WebBrowser from 'expo-web-browser'
-
-import { View, ScrollView, RefreshControl, Image } from 'react-native'
+import { View, ScrollView, SafeAreaView, RefreshControl, Image } from 'react-native'
 import { WebView } from 'react-native-webview'
-import { Menu, Button, Text, withTheme } from 'react-native-paper'
-import consoleBridge from '../../lib/consoleBridge'
-import {
-  getUrls,
-  readFile,
-  isFileBinary,
-  writeFile,
-  deleteFile,
-  getWebUrl
-} from '../../lib/network'
+import { Menu, Button, Text } from 'react-native-paper'
+import { api } from '@replit/protocol'
+import Anser from 'anser'
 
-import ActivityIndicator from '../../components/customized/ActivityIndicator'
-import TabView from '../../components/customized/TabView'
+import OTClient from '../../lib/ot'
+import consoleBridge from '../../lib/consoleBridge'
+import { getUrls, isFileBinary, deleteFile, getWebUrl } from '../../lib/network'
+import ActivityIndicator from '../../components/ui/ActivityIndicator'
+import FAB from '../../components/ui/FAB'
+import TabView from '../../components/ui/TabView'
 import Editor from '../../components/webViews/Editor'
 import Theme from '../../components/wrappers/Theme'
 
@@ -33,32 +29,31 @@ class EditorScene extends Component {
   state = {
     code: undefined,
     path: undefined,
-    loading: true,
     saving: false
   }
+
+  otClient = new OTClient(this.props.crosis) // FIXME: flow blocking issues?
 
   render() {
     return (
       <Theme>
-        <View style={{ flex: 1 }}>
-          {this.state.loading && <ActivityIndicator />}
-          <Editor
-            hidden={this.state.loading}
-            code={this.state.code}
-            path={this.state.path}
-            onChange={this.saveCode}
-            canWrite={this.props.canWrite}
-          />
-          <Text
-            style={{
-              position: 'absolute',
-              bottom: 10,
-              left: 10
-            }}
-          >
-            {this.state.saving ? 'Saving...' : 'Saved'}
-          </Text>
-        </View>
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={{ flex: 1, display: 'flex' }}>
+            <Editor
+              otClient={this.otClient}
+              path={this.props.path}
+              canWrite={this.props.canWrite}
+            />
+
+            <Text
+              style={{
+                padding: 10
+              }}
+            >
+              {this.state.saving ? 'Saving...' : 'Saved'}
+            </Text>
+          </View>
+        </SafeAreaView>
       </Theme>
     )
   }
@@ -72,17 +67,41 @@ class EditorScene extends Component {
   }
 
   load = async () => {
-    const { path, urls } = this.props
-    const code = await readFile(urls)
+    if (this.otClient.version === -1) {
+      this.otClient.on('outgoing', this.debouncedSave)
+      this.otClient.on('error', console.error)
+      this.otClient.connect(this.props.path)
+    }
+  }
+
+  ot = async (ops) => {
+    await this.otClient.sendOps(ops)
+  }
+
+  saveTimeout = null
+  debouncedSave = () => {
+    // FIXME: this runs on an interval even if not updated
+    clearTimeout(this.saveTimeout)
+
+    this.saveTimeout = setTimeout(() => {
+      this.saveTimeout = null
+      this.save()
+    }, 2000)
+
+    if (!this.saveTimeout) this.save()
+  }
+
+  save = async () => {
+    console.log('saving...')
+    if (!this.mounted || this.saving) return
+    this.setState({ saving: true })
+
+    await this.otClient.channel.request({ flush: {} })
+    await this.props.crosis.getChannel('snapshot').request({ fsSnapshot: {} })
 
     if (!this.mounted) return
-    this.urls = urls
-    this.setState({ code, path, loading: false })
-  }
-  saveCode = async (code) => {
-    this.setState({ saving: true })
-    await writeFile(this.urls, code)
     this.setState({ saving: false })
+    console.log('flushed and took snapshot')
   }
 }
 
@@ -130,42 +149,6 @@ class BinaryScene extends Component {
   download = async () => await WebBrowser.openBrowserAsync(this.props.urls.read)
 }
 
-const ConsoleScene = withTheme(
-  class extends Component {
-    state = {
-      messages: []
-    }
-
-    render() {
-      return (
-        <Theme>
-          <ScrollView style={{ minHeight: '100%' }}>
-            {this.state.messages.map(({ message, error }, index) => (
-              <Text
-                style={{
-                  fontFamily: 'Inconsolata',
-                  fontSize: 18,
-                  color: error ? this.props.theme.colors.error : this.props.theme.colors.text
-                }}
-                selectable
-                key={index}
-              >
-                {message}
-              </Text>
-            ))}
-          </ScrollView>
-        </Theme>
-      )
-    }
-
-    appendMessage(message, error) {
-      this.setState((prevState) => ({
-        messages: [...prevState.messages, { message, error }]
-      }))
-    }
-  }
-)
-
 class WebScene extends Component {
   state = {
     source: {},
@@ -192,6 +175,7 @@ class WebScene extends Component {
               source={this.state.source}
               ref={(webView) => (this.webView = webView)}
               renderLoading={() => null}
+              onNavigationStateChange={(event) => console.log(`navigated to ${event.url}`)}
               onLoadEnd={this.onLoadEnd}
               key={this.state.key}
               onMessage={this.onMessage}
@@ -219,6 +203,7 @@ class WebScene extends Component {
   }
 
   reload = () => {
+    console.log('reloading lmao')
     this.setState({ reloading: true })
     this.webView.injectJavaScript(`window.location.href = '${this.state.source.baseUrl}'`)
   }
@@ -229,10 +214,47 @@ class WebScene extends Component {
     this.mounted = false
   }
   onMessage = (event) => {
+    // TODO: add color for error
     const [error, message] = JSON.parse(event.nativeEvent.data)
-    this.props.logMessage(message, error)
+    this.props.appendToLog((error ? `[error] ${message}` : message) + '\n')
   }
 }
+
+const ConsoleScene = forwardRef((_, ref) => {
+  const [log, setLog] = useState([])
+
+  useImperativeHandle(ref, () => ({
+    appendToLog: (content) => {
+      const parsed = Anser.ansiToJson(content.replace(/\uEEA7/g, '>'))
+      setLog(log.concat(parsed))
+    },
+    clearLog: () => setLog([])
+  }))
+
+  return (
+    <Theme>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }}>
+          <Text>
+            {log.map((chunk, index) => (
+              <Text
+                style={{
+                  color: chunk.fg && `rgb(${chunk.fg})`,
+                  backgroundColor: chunk.backgroundColor && `rgb(${chunk.bg})`,
+                  fontFamily: 'Inconsolata',
+                  fontSize: 18
+                }}
+                key={index}
+              >
+                {chunk.content}
+              </Text>
+            ))}
+          </Text>
+        </ScrollView>
+      </SafeAreaView>
+    </Theme>
+  )
+})
 
 export default class extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -246,12 +268,12 @@ export default class extends Component {
 
               const id = navigation.getParam('id')
               const path = navigation.getParam('path')
-              const reload = navigation.getParam('reload')
+              const reloadPrevious = navigation.getParam('reloadPrevious')
 
               const urls = await getUrls(id, path)
               await deleteFile(urls)
 
-              reload()
+              reloadPrevious()
               navigation.goBack()
             }}
           />
@@ -263,9 +285,12 @@ export default class extends Component {
   state = {
     index: 0,
     routes: [],
-    loading: true
+    loading: true,
+    interpState: 'stopped'
   }
   scenes = {}
+  isWebRepl = false
+  crosis = null
 
   render() {
     if (this.state.loading) {
@@ -283,17 +308,96 @@ export default class extends Component {
         </Theme>
       )
     }
-    return <TabView state={this.state} scenes={this.scenes} onIndexChange={this.updateIndex} />
+    return (
+      <View style={{ flex: 1 }}>
+        <TabView
+          state={this.state}
+          scenes={this.scenes}
+          swipeEnabled={this.state.routes[this.state.index].key !== 'editor'}
+          onIndexChange={this.updateIndex}
+        />
+
+        <FAB
+          icon={
+            this.state.interpState === 'stopped'
+              ? 'play'
+              : this.state.interpState === 'installing'
+              ? 'dots-horizontal'
+              : this.state.interpState === 'running'
+              ? 'stop'
+              : 'exclamation'
+          }
+          onPress={this.runOrStop}
+        />
+      </View>
+    )
   }
 
-  async componentWillMount() {
+  runOrStop = async () => {
+    if (this.isWebRepl) {
+      this.setState({ index: this.indexFromKey('web') })
+      alert("I'm too lazy to reload the page so pull down to reload manually lol")
+    } else {
+      if (this.state.interpState === 'running' && this.interp) {
+        await this.interp.request({ clear: {} })
+        return
+      } else {
+        this.clearLog()
+      }
+
+      this.setState({ index: this.indexFromKey('console'), interpState: 'installing' })
+
+      // FIXME: Check for channel compatibility
+
+      if (!this.packager) {
+        this.packager = this.crosis.getChannel('packager3')
+        this.packager.on('command', (command) => {
+          if (command.body === 'output') {
+            this.appendToLog(command.output)
+          }
+        })
+      }
+      await this.packager.request({ packageInstall: {} })
+
+      this.setState({ interpState: 'running' })
+      if (!this.interp) {
+        this.interp = this.crosis.getChannel('interp2')
+        this.interp.on('command', (command) => {
+          switch (command.body) {
+            case 'output': {
+              this.appendToLog(command.output)
+              break
+            }
+
+            case 'state': {
+              console.log('got state update to', command.state)
+              this.setState({
+                interpState: command.state === api.State.Running ? 'running' : 'stopped'
+              })
+              break
+            }
+          }
+        })
+      }
+      await this.interp.request({ runMain: {} })
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.packager) this.packager.removeAllListeners()
+    if (this.interp) this.interp.removeAllListeners()
+  }
+
+  async UNSAFE_componentWillMount() {
     const id = this.props.navigation.getParam('id')
     const path = this.props.navigation.getParam('path')
     const language = this.props.navigation.getParam('language')
     const canWrite = this.props.navigation.getParam('canWrite')
+    const crosis = this.props.navigation.getParam('crosis')
 
     const urls = await getUrls(id, path)
     const newState = this.state
+    this.isWebRepl = language === 'web_project' || language === 'html' // TODO: refactor
 
     if (isImage(path)) {
       newState.routes = [{ key: 'image', title: 'Image' }]
@@ -308,39 +412,51 @@ export default class extends Component {
     } else {
       newState.routes = [{ key: 'editor', title: 'Code' }]
       this.scenes = {
-        editor: () => <EditorScene canWrite={canWrite} urls={urls} path={path} />
+        editor: () => <EditorScene crosis={crosis} canWrite={canWrite} urls={urls} path={path} />
       }
     }
 
-    if (language === 'html') {
+    if (this.isWebRepl) {
       newState.routes.push({ key: 'web', title: 'Web' })
-      this.scenes.web = () => <WebScene id={id} logMessage={this.logMessage} />
-    } else {
-      this.logMessage("Sorry, running repls isn't currently supported! We're working on it.", true)
+      this.scenes.web = () => <WebScene id={id} appendToLog={this.appendToLog} />
     }
 
     newState.routes.push({ key: 'console', title: 'Console' })
     this.scenes.console = () => <ConsoleScene ref={this.consoleRef} />
 
     newState.loading = false
+    this.crosis = crosis
     this.setState(newState)
   }
 
-  logQueue = []
+  indexFromKey(key) {
+    return this.state.routes.findIndex((route) => route.key === key)
+  }
+
+  logQueue = ''
+  consoleScene = null
+
   consoleRef = (consoleScene) => {
-    this.console = consoleScene
+    this.consoleScene = consoleScene
     if (this.logQueue.length > 0) {
-      for (let [message, error] of this.logQueue) {
-        consoleScene.appendMessage(message, error)
-      }
-      this.logQueue = []
+      consoleScene.appendToLog(this.logQueue)
+      this.logQueue = ''
     }
   }
-  logMessage = (message, error) => {
-    if (this.console) {
-      this.console.appendMessage(message, error)
+
+  appendToLog = (content) => {
+    if (this.consoleScene) {
+      this.consoleScene.appendToLog(content)
     } else {
-      this.logQueue.push([message, error])
+      this.logQueue += content
+    }
+  }
+
+  clearLog = () => {
+    if (this.consoleScene) {
+      this.consoleScene.clearLog()
+    } else {
+      this.logQueue = ''
     }
   }
 

@@ -1,24 +1,27 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { StatusBar, AsyncStorage } from 'react-native'
+import { useColorScheme, AppearanceProvider } from 'react-native-appearance'
 import { SplashScreen } from 'expo'
 import * as Font from 'expo-font'
-import { DarkTheme, DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
+import {
+  configureFonts,
+  DarkTheme,
+  DefaultTheme,
+  Provider as PaperProvider
+} from 'react-native-paper'
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation'
 
-import CustomHeader from './components/customized/CustomHeader'
+import { getUserInfo, updateEditorPreferences } from './lib/network'
+import CustomHeader from './components/ui/CustomHeader'
 import SettingsContext from './components/wrappers/SettingsContext'
-
 import InitialScreen from './screens/Initial'
-
 import WelcomeScreen from './screens/auth/Welcome'
 import LogInScreen from './screens/auth/LogIn'
 import SignUpScreen from './screens/auth/SignUp'
 import HelloScreen from './screens/auth/Hello'
-
 import GoogleProviderScreen from './screens/auth/providers/Google'
 import GitHubProviderScreen from './screens/auth/providers/GitHub'
 import FacebookProviderScreen from './screens/auth/providers/Facebook'
-
 import DashboardScreen from './screens/app/Dashboard'
 import SettingsScreen from './screens/app/Settings'
 import LoadReplScreen from './screens/app/LoadRepl'
@@ -79,16 +82,32 @@ const Navigator = createSwitchNavigator(
 )
 const App = createAppContainer(Navigator)
 
-const primary = '#e83d39'
-const accent = '#687d85'
-const roundness = 0
+const roundness = 2
 
-const fonts = {
-  regular: 'Montserrat',
-  medium: 'Montserrat Medium',
-  light: 'Montserrat Light',
-  thin: 'Montserrat Thin'
+const allFonts = {
+  regular: {
+    fontFamily: 'IBM Plex Sans',
+    fontWeight: 'normal'
+  },
+  medium: {
+    fontFamily: 'IBM Plex Sans Medium',
+    fontWeight: 'normal'
+  },
+  light: {
+    fontFamily: 'IBM Plex Sans Light',
+    fontWeight: 'normal'
+  },
+  thin: {
+    fontFamily: 'IBM Plex Sans Thin',
+    fontWeight: 'normal'
+  }
 }
+
+const fonts = configureFonts({
+  default: allFonts,
+  ios: allFonts,
+  android: allFonts
+})
 
 const darkTheme = {
   ...DarkTheme,
@@ -96,11 +115,8 @@ const darkTheme = {
   fonts,
   colors: {
     ...DarkTheme.colors,
-    primary,
-    accent,
-    background: '#121212',
-    surface: '#373737',
-    appBar: '#1f1f1f'
+    primary: '#ffffff',
+    accent: '#455a64'
   }
 }
 const lightTheme = {
@@ -109,97 +125,135 @@ const lightTheme = {
   fonts,
   colors: {
     ...DefaultTheme.colors,
-    primary,
-    accent,
-    appBar: primary
+    primary: '#222222',
+    accent: '#222222'
   }
 }
 
-export default class extends Component {
-  state = {
-    theme: lightTheme,
-    softWrapping: false,
-    softTabs: true,
-    indentSize: '2',
-    ready: false
-  }
+const updateSettings = async (settings) => {
+  const {
+    user: { editor_preferences }
+  } = await getUserInfo()
 
-  constructor(props) {
-    super(props)
-    SplashScreen.preventAutoHide()
-  }
+  await updateEditorPreferences({
+    ...editor_preferences,
+    theme: settings.theme,
+    wrapping: settings.softWrapping,
+    indentIsSpaces: settings.softTabs,
+    indentSize: settings.indentSize
+  })
 
-  render() {
-    return (
-      <PaperProvider theme={this.state.theme}>
-        <StatusBar barStyle="light-content" />
-        <SettingsContext.Provider
-          value={{
-            theme: this.state.theme.dark,
-            setTheme: this.setTheme,
-            softWrapping: this.state.softWrapping,
-            setSoftWrapping: this.setSoftWrapping,
-            softTabs: this.state.softTabs,
-            setSoftTabs: this.setSoftTabs,
-            indentSize: this.state.indentSize,
-            setIndentSize: this.setIndentSize
-          }}
-        >
-          {this.state.ready && <App />}
-        </SettingsContext.Provider>
-      </PaperProvider>
-    )
-  }
+  await AsyncStorage.setItem('@useSystemTheme', settings.systemTheme ? 'yes' : 'no')
+}
 
-  asyncSetState = (newState) =>
-    new Promise((resolve) => {
-      this.setState(newState, resolve)
-    })
-
-  setTheme = async (dark) => {
-    await this.asyncSetState({
-      theme: dark ? darkTheme : lightTheme
-    })
-    await AsyncStorage.setItem('@dark', dark ? 'glory' : '')
-  }
-
-  setSoftWrapping = async (softWrapping) => {
-    await this.asyncSetState({ softWrapping })
-    await AsyncStorage.setItem('@wrapping', softWrapping ? 'soft' : 'hard')
-  }
-
-  setSoftTabs = async (softTabs) => {
-    await this.asyncSetState({ softTabs })
-    await AsyncStorage.setItem('@tabs', softTabs ? 'soft' : 'hard')
-  }
-
-  setIndentSize = async (indentSize) => {
-    if (!/^[0-9]+$/.test(indentSize)) return
-    await this.asyncSetState({ indentSize })
-    await AsyncStorage.setItem('@indent', indentSize)
-  }
-
-  async componentDidMount() {
-    const theme = await AsyncStorage.getItem('@dark')
-    this.setTheme(theme === 'glory')
-
-    const wrapping = await AsyncStorage.getItem('@wrapping')
-    this.setSoftWrapping(wrapping === 'soft')
-
-    const tabs = await AsyncStorage.getItem('@tabs')
-    this.setSoftTabs(tabs !== 'hard')
-
-    const indentSize = await AsyncStorage.getItem('@indent')
-    this.setIndentSize(indentSize || '2')
-
-    await Font.loadAsync({
-      Inconsolata: require('./assets/fonts/Inconsolata-Regular.ttf'),
-      Montserrat: require('./assets/fonts/Montserrat-Regular.ttf'),
-      'Montserrat Medium': require('./assets/fonts/Montserrat-Medium.ttf'),
-      'Montserrat Light': require('./assets/fonts/Montserrat-Light.ttf'),
-      'Montserrat Thin': require('./assets/fonts/Montserrat-Thin.ttf')
-    })
-    await this.asyncSetState({ ready: true })
-    SplashScreen.hide()
+const systemThemeToTheme = (systemTheme) => {
+  switch (systemTheme) {
+    case 'dark': {
+      return 'replitDark'
+    }
+    default: {
+      return 'replitLight'
+    }
   }
 }
+
+const Main = () => {
+  const [theme, setTheme] = useState('replitDark')
+  const [systemTheme, setSystemTheme] = useState(true)
+  const scheme = useColorScheme()
+
+  const [softWrapping, setSoftWrapping] = useState(false)
+  const [softTabs, setSoftTabs] = useState(true)
+  const [indentSize, setIndentSize] = useState(2)
+  const [redirectRoute, setRedirectRoute] = useState(null)
+
+  const finalTheme = systemTheme ? systemThemeToTheme(scheme) : theme
+
+  const firstUpdate = useRef(true)
+  useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false
+      return
+    }
+
+    try {
+      updateSettings({
+        theme,
+        softWrapping,
+        softTabs,
+        indentSize,
+        systemTheme
+      })
+    } catch (error) {
+      // Unhandled on purpose
+    }
+  }, [theme, softWrapping, softTabs, indentSize, systemTheme])
+
+  useEffect(() => {
+    ;(async () => {
+      SplashScreen.preventAutoHide()
+
+      await Font.loadAsync({
+        Inconsolata: require('./assets/fonts/Inconsolata-Regular.ttf'),
+        'IBM Plex Sans': require('./assets/fonts/IBMPlexSans-Regular.ttf'),
+        'IBM Plex Sans Medium': require('./assets/fonts/IBMPlexSans-Medium.ttf'),
+        'IBM Plex Sans Light': require('./assets/fonts/IBMPlexSans-Light.ttf'),
+        'IBM Plex Sans Thin': require('./assets/fonts/IBMPlexSans-Thin.ttf')
+      })
+
+      setSystemTheme((await AsyncStorage.getItem('@useSystemTheme')) !== 'no')
+
+      const { success, user } = await getUserInfo()
+
+      if (success) {
+        const {
+          editor_preferences: { theme, indentIsSpaces, indentSize, wrapping }
+        } = user
+
+        setTheme(theme)
+        setSoftTabs(indentIsSpaces)
+        setIndentSize(indentSize.toString())
+        setSoftWrapping(wrapping)
+
+        setRedirectRoute('App')
+      } else setRedirectRoute('Auth')
+
+      SplashScreen.hide()
+    })()
+  }, [])
+
+  return (
+    <PaperProvider theme={finalTheme === 'replitDark' ? darkTheme : lightTheme}>
+      <StatusBar barStyle="light-content" />
+      <SettingsContext.Provider
+        value={{
+          theme,
+          setTheme,
+          systemTheme,
+          setSystemTheme,
+          softWrapping,
+          setSoftWrapping,
+          softTabs,
+          setSoftTabs,
+          indentSize,
+          setIndentSize,
+          redirectRoute,
+          updateSettings
+        }}
+      >
+        {console.log(
+          `rendering, theme=${theme}, system scheme=${scheme}, using ${
+            systemTheme ? 'system theme' : 'repl.it theme'
+          }, final theme=${finalTheme}`
+        )}
+        {redirectRoute && <App />}
+      </SettingsContext.Provider>
+    </PaperProvider>
+  )
+}
+
+export default () => (
+  <AppearanceProvider>
+    <Main />
+  </AppearanceProvider>
+)

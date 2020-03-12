@@ -1,65 +1,61 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { View } from 'react-native'
 import { Title, Text, Button } from 'react-native-paper'
+import { useNavigation } from 'react-navigation-hooks'
 
-import ImageButton from '../../components/customized/ImageButton'
-import HorizontalList from '../../components/lists/HorizontalList'
+import ImageButton from '../../components/ui/ImageButton'
+import HorizontalList from '../../components/ui/HorizontalList'
 import Theme from '../../components/wrappers/Theme'
 
-export default class extends Component {
-  render() {
-    const { navigate } = this.props.navigation
-    return (
-      <Theme>
-        <View
+export default () => {
+  const { navigate } = useNavigation()
+
+  return (
+    <Theme>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Title
           style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center'
+            fontSize: 36,
+            padding: 16,
+            textAlign: 'center'
           }}
         >
-          <Title
-            style={{
-              fontSize: 36,
-              padding: 16,
-              textAlign: 'center'
-            }}
-          >
-            Welcome!
-          </Title>
-          <Text
-            style={{
-              fontSize: 18,
-              textAlign: 'center',
-              maxWidth: '84%',
-              marginBottom: 20
-            }}
-          >
-            Just sign in or sign up and you'll be ready to start coding with Repl.it
-          </Text>
+          Welcome!
+        </Title>
+        <Text
+          style={{
+            fontSize: 18,
+            textAlign: 'center',
+            maxWidth: '84%',
+            marginBottom: 20
+          }}
+        >
+          Just sign in or sign up and you'll be ready to start coding with Repl.it
+        </Text>
 
-          <HorizontalList style={{ marginBottom: 20 }}>
-            <ImageButton image="google" onPress={this.googleLogIn} />
-            <ImageButton image="github" onPress={this.gitHubLogIn} />
-            <ImageButton image="facebook" onPress={this.facebookLogIn} />
-          </HorizontalList>
+        <HorizontalList style={{ marginBottom: 20 }}>
+          <ImageButton image="google" onPress={() => navigate('GoogleProvider')} />
+          <ImageButton image="github" onPress={() => navigate('GitHubProvider')} />
+          <ImageButton image="facebook" onPress={() => navigate('FacebookProvider')} />
+        </HorizontalList>
 
-          <Button
-            mode="contained"
-            style={{ marginBottom: 10, minWidth: 200 }}
-            onPress={() => navigate('LogIn')}
-          >
-            Log in
-          </Button>
-          <Button mode="outlined" style={{ minWidth: 200 }} onPress={() => navigate('SignUp')}>
-            Sign up
-          </Button>
-        </View>
-      </Theme>
-    )
-  }
-
-  googleLogIn = () => this.props.navigation.navigate('GoogleProvider')
-  gitHubLogIn = () => this.props.navigation.navigate('GitHubProvider')
-  facebookLogIn = () => this.props.navigation.navigate('FacebookProvider')
+        <Button
+          mode="contained"
+          style={{ marginBottom: 10, minWidth: 200 }}
+          onPress={() => navigate('LogIn')}
+        >
+          Log in
+        </Button>
+        <Button mode="outlined" style={{ minWidth: 200 }} onPress={() => navigate('SignUp')}>
+          Sign up
+        </Button>
+      </View>
+    </Theme>
+  )
 }

@@ -4,6 +4,8 @@
 <head>
   <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
   <link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet'>
+
+  <!-- You should probably hide this style element because it's HUGE -->
   <style>
     #editor {
       position: absolute;
@@ -12,11 +14,195 @@
       bottom: 0;
       left: 0;
       font-size: 18px;
-      font-family: Inconsolata, monospace;
+      font-family: 'Inconsolata', monospace;
     }
 
     .ace_scroller.ace_scroll-left {
       box-shadow: initial !important;
+    }
+
+    .ace-dark .ace_gutter {
+      background: #121212;
+      color: rgb(144,145,148)
+    }
+
+    .ace-dark .ace_print-margin {
+      width: 1px;
+      background: #222222
+    }
+
+    .ace-dark, .ace-dark #editor {
+      background-color: #121212;
+      color: #f8f8f2
+    }
+
+    .ace-dark .ace_cursor {
+      color: #f8f8f0
+    }
+
+    .ace-dark .ace_tag {
+      color: #f8f8f2 !important
+    }
+
+    .ace-dark .ace_marker-layer .ace_selection {
+      background: #222222
+    }
+
+    .ace-dark.ace_multiselect .ace_selection.ace_start {
+      box-shadow: 0 0 3px 0px #121212;
+      border-radius: 2px
+    }
+
+    .ace-dark .ace_marker-layer .ace_step {
+      background: rgb(198, 219, 174)
+    }
+
+    .ace-dark .ace_marker-layer .ace_bracket {
+      margin: -1px 0 0 -1px;
+      border: 1px solid #a29709
+    }
+
+    .ace-dark .ace_marker-layer .ace_active-line {
+      background: #222222
+    }
+
+    .ace-dark .ace_gutter-active-line {
+      background-color: #222222
+    }
+
+    .ace-dark .ace_marker-layer .ace_selected-word {
+      box-shadow: 0px 0px 0px 1px #a29709;
+      border-radius: 3px;
+    }
+
+    .ace-dark .ace_fold {
+      background-color: #50fa7b;
+      border-color: #f8f8f2
+    }
+
+    .ace-dark .ace_keyword {
+      color: #ff79c6
+    }
+
+    .ace-dark .ace_constant.ace_language {
+      color: #bd93f9
+    }
+
+    .ace-dark .ace_constant.ace_numeric {
+      color: #bd93f9
+    }
+
+    .ace-dark .ace_constant.ace_character {
+      color: #bd93f9
+    }
+
+    .ace-dark .ace_constant.ace_character.ace_escape {
+      color: #ff79c6
+    }
+
+    .ace-dark .ace_constant.ace_other {
+      color: #bd93f9
+    }
+
+    .ace-dark .ace_support.ace_function {
+      color: #8be9fd
+    }
+
+    .ace-dark .ace_support.ace_constant {
+      color: #6be5fd
+    }
+
+    .ace-dark .ace_support.ace_class {
+      font-style: italic;
+      color: #66d9ef
+    }
+
+    .ace-dark .ace_support.ace_type {
+      font-style: italic;
+      color: #66d9ef
+    }
+
+    .ace-dark .ace_storage {
+      color: #ff79c6
+    }
+
+    .ace-dark .ace_storage.ace_type {
+      font-style: italic;
+      color: #8be9fd
+    }
+
+    .ace-dark .ace_invalid {
+      color: #F8F8F0;
+      background-color: #ff79c6
+    }
+
+    .ace-dark .ace_invalid.ace_deprecated {
+      color: #F8F8F0;
+      background-color: #bd93f9
+    }
+
+    .ace-dark .ace_string {
+      color: #f1fa8c
+    }
+
+    .ace-dark .ace_comment {
+      color: #6272a4
+    }
+
+    .ace-dark .ace_variable {
+      color: #50fa7b
+    }
+
+    .ace-dark .ace_variable.ace_parameter {
+      font-style: italic;
+      color: #ffb86c
+    }
+
+    .ace-dark .ace_entity.ace_other.ace_attribute-name {
+      color: #50fa7b
+    }
+
+    .ace-dark .ace_entity.ace_name.ace_function {
+      color: #50fa7b
+    }
+
+    .ace-dark .ace_entity.ace_name.ace_tag {
+      color: #ff79c6
+    }
+    .ace-dark .ace_invisible, .ace-dark .ace_doctype {
+      color: #707070 !important
+    }
+
+    .ace-dark .ace_indent-guide {
+      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYHB3d/8PAAOIAdULw8qMAAAAAElFTkSuQmCC) right repeat-y
+    }
+
+    .ace-dark .ace_xml.ace_tag.ace_tag-name {
+      color: #ff79c6 !important;
+    }
+
+    .ace-light .ace_gutter {
+      background: #f6f6f6
+    }
+
+    .ace-light .ace_print-margin {
+      background: #ffffff
+    }
+
+    .ace-light, .ace-light #editor {
+      background-color: #f6f6f6
+    }
+
+    .ace-light .ace_marker-layer .ace_selection {
+      background: #ffffff
+    }
+
+    .ace-light .ace_marker-layer .ace_active-line {
+      background: #ffffff
+    }
+
+    .ace-light .ace_gutter-active-line {
+      background-color: #ffffff
     }
   </style>
 </head>
@@ -27,61 +213,159 @@
   <script src='https://cdn.jsdelivr.net/gh/ajaxorg/ace-builds@1.4.5/src-min/ace.js'></script>
   <script src='https://cdn.jsdelivr.net/gh/ajaxorg/ace-builds@1.4.5/src-min/ext-modelist.js'></script>
   <script>
-    function load(data) {
-      const editor = ace.edit('editor', {
-        cursorStyle: 'slim',
-        useWorker: false
-      })
-      const modeList = ace.require('ace/ext/modelist')
+    function acePositionToIndex(start, lines) {
+      let index = 0
+      const row = Math.min(start.row, lines.length)
+      for (let i = 0; i < row; ++i) {
+        index += lines[i].length + 1
+      }
+      return index + start.column
+    }
 
-      let listening = false
-      const { code, path, dark, canWrite, softWrapping, indentSize, softTabs } = JSON.parse(data)
+    const editor = ace.edit('editor', {
+      cursorStyle: 'slim',
+      useWorker: false
+    })
+    const modeList = ace.require('ace/ext/modelist')
+
+    let ready = false
+    let readOnlyGlobal = false
+    let listening = false
+    let cancelEdits = { current: false }
+
+    function log(message) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        type: 'log',
+        payload: message
+      }))
+    }
+
+    function setReadOnly(readOnly) {
+      editor.setOptions({
+        readOnly,
+        highlightActiveLine: !readOnly,
+        highlightGutterLine: !readOnly
+      })
+      editor.renderer.$cursorLayer.element.style.opacity = readOnly ? 0 : 1
+      editor.textInput.getElement().disabled = readOnly
+    }
+
+    function enable() {
+      if (!ready && !readOnlyGlobal) {
+        ready = true
+        setReadOnly(false)
+      }
+    }
+
+    function config(payload) {
+      const { path, dark, canWrite, softWrapping, indentSize, softTabs } = payload
+      readOnlyGlobal = !canWrite
       const mode = modeList.getModeForPath(path).mode
-      editor.setTheme(dark ? 'ace/theme/dracula' : 'ace/theme/github')
+
+      if (dark) {
+        document.body.classList.remove('ace-light')
+        document.body.classList.add('ace-dark')
+      } else {
+        document.body.classList.remove('ace-dark')
+        document.body.classList.add('ace-light')
+      }
+
       editor.session.setMode(mode)
       editor.session.setUseWrapMode(softWrapping)
-      editor.session.setValue(code)
       editor.session.setUseSoftTabs(softTabs)
       editor.session.setTabSize(indentSize)
 
-      if (!canWrite) {
-        editor.setOptions({
-          readOnly: true,
-          highlightActiveLine: false,
-          highlightGutterLine: false
-        })
-        editor.renderer.$cursorLayer.element.style.opacity = 0
-        editor.textInput.getElement().tabIndex = -1
-        editor.textInput.getElement().disabled = true
-        editor.commands.commmandKeyBinding = {}
-      }
+      if (!ready || !canWrite) setReadOnly(true)
+      if (canWrite && !listening) {
+        listening = true
 
-      let lastBounce = Date.now()
-      function update() {
-        const now = Date.now()
-        if (now - lastBounce > 100) {
+        editor.session.on('change', function(delta) {
+          if (cancelEdits.current) {
+            cancelEdits.current = false
+            return
+          }
+
+          const prevLines = editor.session.getValue().split('\n')
+          const skip = acePositionToIndex(delta.start, prevLines)
+
+          const ops = []
+          if (skip > 0) ops.push({ skip })
+          const text = delta.lines.join('\n')
+          if (delta.action === 'remove') {
+            ops.push({ delete: text.length })
+          } else {
+            for (let char of [...text]) ops.push({ insert: char })
+          }
+
           window.ReactNativeWebView.postMessage(JSON.stringify({
-            type: 'update',
-            data: editor.session.getValue()
+            type: 'ot',
+            payload: ops
           }))
-          lastBounce = now
-        }
+        })
       }
-      editor.container.addEventListener('keyup', update)
-      editor.container.addEventListener('change', update)
     }
 
-    document.addEventListener('message', (event) => load(event.data))
+    function applyOps(ops) {
+      log(`applying ot ops? count=${ops.length}`)
+      const aceDocument = editor.session.getDocument()
+
+      let cursor = 0
+      let length = editor.session.getValue().length
+      for (const op of ops) {
+        if (op.skip) {
+          cursor += op.skip
+        } else if (op.insert) {
+          const position = aceDocument.indexToPosition(cursor, 0)
+          editor.session.insert(position, op.insert)
+        } else if (op.delete) {
+          const start = aceDocument.indexToPosition(cursor, 0)
+          const end = aceDocument.indexToPosition(cursor + op.delete)
+          const range = new ace.Range(
+            start.row,
+            start.column,
+            end.row,
+            end.column,
+          )
+          editor.session.remove(range)
+          length -= op.delete
+        }
+      }
+    }
+
+    function onMessage(event) {
+      const message = JSON.parse(event.data)
+
+      if (message.type === 'config') {
+        log('got config')
+        config(message.payload)
+      } else if (message.type === 'ot') {
+        cancelEdits.current = true
+        applyOps(message.payload)
+        cancelEdits.current = false
+        enable()
+      } else if (message.type === 'replace') {
+        cancelEdits.current = true
+        editor.session.setValue(message.payload)
+        cancelEdits.current = false
+        enable()
+      } else {
+        log(`unknown ${message.type}`)
+      }
+    }
+
+    document.addEventListener('message', onMessage)
+    window.addEventListener('message', onMessage)
+
     if (window.ReactNativeWebView) {
       window.ReactNativeWebView.postMessage(JSON.stringify({
-        type: 'load'
+        type: 'ready'
       }))
     } else {
-      const interval = setInterval(() => {
+      const interval = setInterval(function() {
         if (window.ReactNativeWebView) {
           clearInterval(interval)
           window.ReactNativeWebView.postMessage(JSON.stringify({
-            type: 'load'
+            type: 'ready'
           }))
         }
       }, 100)

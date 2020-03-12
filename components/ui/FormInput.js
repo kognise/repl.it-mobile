@@ -8,8 +8,7 @@ export default class extends Component {
       <TextInput
         label={this.props.label}
         style={{
-          marginBottom: this.props.hasNext ? 10 : 20,
-          backgroundColor: this.props.background
+          marginBottom: this.props.hasNext ? 10 : 20
         }}
         mode="outlined"
         render={(props) => (

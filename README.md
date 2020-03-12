@@ -18,6 +18,10 @@ Repl.it is amazing but the site isn't very mobile friendly. This app's developme
 - Run `yarn dev` to start a development server
 - On your phone scan the QR code or enter in the address
 
+**Or, just click the button below!** Warning: this might be a little buggy.
+
+[![Run on Repl.it](https://repl.it/badge/github/kognise/repl.it-mobile)](https://repl.it/github/kognise/repl.it-mobile)
+
 ## File Structure
 
 Some files and directories are excluded due to boringness.
@@ -28,11 +32,10 @@ Some files and directories are excluded due to boringness.
     - `app/` - Icons and splash screens
     - `logos/` - Other company logos
 - `components/` - React components
-  - `customized/` - Customized versions/wrappers of other components
+  - `ui/` - Custom UI elements/components
   - `dialogButtons/` - Self-contained buttons that trigger dialogs
     - `fabs/` - FAB-style buttons
     - `menuItems/` - Menu buttons
-  - `lists/` - Lists of items
   - `webViews/` - Components that are primarily `WebView`s
   - `wrappers/` - Components meant to be used as wrappers
 - `lib/` - Library and utility functions

@@ -233,8 +233,8 @@ const ConsoleScene = forwardRef((_, ref) => {
 
   return (
     <Theme>
-      <SafeAreaView>
-        <ScrollView style={{ minHeight: '100%' }}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }}>
           <Text>
             {log.map((chunk, index) => (
               <Text

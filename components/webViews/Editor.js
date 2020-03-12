@@ -1,7 +1,6 @@
 import React, { memo, useRef, useCallback, useEffect } from 'react'
-import { View } from 'react-native'
+import { View, SafeAreaView } from 'react-native'
 import { useTheme } from 'react-native-paper'
-import { useSafeArea } from 'react-native-safe-area-context'
 import { WebView } from 'react-native-webview'
 
 import useSource from '../../lib/useSource'
@@ -14,7 +13,6 @@ export default withSettings(
   memo(({ otClient, path, canWrite, context }) => {
     const source = useSource(code)
     const theme = useTheme()
-    const insets = useSafeArea()
 
     const webView = useRef()
     const webViewReady = useRef(false)
@@ -96,15 +94,8 @@ export default withSettings(
       theme.dark
     ])
 
-    useEffect(() => {
-      postMessage({
-        type: 'bottomInset',
-        payload: insets.bottom
-      })
-    }, [insets])
-
     return (
-      <View
+      <SafeAreaView
         style={{
           height: '100%',
           display: otClient ? 'flex' : 'none'
@@ -120,10 +111,10 @@ export default withSettings(
               onMessage={onMessage}
             />
           ) : (
-              <ActivityIndicator />
-            )}
+            <ActivityIndicator />
+          )}
         </Theme>
-      </View>
+      </SafeAreaView>
     )
   })
 )

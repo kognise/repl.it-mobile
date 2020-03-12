@@ -4,6 +4,8 @@
 <head>
   <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
   <link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet'>
+
+  <!-- You should probably hide this style element because it's HUGE -->
   <style>
     #editor {
       position: absolute;
@@ -12,11 +14,195 @@
       bottom: 0;
       left: 0;
       font-size: 18px;
-      font-family: Inconsolata, monospace;
+      font-family: 'Inconsolata', monospace;
     }
 
     .ace_scroller.ace_scroll-left {
       box-shadow: initial !important;
+    }
+
+    .ace-dark .ace_gutter {
+      background: #121212;
+      color: rgb(144,145,148)
+    }
+
+    .ace-dark .ace_print-margin {
+      width: 1px;
+      background: #222222
+    }
+
+    .ace-dark {
+      background-color: #121212;
+      color: #f8f8f2
+    }
+
+    .ace-dark .ace_cursor {
+      color: #f8f8f0
+    }
+
+    .ace-dark .ace_tag {
+      color: #f8f8f2 !important
+    }
+
+    .ace-dark .ace_marker-layer .ace_selection {
+      background: #222222
+    }
+
+    .ace-dark.ace_multiselect .ace_selection.ace_start {
+      box-shadow: 0 0 3px 0px #121212;
+      border-radius: 2px
+    }
+
+    .ace-dark .ace_marker-layer .ace_step {
+      background: rgb(198, 219, 174)
+    }
+
+    .ace-dark .ace_marker-layer .ace_bracket {
+      margin: -1px 0 0 -1px;
+      border: 1px solid #a29709
+    }
+
+    .ace-dark .ace_marker-layer .ace_active-line {
+      background: #222222
+    }
+
+    .ace-dark .ace_gutter-active-line {
+      background-color: #222222
+    }
+
+    .ace-dark .ace_marker-layer .ace_selected-word {
+      box-shadow: 0px 0px 0px 1px #a29709;
+      border-radius: 3px;
+    }
+
+    .ace-dark .ace_fold {
+      background-color: #50fa7b;
+      border-color: #f8f8f2
+    }
+
+    .ace-dark .ace_keyword {
+      color: #ff79c6
+    }
+
+    .ace-dark .ace_constant.ace_language {
+      color: #bd93f9
+    }
+
+    .ace-dark .ace_constant.ace_numeric {
+      color: #bd93f9
+    }
+
+    .ace-dark .ace_constant.ace_character {
+      color: #bd93f9
+    }
+
+    .ace-dark .ace_constant.ace_character.ace_escape {
+      color: #ff79c6
+    }
+
+    .ace-dark .ace_constant.ace_other {
+      color: #bd93f9
+    }
+
+    .ace-dark .ace_support.ace_function {
+      color: #8be9fd
+    }
+
+    .ace-dark .ace_support.ace_constant {
+      color: #6be5fd
+    }
+
+    .ace-dark .ace_support.ace_class {
+      font-style: italic;
+      color: #66d9ef
+    }
+
+    .ace-dark .ace_support.ace_type {
+      font-style: italic;
+      color: #66d9ef
+    }
+
+    .ace-dark .ace_storage {
+      color: #ff79c6
+    }
+
+    .ace-dark .ace_storage.ace_type {
+      font-style: italic;
+      color: #8be9fd
+    }
+
+    .ace-dark .ace_invalid {
+      color: #F8F8F0;
+      background-color: #ff79c6
+    }
+
+    .ace-dark .ace_invalid.ace_deprecated {
+      color: #F8F8F0;
+      background-color: #bd93f9
+    }
+
+    .ace-dark .ace_string {
+      color: #f1fa8c
+    }
+
+    .ace-dark .ace_comment {
+      color: #6272a4
+    }
+
+    .ace-dark .ace_variable {
+      color: #50fa7b
+    }
+
+    .ace-dark .ace_variable.ace_parameter {
+      font-style: italic;
+      color: #ffb86c
+    }
+
+    .ace-dark .ace_entity.ace_other.ace_attribute-name {
+      color: #50fa7b
+    }
+
+    .ace-dark .ace_entity.ace_name.ace_function {
+      color: #50fa7b
+    }
+
+    .ace-dark .ace_entity.ace_name.ace_tag {
+      color: #ff79c6
+    }
+    .ace-dark .ace_invisible, .ace-dark .ace_doctype {
+      color: #707070 !important
+    }
+
+    .ace-dark .ace_indent-guide {
+      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYHB3d/8PAAOIAdULw8qMAAAAAElFTkSuQmCC) right repeat-y
+    }
+
+    .ace-dark .ace_xml.ace_tag.ace_tag-name {
+      color: #ff79c6 !important;
+    }
+
+    .ace-light .ace_gutter {
+      background: #f6f6f6
+    }
+
+    .ace-light .ace_print-margin {
+      background: #ffffff
+    }
+
+    .ace-light {
+      background-color: #f6f6f6
+    }
+
+    .ace-light .ace_marker-layer .ace_selection {
+      background: #ffffff
+    }
+
+    .ace-light .ace_marker-layer .ace_active-line {
+      background: #ffffff
+    }
+
+    .ace-light .ace_gutter-active-line {
+      background-color: #ffffff
     }
   </style>
 </head>
@@ -76,7 +262,14 @@
       readOnlyGlobal = !canWrite
       const mode = modeList.getModeForPath(path).mode
 
-      editor.setTheme(dark ? 'ace/theme/dracula' : 'ace/theme/github')
+      if (dark) {
+        editor.container.classList.remove('ace-light')
+        editor.container.classList.add('ace-dark')
+      } else {
+        editor.container.classList.remove('ace-dark')
+        editor.container.classList.add('ace-light')
+      }
+
       editor.session.setMode(mode)
       editor.session.setUseWrapMode(softWrapping)
       editor.session.setUseSoftTabs(softTabs)
@@ -155,9 +348,6 @@
         editor.session.setValue(message.payload)
         cancelEdits.current = false
         enable()
-      } else if (message.type === 'bottomInset') {
-        log(`updating bottom inset to ${message.payload}px`)
-        editor.renderer.setScrollMargin(0, message.payload)
       } else {
         log(`unknown ${message.type}`)
       }

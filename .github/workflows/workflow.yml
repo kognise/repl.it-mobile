@@ -3,7 +3,8 @@ name: Node CI
 on: [push]
 
 jobs:
-  build:
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
 
     strategy:

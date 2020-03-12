@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { StatusBar, AsyncStorage } from 'react-native'
 import { useColorScheme, AppearanceProvider } from 'react-native-appearance'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { SplashScreen } from 'expo'
 import * as Font from 'expo-font'
 import {
@@ -255,8 +254,6 @@ const Main = () => {
 
 export default () => (
   <AppearanceProvider>
-    <SafeAreaProvider>
     <Main />
-    </SafeAreaProvider>
   </AppearanceProvider>
 )

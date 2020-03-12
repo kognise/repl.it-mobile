@@ -31,7 +31,7 @@
       background: #222222
     }
 
-    .ace-dark {
+    .ace-dark, .ace-dark #editor {
       background-color: #121212;
       color: #f8f8f2
     }
@@ -189,7 +189,7 @@
       background: #ffffff
     }
 
-    .ace-light {
+    .ace-light, .ace-light #editor {
       background-color: #f6f6f6
     }
 
@@ -263,11 +263,11 @@
       const mode = modeList.getModeForPath(path).mode
 
       if (dark) {
-        editor.container.classList.remove('ace-light')
-        editor.container.classList.add('ace-dark')
+        document.body.classList.remove('ace-light')
+        document.body.classList.add('ace-dark')
       } else {
-        editor.container.classList.remove('ace-dark')
-        editor.container.classList.add('ace-light')
+        document.body.classList.remove('ace-dark')
+        document.body.classList.add('ace-light')
       }
 
       editor.session.setMode(mode)

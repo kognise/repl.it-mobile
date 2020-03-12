@@ -1,5 +1,5 @@
 import React, { memo, useRef, useCallback, useEffect } from 'react'
-import { View, SafeAreaView } from 'react-native'
+import { View } from 'react-native'
 import { useTheme } from 'react-native-paper'
 import { WebView } from 'react-native-webview'
 
@@ -95,9 +95,9 @@ export default withSettings(
     ])
 
     return (
-      <SafeAreaView
+      <View
         style={{
-          height: '100%',
+          flex: 1,
           display: otClient ? 'flex' : 'none'
         }}
       >
@@ -114,7 +114,7 @@ export default withSettings(
             <ActivityIndicator />
           )}
         </Theme>
-      </SafeAreaView>
+      </View>
     )
   })
 )

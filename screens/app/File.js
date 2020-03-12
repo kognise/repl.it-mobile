@@ -1,6 +1,6 @@
 import React, { Component, useImperativeHandle, useState, forwardRef } from 'react'
 import * as WebBrowser from 'expo-web-browser'
-import { View, ScrollView, RefreshControl, Image, SafeAreaView } from 'react-native'
+import { View, ScrollView, SafeAreaView, RefreshControl, Image } from 'react-native'
 import { WebView } from 'react-native-webview'
 import { Menu, Button, Text } from 'react-native-paper'
 import { api } from '@replit/protocol'
@@ -37,19 +37,23 @@ class EditorScene extends Component {
   render() {
     return (
       <Theme>
-        <View style={{ flex: 1 }}>
-          <Editor otClient={this.otClient} path={this.props.path} canWrite={this.props.canWrite} />
+        <SafeAreaView style={{ flex: 1 }}>
+          <View style={{ flex: 1, display: 'flex' }}>
+            <Editor
+              otClient={this.otClient}
+              path={this.props.path}
+              canWrite={this.props.canWrite}
+            />
 
-          <Text
-            style={{
-              position: 'absolute',
-              bottom: 10,
-              left: 10
-            }}
-          >
-            {this.state.saving ? 'Saving...' : 'Saved'}
-          </Text>
-        </View>
+            <Text
+              style={{
+                padding: 10
+              }}
+            >
+              {this.state.saving ? 'Saving...' : 'Saved'}
+            </Text>
+          </View>
+        </SafeAreaView>
       </Theme>
     )
   }

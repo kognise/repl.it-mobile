@@ -68,7 +68,6 @@ const Screen = () => {
 
       switch (command.fileEvent.op) {
         case api.FileEvent.Op.Create: {
-          console.log('type is', command.fileEvent.file.type)
           closureFiles = setAtPath(
             closureFiles,
             command.fileEvent.file.path,

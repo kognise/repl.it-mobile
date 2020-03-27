@@ -3,7 +3,6 @@ import * as WebBrowser from 'expo-web-browser'
 import { View, ScrollView, SafeAreaView, RefreshControl, Image } from 'react-native'
 import { WebView } from 'react-native-webview'
 import { Menu, Button, Text } from 'react-native-paper'
-import { api } from '@replit/protocol'
 import Anser from 'anser'
 
 import OTClient from '../../lib/ot'
@@ -14,6 +13,7 @@ import FAB from '../../components/ui/FAB'
 import TabView from '../../components/ui/TabView'
 import Editor from '../../components/webViews/Editor'
 import Theme from '../../components/wrappers/Theme'
+import Runner from '../../lib/runner'
 
 const imageExtensions = ['png', 'jpg', 'jpeg', 'bmp', 'gif']
 function isImage(file) {
@@ -286,11 +286,12 @@ export default class extends Component {
     index: 0,
     routes: [],
     loading: true,
-    interpState: 'stopped'
+    runnerState: 'stopped'
   }
   scenes = {}
   isWebRepl = false
   crosis = null
+  runner = null
 
   render() {
     if (this.state.loading) {
@@ -319,11 +320,11 @@ export default class extends Component {
 
         <FAB
           icon={
-            this.state.interpState === 'stopped'
+            this.state.runnerState === 'stopped'
               ? 'play'
-              : this.state.interpState === 'installing'
+              : this.state.runnerState === 'installing'
               ? 'dots-horizontal'
-              : this.state.interpState === 'running'
+              : this.state.runnerState === 'running'
               ? 'stop'
               : 'exclamation'
           }
@@ -338,48 +339,23 @@ export default class extends Component {
       this.setState({ index: this.indexFromKey('web') })
       alert("I'm too lazy to reload the page so pull down to reload manually lol")
     } else {
-      if (this.state.interpState === 'running' && this.interp) {
-        await this.interp.request({ clear: {} })
+      this.setState({ index: this.indexFromKey('console') })
+
+      if (this.state.runnerState === 'running' && this.runner) {
+        await this.runner.clear()
         return
       } else {
         this.clearLog()
       }
 
-      this.setState({ index: this.indexFromKey('console'), interpState: 'installing' })
-
-      // FIXME: Check for channel compatibility
-
-      if (!this.packager) {
-        this.packager = this.crosis.getChannel('packager3')
-        this.packager.on('command', (command) => {
-          if (command.body === 'output') {
-            this.appendToLog(command.output)
-          }
-        })
+      if (!this.runner) {
+        this.runner = new Runner(this.crosis)
+        this.runner.on('log', (message) => this.appendToLog(message))
+        this.runner.on('state', (message) => this.setState({ runnerState: message }))
       }
-      await this.packager.request({ packageInstall: {} })
 
-      this.setState({ interpState: 'running' })
-      if (!this.interp) {
-        this.interp = this.crosis.getChannel('interp2')
-        this.interp.on('command', (command) => {
-          switch (command.body) {
-            case 'output': {
-              this.appendToLog(command.output)
-              break
-            }
-
-            case 'state': {
-              console.log('got state update to', command.state)
-              this.setState({
-                interpState: command.state === api.State.Running ? 'running' : 'stopped'
-              })
-              break
-            }
-          }
-        })
-      }
-      await this.interp.request({ runMain: {} })
+      await this.runner.install()
+      await this.runner.run()
     }
   }
 

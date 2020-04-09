@@ -1,8 +1,17 @@
-import React, { Component, useImperativeHandle, useState, forwardRef } from 'react'
+import React, {
+  Component,
+  useImperativeHandle,
+  useState,
+  forwardRef,
+  useRef,
+  useEffect
+} from 'react'
 import * as WebBrowser from 'expo-web-browser'
 import { View, ScrollView, SafeAreaView, RefreshControl, Image } from 'react-native'
 import { WebView } from 'react-native-webview'
 import { Menu, Button, Text } from 'react-native-paper'
+import { SceneMap } from 'react-native-tab-view'
+import { useNavigation } from 'react-navigation-hooks'
 import Anser from 'anser'
 
 import OTClient from '../../lib/ot'
@@ -256,187 +265,188 @@ const ConsoleScene = forwardRef((_, ref) => {
   )
 })
 
-export default class extends Component {
-  static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam('path', 'File'),
-    menu: navigation.getParam('canWrite')
-      ? (closeMenu) => (
-          <Menu.Item
-            title="Delete"
-            onPress={async () => {
-              closeMenu()
+const Screen = () => {
+  const navigation = useNavigation()
+  const { navigate, getParam, setParams } = navigation
 
-              const id = navigation.getParam('id')
-              const path = navigation.getParam('path')
-              const reloadPrevious = navigation.getParam('reloadPrevious')
+  const [index, setIndex] = useState(0)
+  const [routes, setRoutes] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [runnerState, setRunnerState] = useState('stopped')
+  const [crosis, setCrosis] = useState(null)
 
-              const urls = await getUrls(id, path)
-              await deleteFile(urls)
+  const renderScene = useRef(null)
+  const runner = useRef(null)
+  const consoleRef = useRef(null)
+  const logQueue = useRef('')
 
-              reloadPrevious()
-              navigation.goBack()
-            }}
-          />
-        )
-      : null,
-    hasAddon: true
-  })
-
-  state = {
-    index: 0,
-    routes: [],
-    loading: true,
-    runnerState: 'stopped'
-  }
-  scenes = {}
-  isWebRepl = false
-  crosis = null
-  runner = null
-
-  render() {
-    if (this.state.loading) {
-      return (
-        <Theme>
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <ActivityIndicator />
-          </View>
-        </Theme>
-      )
+  const consoleRefFunc = (consoleScene) => {
+    consoleRef.current = consoleScene
+    if (logQueue.current.length > 0) {
+      consoleScene.appendToLog(logQueue.current)
+      logQueue.current = ''
     }
-    return (
-      <View style={{ flex: 1 }}>
-        <TabView
-          state={this.state}
-          scenes={this.scenes}
-          swipeEnabled={this.state.routes[this.state.index].key !== 'editor'}
-          onIndexChange={this.updateIndex}
-        />
+  }
 
-        <FAB
-          icon={
-            this.state.runnerState === 'stopped'
-              ? 'play'
-              : this.state.runnerState === 'installing'
-              ? 'dots-horizontal'
-              : this.state.runnerState === 'running'
-              ? 'stop'
-              : 'exclamation'
-          }
-          onPress={this.runOrStop}
-        />
-      </View>
+  const appendToLog = (content) => {
+    if (consoleRef.current) {
+      consoleRef.current.appendToLog(content)
+    } else {
+      logQueue.current += content
+    }
+  }
+
+  const clearLog = () => {
+    if (consoleRef.current) {
+      consoleRef.current.clearLog()
+    } else {
+      logQueue.current = ''
+    }
+  }
+
+  const indexFromKey = (key) => {
+    return routes.findIndex((route) => route.key === key)
+  }
+
+  const runOrStop = async () => {
+    if (indexFromKey('web') > -1) {
+      setIndex(indexFromKey('web'))
+      alert("I'm too lazy to reload the page so pull down to reload manually lol")
+    } else {
+      setIndex(indexFromKey('console'))
+
+      if (runnerState === 'running' && runner.current) {
+        await runner.current.clear()
+        return
+      } else {
+        clearLog()
+      }
+
+      if (!runner.current) {
+        runner.current = new Runner(crosis)
+        runner.current.on('log', (message) => appendToLog(message))
+        runner.current.on('state', (message) => setRunnerState(message))
+      }
+
+      await runner.current.install()
+      await runner.current.run()
+    }
+  }
+
+  useEffect(() => {
+    ;(async () => {
+      const id = getParam('id')
+      const path = getParam('path')
+      const language = getParam('language')
+      const canWrite = getParam('canWrite')
+      const crosis = getParam('crosis')
+
+      const urls = await getUrls(id, path)
+
+      const newRoutes = []
+      const newScenes = {
+        image: () => <ImageScene urls={urls} />,
+        binary: () => <BinaryScene urls={urls} />,
+        editor: () => <EditorScene crosis={crosis} canWrite={canWrite} urls={urls} path={path} />,
+        web: () => <WebScene id={id} appendToLog={appendToLog} />,
+        console: () => <ConsoleScene ref={consoleRefFunc} />
+      }
+
+      if (isImage(path)) {
+        newRoutes.push({ key: 'image', title: 'Image' })
+      } else if (await isFileBinary(urls)) {
+        newRoutes.push({ key: 'binary', title: 'File' })
+      } else {
+        newRoutes.push({ key: 'editor', title: 'Code' })
+      }
+
+      if (language === 'web_project' || language === 'html') {
+        newRoutes.push({ key: 'web', title: 'Web' })
+      }
+      newRoutes.push({ key: 'console', title: 'Console' })
+
+      renderScene.current = SceneMap(newScenes)
+      setCrosis(crosis)
+      setRoutes(newRoutes)
+      setLoading(false)
+    })()
+
+    return () => {
+      if (runner.current) {
+        runner.current.disconnect()
+        runner.current = null
+      }
+    }
+  }, [getParam])
+
+  if (loading) {
+    return (
+      <Theme>
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <ActivityIndicator />
+        </View>
+      </Theme>
     )
   }
 
-  runOrStop = async () => {
-    if (this.isWebRepl) {
-      this.setState({ index: this.indexFromKey('web') })
-      alert("I'm too lazy to reload the page so pull down to reload manually lol")
-    } else {
-      this.setState({ index: this.indexFromKey('console') })
-
-      if (this.state.runnerState === 'running' && this.runner) {
-        await this.runner.clear()
-        return
-      } else {
-        this.clearLog()
-      }
-
-      if (!this.runner) {
-        this.runner = new Runner(this.crosis)
-        this.runner.on('log', (message) => this.appendToLog(message))
-        this.runner.on('state', (message) => this.setState({ runnerState: message }))
-      }
-
-      await this.runner.install()
-      await this.runner.run()
+  let fabIcon = 'exclamation'
+  switch (runnerState) {
+    case 'stopped': {
+      fabIcon = 'play'
+      break
+    }
+    case 'installing': {
+      fabIcon = 'dots-horizontal'
+      break
+    }
+    case 'running': {
+      fabIcon = 'stop'
+      break
     }
   }
 
-  componentWillUnmount() {
-    if (this.packager) this.packager.removeAllListeners()
-    if (this.interp) this.interp.removeAllListeners()
-  }
-
-  async UNSAFE_componentWillMount() {
-    const id = this.props.navigation.getParam('id')
-    const path = this.props.navigation.getParam('path')
-    const language = this.props.navigation.getParam('language')
-    const canWrite = this.props.navigation.getParam('canWrite')
-    const crosis = this.props.navigation.getParam('crosis')
-
-    const urls = await getUrls(id, path)
-    const newState = this.state
-    this.isWebRepl = language === 'web_project' || language === 'html' // TODO: refactor
-
-    if (isImage(path)) {
-      newState.routes = [{ key: 'image', title: 'Image' }]
-      this.scenes = {
-        image: () => <ImageScene urls={urls} />
-      }
-    } else if (await isFileBinary(urls)) {
-      newState.routes = [{ key: 'binary', title: 'File' }]
-      this.scenes = {
-        binary: () => <BinaryScene urls={urls} />
-      }
-    } else {
-      newState.routes = [{ key: 'editor', title: 'Code' }]
-      this.scenes = {
-        editor: () => <EditorScene crosis={crosis} canWrite={canWrite} urls={urls} path={path} />
-      }
-    }
-
-    if (this.isWebRepl) {
-      newState.routes.push({ key: 'web', title: 'Web' })
-      this.scenes.web = () => <WebScene id={id} appendToLog={this.appendToLog} />
-    }
-
-    newState.routes.push({ key: 'console', title: 'Console' })
-    this.scenes.console = () => <ConsoleScene ref={this.consoleRef} />
-
-    newState.loading = false
-    this.crosis = crosis
-    this.setState(newState)
-  }
-
-  indexFromKey(key) {
-    return this.state.routes.findIndex((route) => route.key === key)
-  }
-
-  logQueue = ''
-  consoleScene = null
-
-  consoleRef = (consoleScene) => {
-    this.consoleScene = consoleScene
-    if (this.logQueue.length > 0) {
-      consoleScene.appendToLog(this.logQueue)
-      this.logQueue = ''
-    }
-  }
-
-  appendToLog = (content) => {
-    if (this.consoleScene) {
-      this.consoleScene.appendToLog(content)
-    } else {
-      this.logQueue += content
-    }
-  }
-
-  clearLog = () => {
-    if (this.consoleScene) {
-      this.consoleScene.clearLog()
-    } else {
-      this.logQueue = ''
-    }
-  }
-
-  updateIndex = (index) => {
-    this.setState({ index })
-  }
+  return (
+    <View style={{ flex: 1 }}>
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene.current}
+        swipeEnabled={routes[index].key !== 'editor'}
+        onIndexChange={setIndex}
+      />
+      <FAB icon={fabIcon} onPress={runOrStop} />
+    </View>
+  )
 }
+
+Screen.navigationOptions = ({ navigation }) => ({
+  title: navigation.getParam('path', 'File'),
+  menu: navigation.getParam('canWrite')
+    ? (closeMenu) => (
+        <Menu.Item
+          title="Delete"
+          onPress={async () => {
+            closeMenu()
+
+            const id = navigation.getParam('id')
+            const path = navigation.getParam('path')
+            const reloadPrevious = navigation.getParam('reloadPrevious')
+
+            const urls = await getUrls(id, path)
+            await deleteFile(urls)
+
+            reloadPrevious()
+            navigation.goBack()
+          }}
+        />
+      )
+    : null,
+  hasAddon: true
+})
+
+export default Screen

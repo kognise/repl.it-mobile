@@ -1,3 +1,11 @@
+> 🚩 **This project is archived!** 🚩  
+> 
+> *After a long time of not updating this project I thought it ran on for too long, so I'll archived this repo and officially discontinued development. While I was entertaining the idea of continuing, I was too overwhelmed by a lot of other things and just didn't have the mental energy.*
+>  
+> *I recommend using Repl.it's PWA app instead, while it's admittedly a much worse experience it's better than nothing. Feel free to fork my code and do whatever you want with it! I would love to return to the project at some point but I don't know if that will ever happen.*
+> 
+> *Iwould like to thank everyone in the community who supported me while I was developing the app, as well as the wonderful people from Repl.it who listened to me and my ideas.*
+
 # Repl.it Mobile
 
 A mobile client for the online coding platform and community [Repl.it](https://repl.it/). **This is a work in progress, [join the Discord server](https://discord.gg/sVxJJZA) if you're interested!**
